@@ -90,29 +90,12 @@ class ContentSection {
 const ContentSectionSchema = SchemaFactory.createForClass(ContentSection);
 
 @Schema({ _id: false })
-class Thumbnail {
-  @Prop({ type: String })
-  url!: string;
-
-  @Prop({ type: String })
-  publicId!: string;
-
-  @Prop({ type: Number })
-  size!: number;
-
-  @Prop({ type: String })
-  mimeType!: string;
-}
-
-const ThumbnailSchema = SchemaFactory.createForClass(Thumbnail);
-
-@Schema({ _id: false })
 class Media {
   @Prop({ type: String })
   type!: string;
 
-  @Prop({ type: ThumbnailSchema })
-  thumbnail!: Thumbnail;
+  @Prop({ type: String })
+  thumbnail!: string;
 }
 
 const MediaSchema = SchemaFactory.createForClass(Media);
@@ -130,9 +113,6 @@ const AuthorSchema = SchemaFactory.createForClass(Author);
 
 @Schema({ _id: false })
 class Metadata {
-  @Prop({ type: String })
-  status!: string;
-
   @Prop({ type: Date })
   publishedDate!: Date;
 
@@ -141,9 +121,6 @@ class Metadata {
 
   @Prop({ type: Boolean, default: false })
   featured!: boolean;
-
-  @Prop({ type: Boolean, default: false })
-  trending!: boolean;
 
   @Prop({ type: Number })
   readTime!: number;
@@ -161,9 +138,6 @@ class SEO {
 
   @Prop({ type: [String], default: [] })
   keywords!: string[];
-
-  @Prop({ type: String })
-  ogImage!: string;
 }
 
 const SEOSchema = SchemaFactory.createForClass(SEO);
@@ -194,7 +168,7 @@ export class Blog extends Document {
   @Prop({ type: SEOSchema })
   seo!: SEO;
 
-  @Prop({ type: Boolean, default: true })
+  @Prop({ type: Boolean, default: false })
   isActive!: boolean;
 }
 

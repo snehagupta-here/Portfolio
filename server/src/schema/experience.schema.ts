@@ -30,7 +30,7 @@ export class Experience extends Document {
   organization_name!: string;
 
   @Prop({ type: String })
-  organization_logo!: string;
+  organization_logo_url!: string;
 
   @Prop({ type: String })
   organization_url!: string;
