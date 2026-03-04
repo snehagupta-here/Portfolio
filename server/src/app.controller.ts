@@ -1,6 +1,6 @@
 import { Controller, Get } from '@nestjs/common';
 import { AppService } from './app.service';
-@Controller('contact-us')
+@Controller('health-check')
 export class ContactUsController {
     constructor(
         private readonly appService : AppService

@@ -1,30 +1,37 @@
 import { Module } from '@nestjs/common';
-import { AppService } from './app.service';
-import { ContactUsController } from './contact-us/contact-us.controller';
-import { ContactUsService } from './contact-us/contact-us.service';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
-import { ConfigService } from '@nestjs/config';
-import { SecretsModule } from './secrets-service/secrets-service.module';
-import { ContactUs, ContactUsSchema } from './schema/contact-us.schema';
+
+import { UserModule } from './modules/user/user.module';
+import { SkillModule } from './modules/skill/skill.module';
+import { ExperienceModule } from './modules/experience/experience.module';
+import { AchievementModule } from './modules/achievement/achievement.module';
+import { TestimonialModule } from './modules/testimonial/testimonial.module';
+import { BlogModule } from './modules/blog/blog.module';
+import { ContactUsModule } from './modules/contact-us/contact-us.module';
 
 @Module({
   imports: [
-    MongooseModule.forRootAsync({
-      imports: [SecretsModule],
-      useFactory: async (configService: ConfigService) => ({
-        uri: configService.get<string>('dbUrl'),
-      }),
-      inject: [ConfigService],
-      connectionName: 'db',
+    ConfigModule.forRoot({
+      isGlobal: true,
     }),
-     MongooseModule.forFeature(
-      [{ name: ContactUs.name, schema: ContactUsSchema }],
-      'db',
-    ),
-    SecretsModule,
+
+    MongooseModule.forRootAsync({
+      connectionName: 'db',
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: async (configService: ConfigService) => ({
+        uri: configService.get<string>('MONGO_URI'),
+      }),
+    }),
+
+    UserModule,
+    SkillModule,
+    ExperienceModule,
+    AchievementModule,
+    TestimonialModule,
+    BlogModule,
+    ContactUsModule,
   ],
-  controllers: [ContactUsController],
-  providers: [AppService, ContactUsService, ConfigService,],
-  exports: [ConfigService],
 })
 export class AppModule {}
