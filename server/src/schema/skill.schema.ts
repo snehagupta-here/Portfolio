@@ -1,40 +1,52 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument, Document, Types } from 'mongoose';
 import { SkillCategoryEnum } from 'src/enums';
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Document, HydratedDocument } from 'mongoose';
 
 export type SkillDocument = HydratedDocument<Skill>;
 
-@Schema({ collection: 'skills', timestamps: true })
-export class Skill extends Document {
-  @Prop({ type: Types.ObjectId, ref: 'User', required: true })
-  user_id!: Types.ObjectId;
+@Schema({ _id: false })
+export class SkillIcon {
+  @Prop({ type: String, required: true })
+  publicId!: string;
 
   @Prop({ type: String, required: true })
-  name!: string;
+  secureUrl!: string;
+
+  @Prop({ type: Number })
+  width?: number;
+
+  @Prop({ type: Number })
+  height?: number;
 
   @Prop({ type: String })
-  icon!: string;
+  format?: string;
 
-  @Prop({
-    type: Number,
-    min: 0,
-    max: 10,
-    required: true,
-  })
-  scale!: number;
+  @Prop({ type: String })
+  resourceType?: string;
 
-  @Prop({
-    type: Number,
-    min: 0,
-  })
-  yoe!: number;
+  @Prop({ type: Number })
+  bytes?: number;
 
-  @Prop({
+  @Prop({ type: String })
+  originalFilename?: string;
+}
+
+export const SkillIconSchema = SchemaFactory.createForClass(SkillIcon);
+
+@Schema({ collection: 'skills', timestamps: true })
+export class Skill extends Document {
+  @Prop({ type: String, required: true, trim: true })
+  name!: string;
+
+    @Prop({
     type: String,
     enum: SkillCategoryEnum,
     required: true,
   })
   category!: SkillCategoryEnum;
+
+  @Prop({ type: SkillIconSchema })
+  icon?: SkillIcon;
 }
 
 export const SkillSchema = SchemaFactory.createForClass(Skill);

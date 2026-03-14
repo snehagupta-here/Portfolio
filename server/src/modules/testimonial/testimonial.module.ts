@@ -8,7 +8,7 @@ import { TestimonialService } from './testimonial.service';
   imports: [
     MongooseModule.forFeature(
       [{ name: Testimonial.name, schema: TestimonialSchema }],
-      'db',
+
     ),
   ],
   controllers: [TestimonialController],

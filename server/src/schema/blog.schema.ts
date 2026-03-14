@@ -124,6 +124,10 @@ class Metadata {
 
   @Prop({ type: Number })
   readTime!: number;
+
+  @Prop({ default: 0 }) views!: number;
+
+  @Prop({ default: 0 }) likes!: number;
 }
 
 const MetadataSchema = SchemaFactory.createForClass(Metadata);

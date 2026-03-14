@@ -8,7 +8,7 @@ import { BlogService } from './blog.service';
   imports: [
     MongooseModule.forFeature(
       [{ name: Blog.name, schema: BlogSchema }],
-      'db',
+
     ),
   ],
   controllers: [BlogController],

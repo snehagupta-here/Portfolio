@@ -12,7 +12,7 @@ import { handleError } from 'src/utils/error-handler';
 @Injectable()
 export class ProjectService {
   constructor(
-    @InjectModel(Project.name, 'db')
+    @InjectModel(Project.name)
     private readonly projectCollection: Model<Project>,
   ) {}
 

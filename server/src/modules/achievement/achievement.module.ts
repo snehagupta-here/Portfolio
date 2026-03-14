@@ -8,7 +8,7 @@ import { AchievementService } from './achievement.service';
   imports: [
     MongooseModule.forFeature(
       [{ name: Achievement.name, schema: AchievementSchema }],
-      'db',
+ 
     ),
   ],
   controllers: [AchievementController],

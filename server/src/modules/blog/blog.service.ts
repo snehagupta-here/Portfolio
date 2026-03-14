@@ -12,7 +12,7 @@ import { CreateBlog, UpdateBlog } from 'src/interfaces';
 @Injectable()
 export class BlogService {
   constructor(
-    @InjectModel(Blog.name, 'db')
+    @InjectModel(Blog.name)
     private readonly blogCollection: Model<Blog>,
   ) {}
 

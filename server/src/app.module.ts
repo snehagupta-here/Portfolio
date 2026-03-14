@@ -16,14 +16,13 @@ import { ContactUsModule } from './modules/contact-us/contact-us.module';
       isGlobal: true,
     }),
 
-    MongooseModule.forRootAsync({
-      connectionName: 'db',
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: async (configService: ConfigService) => ({
-        uri: configService.get<string>('MONGO_URI'),
-      }),
-    }),
+   MongooseModule.forRootAsync({
+  imports: [ConfigModule],
+  inject: [ConfigService],
+  useFactory: (configService: ConfigService) => ({
+    uri: 'mongodb+srv://admin:WCoB057CkiXFNhgh@cluster0.h9xpsvl.mongodb.net/',
+  }),
+}),
 
     UserModule,
     SkillModule,

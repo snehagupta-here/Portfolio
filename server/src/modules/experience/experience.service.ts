@@ -12,7 +12,7 @@ import { CreateExperience, UpdateExperience } from 'src/interfaces';
 @Injectable()
 export class ExperienceService {
   constructor(
-    @InjectModel(Experience.name, 'db')
+    @InjectModel(Experience.name)
     private readonly experienceCollection: Model<Experience>,
   ) {}
 

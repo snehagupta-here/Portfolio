@@ -14,7 +14,7 @@ import {
 @Injectable()
 export class TestimonialService {
   constructor(
-    @InjectModel(Testimonial.name, 'db')
+    @InjectModel(Testimonial.name)
     private readonly testimonialCollection: Model<Testimonial>,
   ) {}
 

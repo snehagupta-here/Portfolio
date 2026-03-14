@@ -1,18 +1,34 @@
 import { SkillCategoryEnum } from 'src/enums';
+import { CloudinaryImageAsset } from '../common/image/image.types';
 
-export interface CreateSkill {
-  user_id: string;
-  name: string;
-  icon?: string;
-  scale: number;
-  yoe?: number;
-  category: SkillCategoryEnum;
+export interface SkillIcon {
+  publicId: string;
+  secureUrl: string;
+  width?: number;
+  height?: number;
+  format?: string;
+  resourceType?: string;
+  bytes?: number;
+  originalFilename?: string;
 }
+
+// export interface CreateSkill {
+//   name: string;
+//   icon?: SkillIcon;
+//   category: SkillCategoryEnum;
+// }
 
 export interface UpdateSkill {
   name?: string;
-  icon?: string;
-  scale?: number;
-  yoe?: number;
-  category?: SkillCategoryEnum;
+  icon?: SkillIcon;
+  category: SkillCategoryEnum;
+}
+
+export interface SkillResponse {
+  _id: string;
+  name: string;
+  icon?: CloudinaryImageAsset;
+  category: SkillCategoryEnum;
+  createdAt?: Date;
+  updatedAt?: Date;
 }

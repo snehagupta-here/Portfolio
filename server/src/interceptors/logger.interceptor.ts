@@ -28,8 +28,8 @@ export class LoggingInterceptor implements NestInterceptor {
         );
       }),
       catchError((error) => {
-        const statusCode = res.statusCode || error.status || 500;
-        const errorMessage = error.message || 'Internal Server Error';
+        const statusCode = error?.status || error?.statusCode || 500;
+        const errorMessage = error?.message || 'Internal Server Error';
         this.logger.error(
           `${method} ${url} ${statusCode} ${Date.now() - now}ms - Error: ${errorMessage}`,
         );

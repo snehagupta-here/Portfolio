@@ -8,7 +8,6 @@ import { ContactUsService } from './contact-us.service';
   imports: [
     MongooseModule.forFeature(
       [{ name: ContactUs.name, schema: ContactUsSchema }],
-      'db',
     ),
   ],
   controllers: [ContactUsController],

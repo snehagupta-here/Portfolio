@@ -70,6 +70,9 @@ class Content {
   @Prop({ type: [String], default: [] })
   paragraphs!: string[];
 
+  @Prop({ type: [CodeSnippetSchema], default: [] })
+  codeSnippets!: CodeSnippet[];
+
   @Prop({ type: [ContentItemSchema], default: [] })
   items!: ContentItem[];
 

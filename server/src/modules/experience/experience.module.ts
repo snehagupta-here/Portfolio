@@ -8,7 +8,7 @@ import { ExperienceService } from './experience.service';
   imports: [
     MongooseModule.forFeature(
       [{ name: Experience.name, schema: ExperienceSchema }],
-      'db',
+   
     ),
   ],
   controllers: [ExperienceController],

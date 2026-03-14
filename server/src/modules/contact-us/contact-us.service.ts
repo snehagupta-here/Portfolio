@@ -8,7 +8,7 @@ import { ContactUs } from '../../schema/contact-us.schema';
 @Injectable()
 export class ContactUsService {
   constructor(
-    @InjectModel(ContactUs.name, 'db')
+    @InjectModel(ContactUs.name)
     private readonly contactUsCollection: Model<ContactUs>,
   ) {}
 

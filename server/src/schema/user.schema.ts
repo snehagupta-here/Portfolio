@@ -17,6 +17,17 @@ class SocialLink {
 
 const SocialLinkSchema = SchemaFactory.createForClass(SocialLink);
 
+@Schema({ _id: false })
+class UserSkill {
+  @Prop({ type: Types.ObjectId, ref: 'Skill', required: true })
+  skill_id!: Types.ObjectId;
+
+  @Prop({ type: Number, required: true, min: 0 })
+  yoe!: number;
+}
+
+const UserSkillSchema = SchemaFactory.createForClass(UserSkill);
+
 @Schema({ collection: 'users', timestamps: true })
 export class User extends Document {
   @Prop({ type: String })
@@ -28,8 +39,8 @@ export class User extends Document {
   @Prop({ type: [SocialLinkSchema], default: [] })
   links!: SocialLink[];
 
-  @Prop({ type: [{ type: Types.ObjectId, ref: 'Skill' }], default: [] })
-  skills!: Types.ObjectId[];
+  @Prop({ type: [UserSkillSchema], default: [] })
+  skills!: UserSkill[];
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

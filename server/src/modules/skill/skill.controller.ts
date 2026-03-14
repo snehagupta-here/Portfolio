@@ -4,19 +4,42 @@ import {
   Body,
   Get,
   Param,
-  Put,
+  Patch,
   Delete,
+  UploadedFile,
+  UseInterceptors,
 } from '@nestjs/common';
 import { SkillService } from './skill.service';
 import { SkillDto } from 'src/dto';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { memoryStorage } from 'multer';
+import { SkillInputResolverService } from '../../pipes/resolve-skill-icon.pipe';
+import type { ResolvedSkillInput } from '../../common/image/image.types';
 
-@Controller('skill')
+@Controller('skills')
 export class SkillController {
-  constructor(private readonly skillService: SkillService) {}
+  constructor(
+    private readonly skillService: SkillService,
+    private readonly skillInputResolverService: SkillInputResolverService,
+  ) {}
 
   @Post()
-  async create(@Body() body: SkillDto) {
-    return await this.skillService.createSkill(body);
+  @UseInterceptors(
+    FileInterceptor('iconFile', {
+      storage: memoryStorage(),
+      limits: {
+        fileSize: 2 * 1024 * 1024,
+      },
+    }),
+  )
+  async create(
+    @Body() body: SkillDto,
+    @UploadedFile() file?: Express.Multer.File,
+  ) {
+    const input: ResolvedSkillInput =
+      this.skillInputResolverService.resolveCreate(body, file);
+
+    return this.skillService.createSkill(input);
   }
 
   @Get()
@@ -29,12 +52,22 @@ export class SkillController {
     return await this.skillService.getSkillById(id);
   }
 
-  @Put(':id')
+  @Patch(':id')
+  @UseInterceptors(
+    FileInterceptor('iconFile', {
+      storage: memoryStorage(),
+      limits: {
+        fileSize: 2 * 1024 * 1024,
+      },
+    }),
+  )
   async update(
     @Param('id') id: string,
     @Body() body: Partial<SkillDto>,
+    @UploadedFile() file?: Express.Multer.File,
   ) {
-    return await this.skillService.updateSkill(id, body);
+    const input = this.skillInputResolverService.resolveUpdate(body, file);
+    return this.skillService.updateSkill(id, input);
   }
 
   @Delete(':id')

@@ -7,25 +7,55 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { Skill } from 'src/schema/skill.schema';
 import { handleError } from 'src/utils/error-handler';
-import { CreateSkill, UpdateSkill } from 'src/interfaces';
+import { ImageResolverService } from '../../common/image/image-resolver.service';
+import type { ResolvedSkillInput } from '../../common/image/image.types';
 
 @Injectable()
 export class SkillService {
   constructor(
-    @InjectModel(Skill.name, 'db')
+    @InjectModel(Skill.name)
     private readonly skillCollection: Model<Skill>,
+    private readonly imageResolverService: ImageResolverService,
   ) {}
 
   // CREATE
-  async createSkill(body: CreateSkill) {
+  async createSkill(body: ResolvedSkillInput) {
     try {
-      if (!Types.ObjectId.isValid(body.user_id)) {
-        throw new BadRequestException('Invalid user_id');
+      // Check if skill already exists for the user
+      const existingSkill = await this.skillCollection.findOne({
+        name: body.name,
+      });
+
+      if (existingSkill) {
+        throw new BadRequestException('Skill already exists');
       }
+      const resolved = await this.imageResolverService.resolveSingleImage(
+        {
+          file: body.icon.file,
+          url: body.icon.url,
+        },
+        {
+          folder: 'portfolio/skills',
+          publicId: `skills/${this.slugify(body.name)}-${Date.now()}`,
+          overwrite: true,
+          allowSvg: true,
+          maxSizeBytes: 2 * 1024 * 1024,
+        },
+      );
 
       const skill = await this.skillCollection.create({
-        ...body,
-        user_id: new Types.ObjectId(body.user_id),
+        name: body.name,
+        category: body.category,
+        icon: {
+          publicId: resolved.asset.publicId,
+          secureUrl: resolved.asset.secureUrl,
+          width: resolved.asset.width,
+          height: resolved.asset.height,
+          format: resolved.asset.format,
+          resourceType: resolved.asset.resourceType,
+          bytes: resolved.asset.bytes,
+          originalFilename: resolved.asset.originalFilename,
+        },
       });
 
       return {
@@ -75,23 +105,62 @@ export class SkillService {
   }
 
   // UPDATE
-  async updateSkill(id: string, body: UpdateSkill) {
+  async updateSkill(id: string, body: Partial<ResolvedSkillInput>) {
     try {
       if (!Types.ObjectId.isValid(id)) {
         throw new BadRequestException('Invalid skill ID');
       }
 
-      const updated = await this.skillCollection.findByIdAndUpdate(id, body, {
-        new: true,
-      });
+      const skill = await this.skillCollection.findById(id);
 
-      if (!updated) {
+      if (!skill) {
         throw new NotFoundException('Skill not found');
       }
+      if (body.name !== undefined) {
+        skill.name = body.name;
+      }
 
+      if (body.category !== undefined) {
+        skill.category = body.category;
+      }
+      if (body.icon) {
+        const resolved = await this.imageResolverService.resolveSingleImage(
+          {
+            file: body.icon.file,
+            url: body.icon.url,
+          },
+          {
+            folder: 'portfolio/skills',
+            publicId: `skills/${this.slugify(body.name ?? skill.name)}-${Date.now()}`,
+            overwrite: true,
+            allowSvg: true,
+            maxSizeBytes: 2 * 1024 * 1024,
+          },
+        );
+
+        if (skill.icon?.publicId) {
+          try {
+            await this.imageResolverService.destroy(skill.icon.publicId);
+          } catch {
+            // ignore old asset deletion failure
+          }
+        }
+
+        skill.icon = {
+          publicId: resolved.asset.publicId,
+          secureUrl: resolved.asset.secureUrl,
+          width: resolved.asset.width,
+          height: resolved.asset.height,
+          format: resolved.asset.format,
+          resourceType: resolved.asset.resourceType,
+          bytes: resolved.asset.bytes,
+          originalFilename: resolved.asset.originalFilename,
+        } as any;
+      }
+      await skill.save();
       return {
         success: true,
-        data: updated,
+        data: skill,
         message: 'Skill updated successfully.',
       };
     } catch (e: unknown) {
@@ -119,5 +188,13 @@ export class SkillService {
     } catch (e: unknown) {
       handleError(e, 'Failed to delete skill');
     }
+  }
+
+  private slugify(value: string) {
+    return value
+      .toLowerCase()
+      .trim()
+      .replace(/[^\w\s-]/g, '')
+      .replace(/\s+/g, '-');
   }
 }

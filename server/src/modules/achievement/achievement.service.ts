@@ -11,10 +11,10 @@ import { CreateAchievement, UpdateAchievement } from 'src/interfaces';
 
 @Injectable()
 export class AchievementService {
-  constructor(
-    @InjectModel(Achievement.name, 'db')
-    private readonly achievementCollection: Model<Achievement>,
-  ) {}
+constructor(
+  @InjectModel(Achievement.name)
+  private readonly achievementCollection: Model<Achievement>,
+) {}
 
   // CREATE
   async createAchievement(body: CreateAchievement) {

@@ -12,7 +12,7 @@ import { UserCreate, UserUpdate } from 'src/interfaces';
 @Injectable()
 export class UserService {
   constructor(
-    @InjectModel(User.name, 'db')
+    @InjectModel(User.name)
     private readonly userCollection: Model<User>,
   ) {}
 
@@ -21,7 +21,10 @@ export class UserService {
     try {
       const user = await this.userCollection.create({
         ...body,
-        skills: body.skills?.map((id) => new Types.ObjectId(id)),
+skills: body.skills?.map((skill) => ({
+  skill_id: new Types.ObjectId(skill.skill_id),
+  yoe: skill.yoe,
+})),
       });
 
       return {
@@ -81,7 +84,10 @@ export class UserService {
       }
 
       if (body.skills) {
-        body.skills = body.skills.map((id) => new Types.ObjectId(id) as any);
+body.skills = body.skills.map((skill) => ({
+  skill_id: new Types.ObjectId(skill.skill_id),
+  yoe: skill.yoe,
+})) as any;
       }
 
       const updated = await this.userCollection.findByIdAndUpdate(id, body, {
