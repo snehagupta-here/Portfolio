@@ -9,6 +9,7 @@ import { Skill } from 'src/schema/skill.schema';
 import { handleError } from 'src/utils/error-handler';
 import { ImageResolverService } from '../../common/image/image-resolver.service';
 import type { ResolvedSkillInput } from '../../common/image/image.types';
+import { slugify } from 'src/utils/slugify';
 
 @Injectable()
 export class SkillService {
@@ -36,7 +37,7 @@ export class SkillService {
         },
         {
           folder: 'portfolio/skills',
-          publicId: `skills/${this.slugify(body.name)}-${Date.now()}`,
+          publicId: `skills/${slugify(body.name)}-${Date.now()}`,
           overwrite: true,
           allowSvg: true,
           maxSizeBytes: 2 * 1024 * 1024,
@@ -131,7 +132,7 @@ export class SkillService {
           },
           {
             folder: 'portfolio/skills',
-            publicId: `skills/${this.slugify(body.name ?? skill.name)}-${Date.now()}`,
+            publicId: `skills/${slugify(body.name ?? skill.name)}-${Date.now()}`,
             overwrite: true,
             allowSvg: true,
             maxSizeBytes: 2 * 1024 * 1024,
@@ -188,13 +189,5 @@ export class SkillService {
     } catch (e: unknown) {
       handleError(e, 'Failed to delete skill');
     }
-  }
-
-  private slugify(value: string) {
-    return value
-      .toLowerCase()
-      .trim()
-      .replace(/[^\w\s-]/g, '')
-      .replace(/\s+/g, '-');
   }
 }

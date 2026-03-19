@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Document, Types } from 'mongoose';
+import { ImageAsset, ImageAssetSchema } from './image-asset.schema';
 
 export type ExperienceDocument = HydratedDocument<Experience>;
 
@@ -29,8 +30,8 @@ export class Experience extends Document {
   @Prop({ type: String, required: true })
   organization_name!: string;
 
-  @Prop({ type: String })
-  organization_logo_url!: string;
+  @Prop({ type: ImageAssetSchema })
+  organization_logo_url!: ImageAsset;
 
   @Prop({ type: String })
   organization_url!: string;

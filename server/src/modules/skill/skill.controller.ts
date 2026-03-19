@@ -39,7 +39,7 @@ export class SkillController {
     const input: ResolvedSkillInput =
       this.skillInputResolverService.resolveCreate(body, file);
 
-    return this.skillService.createSkill(input);
+    return await this.skillService.createSkill(input);
   }
 
   @Get()
@@ -67,7 +67,7 @@ export class SkillController {
     @UploadedFile() file?: Express.Multer.File,
   ) {
     const input = this.skillInputResolverService.resolveUpdate(body, file);
-    return this.skillService.updateSkill(id, input);
+    return await this.skillService.updateSkill(id, input);
   }
 
   @Delete(':id')
