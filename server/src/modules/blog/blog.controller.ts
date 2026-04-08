@@ -30,10 +30,7 @@ export class BlogController {
   }
 
   @Put(':id')
-  async update(
-    @Param('id') id: string,
-    @Body() body: Partial<BlogDto>,
-  ) {
+  async update(@Param('id') id: string, @Body() body: Partial<BlogDto>) {
     return await this.blogService.updateBlog(id, body);
   }
 

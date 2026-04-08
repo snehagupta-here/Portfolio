@@ -1,50 +1,35 @@
 import {
-  Controller,
-  Post,
   Body,
+  Controller,
+  Delete,
   Get,
   Param,
   Patch,
-  Delete,
-  UploadedFile,
-  UseInterceptors,
+  Post,
+  Query,
 } from '@nestjs/common';
+
+import { SearchSkillQueryDto, SkillDto, UpdateSkillDto } from 'src/dto';
+
 import { SkillService } from './skill.service';
-import { SkillDto } from 'src/dto';
-import { FileInterceptor } from '@nestjs/platform-express';
-import { memoryStorage } from 'multer';
-import { SkillInputResolverService } from '../../pipes/resolve-skill.pipe';
-import type { ResolvedSkillInput } from 'src/interfaces';
 
 @Controller('skills')
 export class SkillController {
-  constructor(
-    private readonly skillService: SkillService,
-    private readonly skillInputResolverService: SkillInputResolverService,
-  ) {}
+  constructor(private readonly skillService: SkillService) {}
 
   @Post()
-  @UseInterceptors(
-    FileInterceptor('iconFile', {
-      storage: memoryStorage(),
-      limits: {
-        fileSize: 2 * 1024 * 1024,
-      },
-    }),
-  )
-  async create(
-    @Body() body: SkillDto,
-    @UploadedFile() file?: Express.Multer.File,
-  ) {
-    const input: ResolvedSkillInput =
-      this.skillInputResolverService.resolveCreate(body, file);
-
-    return await this.skillService.createSkill(input);
+  async create(@Body() body: SkillDto) {
+    return await this.skillService.createSkill(body);
   }
 
   @Get()
   async findAll() {
     return await this.skillService.getAllSkills();
+  }
+
+  @Get('search')
+  async search(@Query() query: SearchSkillQueryDto) {
+    return await this.skillService.searchSkills(query);
   }
 
   @Get(':id')
@@ -53,21 +38,8 @@ export class SkillController {
   }
 
   @Patch(':id')
-  @UseInterceptors(
-    FileInterceptor('iconFile', {
-      storage: memoryStorage(),
-      limits: {
-        fileSize: 2 * 1024 * 1024,
-      },
-    }),
-  )
-  async update(
-    @Param('id') id: string,
-    @Body() body: Partial<SkillDto>,
-    @UploadedFile() file?: Express.Multer.File,
-  ) {
-    const input = this.skillInputResolverService.resolveUpdate(body, file);
-    return await this.skillService.updateSkill(id, input);
+  async update(@Param('id') id: string, @Body() body: UpdateSkillDto) {
+    return await this.skillService.updateSkill(id, body);
   }
 
   @Delete(':id')

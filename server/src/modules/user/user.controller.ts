@@ -1,54 +1,24 @@
 import {
-  Controller,
-  Post,
   Body,
+  Controller,
+  Delete,
   Get,
   Param,
   Patch,
-  Delete,
-  UploadedFiles,
-  UseInterceptors,
+  Post,
 } from '@nestjs/common';
-import { FileFieldsInterceptor } from '@nestjs/platform-express';
-import { memoryStorage } from 'multer';
+
+import { UpdateUserDto, UserDto } from 'src/dto';
+
 import { UserService } from './user.service';
-import { UserDto } from 'src/dto';
-import { ResolvedUserInput } from 'src/interfaces';
-import { UserInputResolverService } from 'src/pipes/resolve-user.pipe';
 
 @Controller('user')
 export class UserController {
-  constructor(
-    private readonly userService: UserService,
-    private readonly userInputResolverService: UserInputResolverService,
-  ) {}
+  constructor(private readonly userService: UserService) {}
 
   @Post()
-  @UseInterceptors(
-    FileFieldsInterceptor(
-      [
-        { name: 'profile_image', maxCount: 1 },
-        { name: 'resume', maxCount: 1 },
-      ],
-      {
-        storage: memoryStorage(),
-        limits: {
-          fileSize: 5 * 1024 * 1024,
-        },
-      },
-    ),
-  )
-  async create(
-    @Body() body: UserDto,
-    @UploadedFiles()
-    files: {
-      profile_image?: Express.Multer.File[];
-      resume?: Express.Multer.File[];
-    },
-  ) {
-    const input: ResolvedUserInput =
-      this.userInputResolverService.resolveCreate(body, files);
-    return await this.userService.createUser(input);
+  async create(@Body() body: UserDto) {
+    return await this.userService.createUser(body);
   }
 
   @Get()
@@ -62,32 +32,8 @@ export class UserController {
   }
 
   @Patch(':id')
-  @UseInterceptors(
-    FileFieldsInterceptor(
-      [
-        { name: 'profile_image', maxCount: 1 },
-        { name: 'resume', maxCount: 1 },
-      ],
-      {
-        storage: memoryStorage(),
-        limits: {
-          fileSize: 5 * 1024 * 1024,
-        },
-      },
-    ),
-  )
-  async update(
-    @Param('id') id: string,
-    @Body() body: Partial<UserDto>,
-    @UploadedFiles()
-    files: {
-      profile_image?: Express.Multer.File[];
-      resume?: Express.Multer.File[];
-    },
-  ) {
-    const input: Partial<ResolvedUserInput> =
-      this.userInputResolverService.resolveUpdate(body, files);
-    return await this.userService.updateUser(id, input);
+  async update(@Param('id') id: string, @Body() body: UpdateUserDto) {
+    return await this.userService.updateUser(id, body);
   }
 
   @Delete(':id')

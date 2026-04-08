@@ -10,7 +10,6 @@ import {
 import { AchievementService } from './achievement.service';
 import { AchievementDto } from 'src/dto';
 
-
 @Controller('achievement')
 export class AchievementController {
   constructor(private readonly achievementService: AchievementService) {}
@@ -31,10 +30,7 @@ export class AchievementController {
   }
 
   @Put(':id')
-  async update(
-    @Param('id') id: string,
-      @Body() body: Partial<AchievementDto>,
-  ) {
+  async update(@Param('id') id: string, @Body() body: Partial<AchievementDto>) {
     return await this.achievementService.updateAchievement(id, body);
   }
 

@@ -1,0 +1,1382 @@
+openapi: 3.0.3
+info:
+  title: Portfolio Server
+  version: 1.0.0
+  description: Combined API reference for the user, skill and Cloudinary flows.
+
+servers:
+  - url: http://localhost:4000/api/v1
+    description: Local development server
+
+tags:
+  - name: Users
+  - name: Skills
+  - name: Cloudinary
+
+paths:
+  /user:
+    post:
+      tags:
+        - Users
+      summary: Create a user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserCreateRequest'
+            examples:
+              default:
+                value:
+                  name: Ashu Goyal
+                  about: Full-stack developer building portfolio products.
+                  links:
+                    - name: GitHub
+                      icon: github
+                      url: https://github.com/ashugoyal
+                    - name: LinkedIn
+                      icon: linkedin
+                      url: https://www.linkedin.com/in/ashugoyal
+                  skills:
+                    - skill_id: 660f0c1f4d8c8b3c2adfd111
+                      yoe: 3
+                      scale: 8
+                    - skill_id: 660f0c1f4d8c8b3c2adfd112
+                      yoe: 2
+                      scale: 7
+                  profile_image:
+                    publicId: portfolio/user/profile-image
+                    secureUrl: https://res.cloudinary.com/demo/image/upload/v1/profile.jpg
+                    width: 512
+                    height: 512
+                    format: jpg
+                    resourceType: image
+                    bytes: 85432
+                    originalFilename: profile
+                  resume:
+                    publicId: portfolio/user/resume
+                    secureUrl: https://res.cloudinary.com/demo/raw/upload/v1/resume.pdf
+                    format: pdf
+                    resourceType: raw
+                    bytes: 240156
+                    originalFilename: ashu-goyal-resume
+      responses:
+        '201':
+          description: User created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserMutationResponse'
+              examples:
+                default:
+                  value:
+                    success: true
+                    statusCode: 201
+                    message: User created successfully.
+                    data:
+                      _id: 660f0c1f4d8c8b3c2adfd001
+                      name: Ashu Goyal
+                      about: Full-stack developer building portfolio products.
+                      links:
+                        - name: GitHub
+                          icon: github
+                          url: https://github.com/ashugoyal
+                      skills:
+                        - skill_id: 660f0c1f4d8c8b3c2adfd111
+                          yoe: 3
+                          scale: 8
+                      profile_image:
+                        publicId: portfolio/user/profile-image
+                        secureUrl: https://res.cloudinary.com/demo/image/upload/v1/profile.jpg
+                      resume:
+                        publicId: portfolio/user/resume
+                        secureUrl: https://res.cloudinary.com/demo/raw/upload/v1/resume.pdf
+                      createdAt: '2026-04-08T06:10:00.000Z'
+                      updatedAt: '2026-04-08T06:10:00.000Z'
+                    timeStamp: '2026-04-08T06:10:00.000Z'
+                    path: /api/v1/user
+        '400':
+          $ref: '#/components/responses/ValidationError'
+
+    get:
+      tags:
+        - Users
+      summary: Get all users
+      responses:
+        '200':
+          description: Users fetched successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserListResponse'
+              examples:
+                default:
+                  value:
+                    success: true
+                    statusCode: 200
+                    message: Request successful
+                    data:
+                      - _id: 660f0c1f4d8c8b3c2adfd001
+                        name: Ashu Goyal
+                        about: Full-stack developer building portfolio products.
+                        links:
+                          - name: GitHub
+                            icon: github
+                            url: https://github.com/ashugoyal
+                        skills:
+                          - skill_id:
+                              _id: 660f0c1f4d8c8b3c2adfd111
+                              name: NestJS
+                              category: backend
+                            yoe: 3
+                            scale: 8
+                        profile_image:
+                          publicId: portfolio/user/profile-image
+                          secureUrl: https://res.cloudinary.com/demo/image/upload/v1/profile.jpg
+                        createdAt: '2026-04-08T06:10:00.000Z'
+                        updatedAt: '2026-04-08T06:10:00.000Z'
+                    timeStamp: '2026-04-08T06:10:01.000Z'
+                    path: /api/v1/user
+
+  /user/{id}:
+    get:
+      tags:
+        - Users
+      summary: Get a user by id
+      parameters:
+        - $ref: '#/components/parameters/MongoIdPathParam'
+      responses:
+        '200':
+          description: User fetched successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserFetchResponse'
+        '400':
+          $ref: '#/components/responses/InvalidUserIdError'
+        '404':
+          $ref: '#/components/responses/UserNotFoundError'
+
+    patch:
+      tags:
+        - Users
+      summary: Update a user
+      parameters:
+        - $ref: '#/components/parameters/MongoIdPathParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserUpdateRequest'
+            examples:
+              default:
+                value:
+                  about: Building scalable backend systems and product APIs.
+                  links:
+                    - name: Portfolio
+                      icon: globe
+                      url: https://portfolio.example.com
+                  skills:
+                    - skill_id: 660f0c1f4d8c8b3c2adfd111
+                      yoe: 4
+                      scale: 9
+      responses:
+        '200':
+          description: User updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserMutationResponse'
+        '400':
+          $ref: '#/components/responses/InvalidUserIdError'
+        '404':
+          $ref: '#/components/responses/UserNotFoundError'
+
+    delete:
+      tags:
+        - Users
+      summary: Delete a user
+      parameters:
+        - $ref: '#/components/parameters/MongoIdPathParam'
+      responses:
+        '200':
+          description: User deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteResponse'
+              examples:
+                default:
+                  value:
+                    success: true
+                    statusCode: 200
+                    message: User deleted successfully.
+                    timeStamp: '2026-04-08T06:10:03.000Z'
+                    path: /api/v1/user/660f0c1f4d8c8b3c2adfd001
+        '400':
+          $ref: '#/components/responses/InvalidUserIdError'
+        '404':
+          $ref: '#/components/responses/UserNotFoundError'
+
+  /skills:
+    post:
+      tags:
+        - Skills
+      summary: Create a skill
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SkillCreateRequest'
+            examples:
+              default:
+                value:
+                  name: NestJS
+                  category: backend
+                  icon:
+                    publicId: portfolio/skills/nestjs
+                    secureUrl: https://res.cloudinary.com/demo/image/upload/v1/nestjs.png
+                    width: 256
+                    height: 256
+                    format: png
+                    resourceType: image
+                    bytes: 48212
+                    originalFilename: nestjs-logo
+      responses:
+        '201':
+          description: Skill created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SkillMutationResponse'
+              examples:
+                default:
+                  value:
+                    success: true
+                    statusCode: 201
+                    message: Skill created successfully.
+                    data:
+                      _id: 660f0c1f4d8c8b3c2adfd111
+                      name: NestJS
+                      category: backend
+                      icon:
+                        publicId: portfolio/skills/nestjs
+                        secureUrl: https://res.cloudinary.com/demo/image/upload/v1/nestjs.png
+                      createdAt: '2026-04-08T06:11:00.000Z'
+                      updatedAt: '2026-04-08T06:11:00.000Z'
+                    timeStamp: '2026-04-08T06:11:00.000Z'
+                    path: /api/v1/skills
+        '400':
+          $ref: '#/components/responses/ValidationError'
+
+    get:
+      tags:
+        - Skills
+      summary: Get all skills
+      responses:
+        '200':
+          description: Skills fetched successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SkillListResponse'
+              examples:
+                default:
+                  value:
+                    success: true
+                    statusCode: 200
+                    message: Request successful
+                    data:
+                      - _id: 660f0c1f4d8c8b3c2adfd111
+                        name: NestJS
+                        category: backend
+                        icon:
+                          publicId: portfolio/skills/nestjs
+                          secureUrl: https://res.cloudinary.com/demo/image/upload/v1/nestjs.png
+                        createdAt: '2026-04-08T06:11:00.000Z'
+                        updatedAt: '2026-04-08T06:11:00.000Z'
+                    timeStamp: '2026-04-08T06:11:01.000Z'
+                    path: /api/v1/skills
+
+  /skills/{id}:
+    get:
+      tags:
+        - Skills
+      summary: Get a skill by id
+      parameters:
+        - $ref: '#/components/parameters/MongoIdPathParam'
+      responses:
+        '200':
+          description: Skill fetched successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SkillFetchResponse'
+        '400':
+          $ref: '#/components/responses/InvalidSkillIdError'
+        '404':
+          $ref: '#/components/responses/SkillNotFoundError'
+
+  /skills/search:
+    get:
+      tags:
+        - Skills
+      summary: Search skills by name or category
+      parameters:
+        - name: name
+          in: query
+          required: false
+          description: Case-insensitive partial skill name match.
+          schema:
+            type: string
+            example: nest
+        - name: category
+          in: query
+          required: false
+          description: Skill category filter.
+          schema:
+            type: string
+            enum:
+              - frontend
+              - language
+              - backend
+              - database
+              - cloud
+              - devops
+              - design
+              - other
+            example: backend
+      responses:
+        '200':
+          description: Skills fetched successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SkillListResponse'
+              examples:
+                byName:
+                  value:
+                    success: true
+                    statusCode: 200
+                    message: Request successful
+                    data:
+                      - _id: 660f0c1f4d8c8b3c2adfd111
+                        name: NestJS
+                        category: backend
+                        icon:
+                          publicId: portfolio/skills/nestjs
+                          secureUrl: https://res.cloudinary.com/demo/image/upload/v1/nestjs.png
+                        createdAt: '2026-04-08T06:11:00.000Z'
+                        updatedAt: '2026-04-08T06:11:00.000Z'
+                    timeStamp: '2026-04-08T06:11:02.000Z'
+                    path: /api/v1/skills/search?name=nest
+                byCategory:
+                  value:
+                    success: true
+                    statusCode: 200
+                    message: Request successful
+                    data:
+                      - _id: 660f0c1f4d8c8b3c2adfd111
+                        name: NestJS
+                        category: backend
+                        icon:
+                          publicId: portfolio/skills/nestjs
+                          secureUrl: https://res.cloudinary.com/demo/image/upload/v1/nestjs.png
+                        createdAt: '2026-04-08T06:11:00.000Z'
+                        updatedAt: '2026-04-08T06:11:00.000Z'
+                    timeStamp: '2026-04-08T06:11:02.000Z'
+                    path: /api/v1/skills/search?category=backend
+        '400':
+          $ref: '#/components/responses/SkillSearchQueryRequiredError'
+
+    patch:
+      tags:
+        - Skills
+      summary: Update a skill
+      parameters:
+        - $ref: '#/components/parameters/MongoIdPathParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SkillUpdateRequest'
+            examples:
+              default:
+                value:
+                  name: NestJS Framework
+                  category: backend
+      responses:
+        '200':
+          description: Skill updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SkillMutationResponse'
+        '400':
+          $ref: '#/components/responses/InvalidSkillIdError'
+        '404':
+          $ref: '#/components/responses/SkillNotFoundError'
+
+    delete:
+      tags:
+        - Skills
+      summary: Delete a skill
+      parameters:
+        - $ref: '#/components/parameters/MongoIdPathParam'
+      responses:
+        '200':
+          description: Skill deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteResponse'
+              examples:
+                default:
+                  value:
+                    success: true
+                    statusCode: 200
+                    message: Skill deleted successfully.
+                    timeStamp: '2026-04-08T06:11:03.000Z'
+                    path: /api/v1/skills/660f0c1f4d8c8b3c2adfd111
+        '400':
+          $ref: '#/components/responses/InvalidSkillIdError'
+        '404':
+          $ref: '#/components/responses/SkillNotFoundError'
+
+  /cloudinary/signed-uploads:
+    post:
+      tags:
+        - Cloudinary
+      summary: Generate signed Cloudinary upload URLs
+      description: Creates one or more signed upload payloads for direct client-side uploads to Cloudinary.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CloudinarySignedUploadRequest'
+            examples:
+              imageUploads:
+                value:
+                  folder: portfolio/users/profile
+                  count: 2
+                  resourceType: image
+              rawUploads:
+                value:
+                  folder: portfolio/users/resume
+                  count: 1
+                  resourceType: raw
+      responses:
+        '201':
+          description: Signed upload URLs generated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CloudinarySignedUploadResponse'
+              examples:
+                default:
+                  value:
+                    success: true
+                    statusCode: 201
+                    message: Request successful
+                    data:
+                      folder: portfolio/users/profile
+                      count: 2
+                      resourceType: image
+                      uploads:
+                        - index: 0
+                          folder: portfolio/users/profile
+                          public_id: img-1744096800000-1
+                          timestamp: 1744096800
+                          resource_type: image
+                          signature: 7f0fb14c2f61e0a5a2f1228f10a7e2f4f885d3f1
+                          api_key: '123456789012345'
+                          cloud_name: demo-cloud
+                          upload_url: https://api.cloudinary.com/v1_1/demo-cloud/image/upload
+                        - index: 1
+                          folder: portfolio/users/profile
+                          public_id: img-1744096800000-2
+                          timestamp: 1744096800
+                          resource_type: image
+                          signature: 2fa5b18a2c9780b9de8d9c2f43bbcc60f0852f3a
+                          api_key: '123456789012345'
+                          cloud_name: demo-cloud
+                          upload_url: https://api.cloudinary.com/v1_1/demo-cloud/image/upload
+                    timeStamp: '2026-04-08T06:13:00.000Z'
+                    path: /api/v1/cloudinary/signed-uploads
+        '400':
+          description: Invalid Cloudinary signed upload request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                folderRequired:
+                  value:
+                    success: false
+                    statusCode: 400
+                    message: Folder path is required
+                    error: Bad Request
+                    timeStamp: '2026-04-08T06:13:01.000Z'
+                    path: /api/v1/cloudinary/signed-uploads
+                invalidCount:
+                  value:
+                    success: false
+                    statusCode: 400
+                    message: Image count must be an integer between 1 and 20
+                    error: Bad Request
+                    timeStamp: '2026-04-08T06:13:02.000Z'
+                    path: /api/v1/cloudinary/signed-uploads
+        '500':
+          description: Cloudinary configuration or signing failure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                missingConfig:
+                  value:
+                    success: false
+                    statusCode: 500
+                    message: Cloudinary environment variables are missing
+                    error: Internal Server Error
+                    timeStamp: '2026-04-08T06:13:03.000Z'
+                    path: /api/v1/cloudinary/signed-uploads
+                signingFailed:
+                  value:
+                    success: false
+                    statusCode: 500
+                    message: Failed to generate signed upload URLs
+                    error: Internal Server Error
+                    timeStamp: '2026-04-08T06:13:04.000Z'
+                    path: /api/v1/cloudinary/signed-uploads
+
+  /{cloud_name}/{resource_type}/upload:
+    post:
+      tags:
+        - Cloudinary
+      summary: Upload file directly to Cloudinary using the signed payload
+      description: Call `POST /cloudinary/signed-uploads` first, then submit the returned `folder`, `public_id`, `timestamp`, `signature`, `api_key`, and the binary `file` to the exact `upload_url` returned by that API.
+      servers:
+        - url: https://api.cloudinary.com/v1_1
+          description: Cloudinary upload API
+      parameters:
+        - $ref: '#/components/parameters/CloudinaryCloudNamePathParam'
+        - $ref: '#/components/parameters/CloudinaryResourceTypePathParam'
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CloudinaryDirectUploadRequest'
+            examples:
+              imageUpload:
+                value:
+                  folder: portfolio/users/profile
+                  public_id: img-1744096800000-1
+                  timestamp: 1744096800
+                  signature: 7f0fb14c2f61e0a5a2f1228f10a7e2f4f885d3f1
+                  api_key: '123456789012345'
+      responses:
+        '200':
+          description: File uploaded to Cloudinary successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CloudinaryUploadResponse'
+              examples:
+                image:
+                  value:
+                    asset_id: 6f5f5c90f5a24d8ab7d2d32d24e8b301
+                    public_id: img-1744096800000-1
+                    version: 1744096801
+                    version_id: 4fd7b3b6d8340123c97b87c0a3b0f123
+                    signature: a2d06c5ce4c702e9cb2ad1c572efe4f3bbfe4101
+                    width: 512
+                    height: 512
+                    format: png
+                    resource_type: image
+                    created_at: '2026-04-08T06:13:05Z'
+                    bytes: 85432
+                    type: upload
+                    etag: b31c8f3b7f92bc7710abbd1d8db21f92
+                    placeholder: false
+                    url: http://res.cloudinary.com/demo-cloud/image/upload/v1744096801/img-1744096800000-1.png
+                    secure_url: https://res.cloudinary.com/demo-cloud/image/upload/v1744096801/img-1744096800000-1.png
+                    original_filename: profile
+        '400':
+          description: Invalid upload payload sent to Cloudinary
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CloudinaryUploadErrorResponse'
+              examples:
+                invalidPayload:
+                  value:
+                    error:
+                      message: Missing required parameter - file
+                      http_code: 400
+        '401':
+          description: Invalid signature or Cloudinary credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CloudinaryUploadErrorResponse'
+              examples:
+                invalidSignature:
+                  value:
+                    error:
+                      message: Invalid Signature 7f0fb14c2f61e0a5a2f1228f10a7e2f4f885d3f1. String to sign - 'folder=portfolio/users/profile&public_id=img-1744096800000-1&timestamp=1744096800'
+                      http_code: 401
+
+components:
+  parameters:
+    MongoIdPathParam:
+      name: id
+      in: path
+      required: true
+      description: MongoDB document id
+      schema:
+        type: string
+        example: 660f0c1f4d8c8b3c2adfd001
+
+    CloudinaryCloudNamePathParam:
+      name: cloud_name
+      in: path
+      required: true
+      description: Cloudinary cloud name returned by the signed upload API.
+      schema:
+        type: string
+        example: demo-cloud
+
+    CloudinaryResourceTypePathParam:
+      name: resource_type
+      in: path
+      required: true
+      description: Cloudinary resource type. Use the same type returned by the signed upload API.
+      schema:
+        type: string
+        enum:
+          - image
+          - raw
+          - video
+          - auto
+        example: image
+
+  responses:
+    ValidationError:
+      description: Validation error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            default:
+              value:
+                success: false
+                statusCode: 400
+                message:
+                  - name must be a string
+                error: Bad Request
+                timeStamp: '2026-04-08T06:12:00.000Z'
+                path: /api/v1/user
+
+    InvalidUserIdError:
+      description: Invalid user id
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            default:
+              value:
+                success: false
+                statusCode: 400
+                message: Invalid user ID
+                error: Bad Request
+                timeStamp: '2026-04-08T06:12:01.000Z'
+                path: /api/v1/user/invalid-id
+
+    UserNotFoundError:
+      description: User not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            default:
+              value:
+                success: false
+                statusCode: 404
+                message: User not found
+                error: Not Found
+                timeStamp: '2026-04-08T06:12:02.000Z'
+                path: /api/v1/user/660f0c1f4d8c8b3c2adfd099
+
+    InvalidSkillIdError:
+      description: Invalid skill id
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            default:
+              value:
+                success: false
+                statusCode: 400
+                message: Invalid skill ID
+                error: Bad Request
+                timeStamp: '2026-04-08T06:12:03.000Z'
+                path: /api/v1/skills/invalid-id
+
+    SkillNotFoundError:
+      description: Skill not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            default:
+              value:
+                success: false
+                statusCode: 404
+                message: Skill not found
+                error: Not Found
+                timeStamp: '2026-04-08T06:12:04.000Z'
+                path: /api/v1/skills/660f0c1f4d8c8b3c2adfd199
+
+    SkillSearchQueryRequiredError:
+      description: Name or category query parameter is required
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            default:
+              value:
+                success: false
+                statusCode: 400
+                message: Either name or category query parameter is required
+                error: Bad Request
+                timeStamp: '2026-04-08T06:12:05.000Z'
+                path: /api/v1/skills/search
+
+    CloudinaryFolderRequiredError:
+      description: Folder path is required
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            default:
+              value:
+                success: false
+                statusCode: 400
+                message: Folder path is required
+                error: Bad Request
+                timeStamp: '2026-04-08T06:13:01.000Z'
+                path: /api/v1/cloudinary/signed-uploads
+
+    CloudinaryInvalidImageCountError:
+      description: Image count is outside the allowed range
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            default:
+              value:
+                success: false
+                statusCode: 400
+                message: Image count must be an integer between 1 and 20
+                error: Bad Request
+                timeStamp: '2026-04-08T06:13:02.000Z'
+                path: /api/v1/cloudinary/signed-uploads
+
+    CloudinaryConfigurationMissingError:
+      description: Cloudinary environment variables are missing
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            default:
+              value:
+                success: false
+                statusCode: 500
+                message: Cloudinary environment variables are missing
+                error: Internal Server Error
+                timeStamp: '2026-04-08T06:13:03.000Z'
+                path: /api/v1/cloudinary/signed-uploads
+
+    CloudinarySignedUploadGenerationError:
+      description: Failed to generate signed upload URLs
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            default:
+              value:
+                success: false
+                statusCode: 500
+                message: Failed to generate signed upload URLs
+                error: Internal Server Error
+                timeStamp: '2026-04-08T06:13:04.000Z'
+                path: /api/v1/cloudinary/signed-uploads
+
+  schemas:
+    CloudinaryAsset:
+      type: object
+      required:
+        - publicId
+        - secureUrl
+      properties:
+        publicId:
+          type: string
+          example: portfolio/assets/example
+        secureUrl:
+          type: string
+          format: uri
+          example: https://res.cloudinary.com/demo/image/upload/v1/example.png
+        width:
+          type: integer
+          minimum: 0
+          example: 512
+        height:
+          type: integer
+          minimum: 0
+          example: 512
+        format:
+          type: string
+          example: png
+        resourceType:
+          type: string
+          example: image
+        bytes:
+          type: integer
+          minimum: 0
+          example: 48212
+        originalFilename:
+          type: string
+          example: example-file
+
+    SocialLink:
+      type: object
+      required:
+        - name
+        - url
+      properties:
+        name:
+          type: string
+          example: GitHub
+        icon:
+          type: string
+          example: github
+        url:
+          type: string
+          format: uri
+          example: https://github.com/ashugoyal
+
+    UserSkill:
+      type: object
+      required:
+        - skill_id
+        - yoe
+        - scale
+      properties:
+        skill_id:
+          type: string
+          description: Skill document id
+          example: 660f0c1f4d8c8b3c2adfd111
+        yoe:
+          type: number
+          minimum: 0
+          example: 3
+        scale:
+          type: integer
+          minimum: 0
+          maximum: 10
+          example: 8
+
+    UserCreateRequest:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          example: Ashu Goyal
+        about:
+          type: string
+          example: Full-stack developer building portfolio products.
+        links:
+          type: array
+          items:
+            $ref: '#/components/schemas/SocialLink'
+        skills:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserSkill'
+        profile_image:
+          $ref: '#/components/schemas/CloudinaryAsset'
+        resume:
+          $ref: '#/components/schemas/CloudinaryAsset'
+
+    UserUpdateRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        about:
+          type: string
+        links:
+          type: array
+          items:
+            $ref: '#/components/schemas/SocialLink'
+        skills:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserSkill'
+        profile_image:
+          $ref: '#/components/schemas/CloudinaryAsset'
+        resume:
+          $ref: '#/components/schemas/CloudinaryAsset'
+
+    UserDocument:
+      allOf:
+        - $ref: '#/components/schemas/UserCreateRequest'
+        - type: object
+          properties:
+            _id:
+              type: string
+              example: 660f0c1f4d8c8b3c2adfd001
+            createdAt:
+              type: string
+              format: date-time
+            updatedAt:
+              type: string
+              format: date-time
+
+    SkillCreateRequest:
+      type: object
+      required:
+        - name
+        - icon
+        - category
+      properties:
+        name:
+          type: string
+          example: NestJS
+        icon:
+          $ref: '#/components/schemas/CloudinaryAsset'
+        category:
+          type: string
+          enum:
+            - frontend
+            - language
+            - backend
+            - database
+            - cloud
+            - devops
+            - design
+            - other
+          example: backend
+
+    SkillUpdateRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          example: NestJS Framework
+        icon:
+          $ref: '#/components/schemas/CloudinaryAsset'
+        category:
+          type: string
+          enum:
+            - frontend
+            - language
+            - backend
+            - database
+            - cloud
+            - devops
+            - design
+            - other
+          example: backend
+
+    SkillDocument:
+      allOf:
+        - $ref: '#/components/schemas/SkillCreateRequest'
+        - type: object
+          properties:
+            _id:
+              type: string
+              example: 660f0c1f4d8c8b3c2adfd111
+            createdAt:
+              type: string
+              format: date-time
+            updatedAt:
+              type: string
+              format: date-time
+
+    CloudinarySignedUploadRequest:
+      type: object
+      required:
+        - folder
+        - count
+      properties:
+        folder:
+          type: string
+          example: portfolio/users/profile
+        count:
+          type: integer
+          minimum: 1
+          maximum: 20
+          example: 2
+        resourceType:
+          type: string
+          enum:
+            - image
+            - raw
+            - video
+            - auto
+          default: image
+          example: image
+
+    CloudinarySignedUploadItem:
+      type: object
+      required:
+        - index
+        - folder
+        - public_id
+        - timestamp
+        - resource_type
+        - signature
+        - api_key
+        - cloud_name
+        - upload_url
+      properties:
+        index:
+          type: integer
+          example: 0
+        folder:
+          type: string
+          example: portfolio/users/profile
+        public_id:
+          type: string
+          example: img-1744096800000-1
+        timestamp:
+          type: integer
+          example: 1744096800
+        resource_type:
+          type: string
+          enum:
+            - image
+            - raw
+            - video
+            - auto
+          example: image
+        signature:
+          type: string
+          example: 7f0fb14c2f61e0a5a2f1228f10a7e2f4f885d3f1
+        api_key:
+          type: string
+          example: '123456789012345'
+        cloud_name:
+          type: string
+          example: demo-cloud
+        upload_url:
+          type: string
+          format: uri
+          example: https://api.cloudinary.com/v1_1/demo-cloud/image/upload
+
+    CloudinarySignedUploadData:
+      type: object
+      required:
+        - folder
+        - count
+        - resourceType
+        - uploads
+      properties:
+        folder:
+          type: string
+          example: portfolio/users/profile
+        count:
+          type: integer
+          example: 2
+        resourceType:
+          type: string
+          enum:
+            - image
+            - raw
+            - video
+            - auto
+          example: image
+        uploads:
+          type: array
+          items:
+            $ref: '#/components/schemas/CloudinarySignedUploadItem'
+
+    CloudinaryDirectUploadRequest:
+      type: object
+      required:
+        - file
+        - folder
+        - public_id
+        - timestamp
+        - signature
+        - api_key
+      properties:
+        file:
+          type: string
+          format: binary
+          description: Binary file to upload to Cloudinary.
+        folder:
+          type: string
+          description: Use the `folder` value returned by `POST /cloudinary/signed-uploads`.
+          example: portfolio/users/profile
+        public_id:
+          type: string
+          description: Use one of the `public_id` values returned by `POST /cloudinary/signed-uploads`.
+          example: img-1744096800000-1
+        timestamp:
+          type: integer
+          description: Use the signed timestamp returned by `POST /cloudinary/signed-uploads`.
+          example: 1744096800
+        signature:
+          type: string
+          description: Use the signature returned by `POST /cloudinary/signed-uploads`.
+          example: 7f0fb14c2f61e0a5a2f1228f10a7e2f4f885d3f1
+        api_key:
+          type: string
+          description: Use the API key returned by `POST /cloudinary/signed-uploads`.
+          example: '123456789012345'
+
+    CloudinaryUploadResponse:
+      type: object
+      required:
+        - asset_id
+        - public_id
+        - version
+        - signature
+        - resource_type
+        - bytes
+        - secure_url
+      properties:
+        asset_id:
+          type: string
+          example: 6f5f5c90f5a24d8ab7d2d32d24e8b301
+        public_id:
+          type: string
+          example: img-1744096800000-1
+        version:
+          type: integer
+          example: 1744096801
+        version_id:
+          type: string
+          example: 4fd7b3b6d8340123c97b87c0a3b0f123
+        signature:
+          type: string
+          example: a2d06c5ce4c702e9cb2ad1c572efe4f3bbfe4101
+        width:
+          type: integer
+          minimum: 0
+          example: 512
+        height:
+          type: integer
+          minimum: 0
+          example: 512
+        format:
+          type: string
+          example: png
+        resource_type:
+          type: string
+          enum:
+            - image
+            - raw
+            - video
+            - auto
+          example: image
+        created_at:
+          type: string
+          format: date-time
+          example: '2026-04-08T06:13:05Z'
+        bytes:
+          type: integer
+          minimum: 0
+          example: 85432
+        type:
+          type: string
+          example: upload
+        etag:
+          type: string
+          example: b31c8f3b7f92bc7710abbd1d8db21f92
+        placeholder:
+          type: boolean
+          example: false
+        url:
+          type: string
+          format: uri
+          example: http://res.cloudinary.com/demo-cloud/image/upload/v1744096801/img-1744096800000-1.png
+        secure_url:
+          type: string
+          format: uri
+          example: https://res.cloudinary.com/demo-cloud/image/upload/v1744096801/img-1744096800000-1.png
+        original_filename:
+          type: string
+          example: profile
+
+    CloudinaryUploadErrorResponse:
+      type: object
+      required:
+        - error
+      properties:
+        error:
+          type: object
+          required:
+            - message
+            - http_code
+          properties:
+            message:
+              type: string
+              example: Missing required parameter - file
+            http_code:
+              type: integer
+              example: 400
+
+    SuccessEnvelope:
+      type: object
+      required:
+        - success
+        - statusCode
+        - message
+        - timeStamp
+        - path
+      properties:
+        success:
+          type: boolean
+          enum:
+            - true
+        statusCode:
+          type: integer
+          example: 200
+        message:
+          type: string
+          example: Request successful
+        timeStamp:
+          type: string
+          format: date-time
+        path:
+          type: string
+          example: /api/v1/user
+
+    ErrorResponse:
+      type: object
+      required:
+        - success
+        - statusCode
+        - message
+        - error
+        - timeStamp
+        - path
+      properties:
+        success:
+          type: boolean
+          enum:
+            - false
+        statusCode:
+          type: integer
+          example: 400
+        message:
+          oneOf:
+            - type: string
+            - type: array
+              items:
+                type: string
+        error:
+          type: string
+          example: Bad Request
+        timeStamp:
+          type: string
+          format: date-time
+        path:
+          type: string
+          example: /api/v1/user
+
+    UserMutationResponse:
+      allOf:
+        - $ref: '#/components/schemas/SuccessEnvelope'
+        - type: object
+          properties:
+            message:
+              type: string
+              example: User created successfully.
+            data:
+              $ref: '#/components/schemas/UserDocument'
+
+    UserFetchResponse:
+      allOf:
+        - $ref: '#/components/schemas/SuccessEnvelope'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/UserDocument'
+
+    UserListResponse:
+      allOf:
+        - $ref: '#/components/schemas/SuccessEnvelope'
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: '#/components/schemas/UserDocument'
+
+    SkillMutationResponse:
+      allOf:
+        - $ref: '#/components/schemas/SuccessEnvelope'
+        - type: object
+          properties:
+            message:
+              type: string
+              example: Skill created successfully.
+            data:
+              $ref: '#/components/schemas/SkillDocument'
+
+    SkillFetchResponse:
+      allOf:
+        - $ref: '#/components/schemas/SuccessEnvelope'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/SkillDocument'
+
+    SkillListResponse:
+      allOf:
+        - $ref: '#/components/schemas/SuccessEnvelope'
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: '#/components/schemas/SkillDocument'
+
+    CloudinarySignedUploadResponse:
+      allOf:
+        - $ref: '#/components/schemas/SuccessEnvelope'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/CloudinarySignedUploadData'
+
+    DeleteResponse:
+      allOf:
+        - $ref: '#/components/schemas/SuccessEnvelope'
+        - type: object
+          properties:
+            message:
+              type: string
+              example: Resource deleted successfully.

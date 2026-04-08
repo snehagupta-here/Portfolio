@@ -1,7 +1,8 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 
+import { ContactUsSubmissionFailedException } from 'src/exceptions/contact-us.exceptions';
 import { ContactUsBody } from '../../interfaces';
 import { ContactUs } from '../../schema/contact-us.schema';
 
@@ -19,16 +20,13 @@ export class ContactUsService {
       return {
         success: true,
         data: {},
-        message: 'Thankyou for contacting, our team will reach out to you soon.',
+        message:
+          'Thankyou for contacting, our team will reach out to you soon.',
       };
-    } catch (e) {
-      if (e instanceof Error) {
-        throw new InternalServerErrorException(
-          'Failed to insert contact us data: ' + e.message,
-        );
-      }
-
-      throw new InternalServerErrorException('Failed to insert contact us data');
+    } catch (e: unknown) {
+      throw new ContactUsSubmissionFailedException(
+        e instanceof Error ? e.message : undefined,
+      );
     }
   }
 }

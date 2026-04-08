@@ -1,16 +1,17 @@
 import {
-  IsOptional,
-  IsString,
   IsArray,
-  ValidateNested,
-  IsUrl,
+  IsInt,
   IsMongoId,
   IsNumber,
-  IsInt,
+  IsOptional,
+  IsString,
+  IsUrl,
   Max,
   Min,
+  ValidateNested,
 } from 'class-validator';
 import { Type } from 'class-transformer';
+import { CloudinaryAssetDto } from './cloudinary.dto';
 
 class SocialLinkDto {
   @IsString()
@@ -39,12 +40,12 @@ class UserSkillDto {
 }
 
 export class UserDto {
+  @IsString()
+  name!: string;
+
   @IsOptional()
   @IsString()
   about?: string;
-
-  @IsString()
-  name!: string;
 
   @IsOptional()
   @IsArray()
@@ -57,4 +58,46 @@ export class UserDto {
   @ValidateNested({ each: true })
   @Type(() => UserSkillDto)
   skills?: UserSkillDto[];
+
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => CloudinaryAssetDto)
+  profile_image?: CloudinaryAssetDto;
+
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => CloudinaryAssetDto)
+  resume?: CloudinaryAssetDto;
+}
+
+export class UpdateUserDto {
+  @IsOptional()
+  @IsString()
+  name?: string;
+
+  @IsOptional()
+  @IsString()
+  about?: string;
+
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => SocialLinkDto)
+  links?: SocialLinkDto[];
+
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => UserSkillDto)
+  skills?: UserSkillDto[];
+
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => CloudinaryAssetDto)
+  profile_image?: CloudinaryAssetDto;
+
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => CloudinaryAssetDto)
+  resume?: CloudinaryAssetDto;
 }

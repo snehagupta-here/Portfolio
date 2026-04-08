@@ -1,10 +1,7 @@
 import { SkillCategoryEnum } from 'src/enums';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, HydratedDocument } from 'mongoose';
-import {
-  ImageAsset,
-  ImageAssetSchema,
-} from './image-asset.schema';
+import { ImageAsset, ImageAssetSchema } from './image-asset.schema';
 
 export type SkillDocument = HydratedDocument<Skill>;
 

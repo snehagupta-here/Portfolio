@@ -1,16 +1,7 @@
 import { SkillCategoryEnum } from 'src/enums';
-import { CloudinaryImageAsset } from '../common/image/image.types';
+import { CloudinaryImageAsset } from './image.interface';
 
-export interface SkillIcon {
-  publicId: string;
-  secureUrl: string;
-  width?: number;
-  height?: number;
-  format?: string;
-  resourceType?: string;
-  bytes?: number;
-  originalFilename?: string;
-}
+export type SkillIcon = CloudinaryImageAsset;
 
 // export interface CreateSkill {
 //   name: string;
@@ -21,7 +12,7 @@ export interface SkillIcon {
 export interface UpdateSkill {
   name?: string;
   icon?: SkillIcon;
-  category: SkillCategoryEnum;
+  category?: SkillCategoryEnum;
 }
 
 export interface SkillResponse {
@@ -36,9 +27,5 @@ export interface SkillResponse {
 export interface ResolvedSkillInput {
   name: string;
   category: SkillCategoryEnum;
-  icon: {
-    sourceType: 'file' | 'url';
-    file?: Express.Multer.File;
-    url?: string;
-  };
+  icon: SkillIcon;
 }

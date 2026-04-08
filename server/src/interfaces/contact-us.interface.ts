@@ -1,6 +1,6 @@
-export interface ContactUsBody{
-    name: string,
-    email: string,
-    organization: string
-    message: string,
+export interface ContactUsBody {
+  name: string;
+  email: string;
+  organization: string;
+  message: string;
 }

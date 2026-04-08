@@ -1,11 +1,12 @@
-import {
-  Injectable,
-  BadRequestException,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
+
 import { CreateProject, UpdateProject } from 'src/interfaces';
+import {
+  InvalidProjectIdException,
+  ProjectNotFoundException,
+} from 'src/exceptions/project.exceptions';
 import { Project } from 'src/schema/project.schema';
 import { handleError } from 'src/utils/error-handler';
 
@@ -51,13 +52,13 @@ export class ProjectService {
   async getProjectById(id: string) {
     try {
       if (!Types.ObjectId.isValid(id)) {
-        throw new BadRequestException('Invalid project id');
+        throw new InvalidProjectIdException();
       }
 
       const project = await this.projectCollection.findById(id);
 
       if (!project) {
-        throw new NotFoundException('Project not found');
+        throw new ProjectNotFoundException();
       }
 
       return {
@@ -73,7 +74,7 @@ export class ProjectService {
   async updateProject(id: string, body: UpdateProject) {
     try {
       if (!Types.ObjectId.isValid(id)) {
-        throw new BadRequestException('Invalid project id');
+        throw new InvalidProjectIdException();
       }
 
       const updated = await this.projectCollection.findByIdAndUpdate(
@@ -83,7 +84,7 @@ export class ProjectService {
       );
 
       if (!updated) {
-        throw new NotFoundException('Project not found');
+        throw new ProjectNotFoundException();
       }
 
       return {
@@ -100,13 +101,13 @@ export class ProjectService {
   async deleteProject(id: string) {
     try {
       if (!Types.ObjectId.isValid(id)) {
-        throw new BadRequestException('Invalid project id');
+        throw new InvalidProjectIdException();
       }
 
       const deleted = await this.projectCollection.findByIdAndDelete(id);
 
       if (!deleted) {
-        throw new NotFoundException('Project not found');
+        throw new ProjectNotFoundException();
       }
 
       return {

@@ -10,4 +10,4 @@ export interface CreateBlog {
   isActive?: boolean;
 }
 
-export interface UpdateBlog extends Partial<CreateBlog> {}
+export type UpdateBlog = Partial<CreateBlog>;

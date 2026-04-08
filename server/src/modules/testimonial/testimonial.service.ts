@@ -1,10 +1,12 @@
-import {
-  Injectable,
-  NotFoundException,
-  BadRequestException,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
+
+import {
+  InvalidTestimonialIdException,
+  InvalidTestimonialUserIdException,
+  TestimonialNotFoundException,
+} from 'src/exceptions/testimonial.exceptions';
 import { Testimonial } from 'src/schema/testimonial.schema';
 import { handleError } from 'src/utils/error-handler';
 import {
@@ -22,7 +24,7 @@ export class TestimonialService {
   async addTestimonial(body: CreateTestimonial) {
     try {
       if (!Types.ObjectId.isValid(body.user_id)) {
-        throw new BadRequestException('Invalid user_id');
+        throw new InvalidTestimonialUserIdException();
       }
 
       const testimonial = await this.testimonialCollection.create({
@@ -60,13 +62,13 @@ export class TestimonialService {
   async getTestimonialById(id: string) {
     try {
       if (!Types.ObjectId.isValid(id)) {
-        throw new BadRequestException('Invalid testimonial ID');
+        throw new InvalidTestimonialIdException();
       }
 
       const testimonial = await this.testimonialCollection.findById(id);
 
       if (!testimonial) {
-        throw new NotFoundException('Testimonial not found');
+        throw new TestimonialNotFoundException();
       }
 
       return {
@@ -82,7 +84,7 @@ export class TestimonialService {
   async updateTestimonial(id: string, body: UpdateTestimonial) {
     try {
       if (!Types.ObjectId.isValid(id)) {
-        throw new BadRequestException('Invalid testimonial ID');
+        throw new InvalidTestimonialIdException();
       }
 
       const updated = await this.testimonialCollection.findByIdAndUpdate(
@@ -92,7 +94,7 @@ export class TestimonialService {
       );
 
       if (!updated) {
-        throw new NotFoundException('Testimonial not found');
+        throw new TestimonialNotFoundException();
       }
 
       return {
@@ -109,13 +111,13 @@ export class TestimonialService {
   async deleteTestimonial(id: string) {
     try {
       if (!Types.ObjectId.isValid(id)) {
-        throw new BadRequestException('Invalid testimonial ID');
+        throw new InvalidTestimonialIdException();
       }
 
       const deleted = await this.testimonialCollection.findByIdAndDelete(id);
 
       if (!deleted) {
-        throw new NotFoundException('Testimonial not found');
+        throw new TestimonialNotFoundException();
       }
 
       return {

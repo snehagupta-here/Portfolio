@@ -11,5 +11,5 @@ export class ContactUsBody {
   organization!: string;
 
   @IsString()
-  message!: string
+  message!: string;
 }

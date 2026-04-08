@@ -1,3 +1,5 @@
+import { CloudinaryImageAsset } from 'src/interfaces/image.interface';
+
 export interface SocialLink {
   name: string;
   icon?: string;
@@ -15,6 +17,8 @@ export interface UserCreate {
   name: string;
   links?: SocialLink[];
   skills?: UserSkill[];
+  profile_image?: CloudinaryImageAsset;
+  resume?: CloudinaryImageAsset;
 }
 
 export interface UserUpdate {
@@ -22,6 +26,8 @@ export interface UserUpdate {
   name: string;
   links?: SocialLink[];
   skills?: UserSkill[];
+  profile_image?: CloudinaryImageAsset;
+  resume?: CloudinaryImageAsset;
 }
 
 export interface ResolvedUserInput {
@@ -29,6 +35,6 @@ export interface ResolvedUserInput {
   name: string;
   links?: SocialLink[];
   skills?: UserSkill[];
-  profile_image?: Express.Multer.File[];
-  resume?: Express.Multer.File[];
+  profile_image?: CloudinaryImageAsset;
+  resume?: CloudinaryImageAsset;
 }

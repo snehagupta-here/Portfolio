@@ -1,7 +1,19 @@
-import { Module } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
-import { MongooseModule } from '@nestjs/mongoose';
+import {
+  MiddlewareConsumer,
+  Module,
+  NestModule,
+  RequestMethod,
+} from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
+import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
 
+import { DbModule } from './common/db/db.module';
+import { validateEnv } from './config';
+import { AllExceptionsFilter } from './filters/all-exceptions.filter';
+import { LoggingInterceptor } from './interceptors/logging.interceptor';
+import { SuccessResponseInterceptor } from './interceptors/success-response.interceptor';
+import { RequestContextMiddleware } from './middleware/request-context.middleware';
+import { CloudinaryModule } from './services/cloudinary/cloudinary.module';
 import { UserModule } from './modules/user/user.module';
 import { SkillModule } from './modules/skill/skill.module';
 import { ExperienceModule } from './modules/experience/experience.module';
@@ -14,16 +26,10 @@ import { ContactUsModule } from './modules/contact-us/contact-us.module';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
+      envFilePath: '.env',
+      validate: validateEnv,
     }),
-
-   MongooseModule.forRootAsync({
-  imports: [ConfigModule],
-  inject: [ConfigService],
-  useFactory: (configService: ConfigService) => ({
-    uri: 'mongodb+srv://admin:WCoB057CkiXFNhgh@cluster0.h9xpsvl.mongodb.net/',
-  }),
-}),
-
+    DbModule,
     UserModule,
     SkillModule,
     ExperienceModule,
@@ -31,6 +37,28 @@ import { ContactUsModule } from './modules/contact-us/contact-us.module';
     TestimonialModule,
     BlogModule,
     ContactUsModule,
+    CloudinaryModule,
+  ],
+  providers: [
+    {
+      provide: APP_FILTER,
+      useClass: AllExceptionsFilter,
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: LoggingInterceptor,
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: SuccessResponseInterceptor,
+    },
   ],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer): void {
+    consumer.apply(RequestContextMiddleware).forRoutes({
+      path: '*',
+      method: RequestMethod.ALL,
+    });
+  }
+}

@@ -1,4 +1,4 @@
-import { PositionEnum } from "src/enums";
+import { PositionEnum } from 'src/enums';
 
 export interface CreateAchievement {
   user_id: string;

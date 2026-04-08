@@ -6,10 +6,9 @@ import { AchievementService } from './achievement.service';
 
 @Module({
   imports: [
-    MongooseModule.forFeature(
-      [{ name: Achievement.name, schema: AchievementSchema }],
- 
-    ),
+    MongooseModule.forFeature([
+      { name: Achievement.name, schema: AchievementSchema },
+    ]),
   ],
   controllers: [AchievementController],
   providers: [AchievementService],

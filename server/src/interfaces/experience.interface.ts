@@ -1,3 +1,5 @@
+import { CloudinaryImageAsset } from 'src/interfaces/image.interface';
+
 export interface CreateExperience {
   user_id: string;
   start_date: string;
@@ -7,7 +9,7 @@ export interface CreateExperience {
   description?: string;
   responsibilities?: string[];
   organization_name: string;
-  organization_logo_url?: string;
+  organization_logo_url?: CloudinaryImageAsset;
   organization_url?: string;
   tech_stack?: string[];
 }
@@ -20,7 +22,7 @@ export interface UpdateExperience {
   description?: string;
   responsibilities?: string[];
   organization_name?: string;
-  organization_logo_url?: string;
+  organization_logo_url?: CloudinaryImageAsset;
   organization_url?: string;
   tech_stack?: string[];
 }
@@ -34,11 +36,7 @@ export interface ResolvedExperienceInput {
   description?: string;
   responsibilities?: string[];
   organization_name: string;
-  organization_logo_url?: {
-    sourceType: 'file' | 'url';
-    file?: Express.Multer.File;
-    url?: string;
-  };
+  organization_logo_url?: CloudinaryImageAsset;
   organization_url?: string;
   tech_stack?: string[];
 }
