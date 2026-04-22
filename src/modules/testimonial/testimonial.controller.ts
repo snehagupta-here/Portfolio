@@ -17,7 +17,7 @@ import {
 
 import { TestimonialService } from './testimonial.service';
 
-@Controller('testimonial')
+@Controller('api/v1/testimonial')
 export class TestimonialController {
   constructor(private readonly testimonialService: TestimonialService) {}
 

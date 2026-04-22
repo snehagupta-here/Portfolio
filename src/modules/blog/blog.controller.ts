@@ -13,7 +13,7 @@ import { BlogDto, SearchBlogQueryDto, UpdateBlogDto } from 'src/dto';
 
 import { BlogService } from './blog.service';
 
-@Controller('blog')
+@Controller('api/v1/blog')
 export class BlogController {
   constructor(private readonly blogService: BlogService) {}
 

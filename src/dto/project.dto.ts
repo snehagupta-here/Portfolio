@@ -21,12 +21,14 @@ class ProjectCodeSnippetDto {
   language?: string;
 
   @IsOptional()
-  @IsString()
-  description?: string;
+  @IsArray()
+  @IsString({ each: true })
+  description?: string[];
 
   @IsOptional()
-  @IsString()
-  code?: string;
+  @IsArray()
+  @IsString({ each: true })
+  code?: string[];
 }
 
 class ProjectImageDto {

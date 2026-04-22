@@ -13,7 +13,7 @@ import { SearchSkillQueryDto, SkillDto, UpdateSkillDto } from 'src/dto';
 
 import { SkillService } from './skill.service';
 
-@Controller('skills')
+@Controller('api/v1/skills')
 export class SkillController {
   constructor(private readonly skillService: SkillService) {}
 

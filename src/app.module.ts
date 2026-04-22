@@ -7,6 +7,8 @@ import {
 import { ConfigModule } from '@nestjs/config';
 import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
 
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
 import { DbModule } from './common/db/db.module';
 import { validateEnv } from './config';
 import { AllExceptionsFilter } from './filters/all-exceptions.filter';
@@ -23,6 +25,7 @@ import { BlogModule } from './modules/blog/blog.module';
 import { ContactUsModule } from './modules/contact-us/contact-us.module';
 
 @Module({
+  controllers: [AppController],
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
@@ -40,6 +43,7 @@ import { ContactUsModule } from './modules/contact-us/contact-us.module';
     CloudinaryModule,
   ],
   providers: [
+    AppService,
     {
       provide: APP_FILTER,
       useClass: AllExceptionsFilter,

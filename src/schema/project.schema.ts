@@ -41,8 +41,8 @@ const ProjectCodeSnippetSchema =
 
 @Schema({ _id: false })
 class ProjectImage implements ProjectImageShape {
-  @Prop({ type: ImageAssetSchema })
-  url!: ImageAsset;
+  @Prop({ type: String })
+  url!: string;
 
   @Prop({ type: String })
   caption!: string;
@@ -203,8 +203,8 @@ class ProjectAuthor implements ProjectAuthorShape {
   @Prop({ type: String })
   name!: string;
 
-  @Prop({ type: ImageAssetSchema })
-  avatar!: ImageAsset;
+  @Prop({ type: String })
+  avatar!: string;
 
   @Prop({ type: String })
   github!: string;

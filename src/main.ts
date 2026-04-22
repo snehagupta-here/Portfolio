@@ -40,9 +40,6 @@ async function bootstrap() {
   });
 
   const configService = app.get(ConfigService);
-  app.setGlobalPrefix(
-    configService.get<string>('API_PREFIX', configDefaults.app.apiPrefix),
-  );
   await app.listen(configService.get<number>('PORT', configDefaults.app.port));
 }
 bootstrap();

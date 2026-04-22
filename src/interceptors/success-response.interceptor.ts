@@ -27,6 +27,16 @@ function isExistingSuccessResponse<T>(
   );
 }
 
+function isHtmlResponse(response: Response, data: unknown): data is string {
+  const contentType = response.getHeader('content-type');
+
+  return (
+    typeof data === 'string' &&
+    typeof contentType === 'string' &&
+    contentType.includes('text/html')
+  );
+}
+
 @Injectable()
 export class SuccessResponseInterceptor<T> implements NestInterceptor<
   T,
@@ -52,6 +62,10 @@ export class SuccessResponseInterceptor<T> implements NestInterceptor<
             : HttpStatus.OK;
         const timeStamp = new Date().toISOString();
         const path = request.originalUrl || request.url;
+
+        if (isHtmlResponse(response, data)) {
+          return data;
+        }
 
         if (isExistingSuccessResponse<T>(data)) {
           return {

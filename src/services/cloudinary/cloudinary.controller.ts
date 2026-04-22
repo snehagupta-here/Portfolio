@@ -3,7 +3,7 @@ import { Body, Controller, Post } from '@nestjs/common';
 import { GenerateSignedUploadDto } from 'src/dto/cloudinary.dto';
 import { CloudinaryService } from './cloudinary.service';
 
-@Controller('cloudinary')
+@Controller('api/v1/cloudinary')
 export class CloudinaryController {
   constructor(private readonly cloudinaryService: CloudinaryService) {}
 

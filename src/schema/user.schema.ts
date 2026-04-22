@@ -9,8 +9,8 @@ export class SocialLink {
   @Prop({ type: String, required: true })
   name!: string;
 
-  @Prop({ type: ImageAssetSchema })
-  icon?: ImageAsset;
+  @Prop({ type: String })
+  icon?: string;
 
   @Prop({ type: String, required: true })
   url!: string;

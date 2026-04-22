@@ -17,7 +17,7 @@ import {
 
 import { AchievementService } from './achievement.service';
 
-@Controller('achievement')
+@Controller('api/v1/achievement')
 export class AchievementController {
   constructor(private readonly achievementService: AchievementService) {}
 

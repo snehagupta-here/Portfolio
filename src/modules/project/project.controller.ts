@@ -13,7 +13,7 @@ import { ProjectDto, SearchProjectQueryDto, UpdateProjectDto } from 'src/dto';
 
 import { ProjectService } from './project.service';
 
-@Controller('project')
+@Controller('api/v1/project')
 export class ProjectController {
   constructor(private readonly projectService: ProjectService) {}
 

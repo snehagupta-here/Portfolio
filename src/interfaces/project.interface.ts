@@ -1,5 +1,3 @@
-import { ImageAsset } from 'src/schema/image-asset.schema';
-
 export type ProjectFlexibleObject = Record<string, unknown>;
 
 export interface ProjectMeta {
@@ -26,7 +24,7 @@ export interface ProjectCodeSnippet {
 }
 
 export interface ProjectImage {
-  url?: ImageAsset;
+  url?: string;
   caption?: string;
 }
 
@@ -75,7 +73,7 @@ export interface ProjectRepository {
 
 export interface ProjectAuthor {
   name?: string;
-  avatar?: ImageAsset;
+  avatar?: string;
   github?: string;
   linkedin?: string;
 }

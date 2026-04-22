@@ -13,7 +13,7 @@ import { SearchUserQueryDto, UpdateUserDto, UserDto } from 'src/dto';
 
 import { UserService } from './user.service';
 
-@Controller('user')
+@Controller('api/v1/user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 

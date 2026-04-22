@@ -17,7 +17,7 @@ import {
 
 import { ExperienceService } from './experience.service';
 
-@Controller('experience')
+@Controller('api/v1/experience')
 export class ExperienceController {
   constructor(private readonly experienceService: ExperienceService) {}
 

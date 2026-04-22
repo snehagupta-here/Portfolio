@@ -9,6 +9,7 @@ import {
   IsUrl,
 } from 'class-validator';
 import { PositionEnum } from 'src/enums';
+import { ImageAsset } from 'src/schema/image-asset.schema';
 
 export class AchievementDto {
   @IsMongoId()
@@ -73,11 +74,11 @@ export class UpdateAchievementDto {
   @IsOptional()
   @IsArray()
   @IsUrl({}, { each: true })
-  images?: string[];
+  images?: ImageAsset[];
 
   @IsOptional()
   @IsUrl()
-  certificate_url?: string;
+  certificate_url?: ImageAsset;
 }
 
 export class SearchAchievementQueryDto {
