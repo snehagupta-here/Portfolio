@@ -8,13 +8,11 @@ import {
   IsString,
   Max,
   Min,
+  ValidateNested,
 } from 'class-validator';
+import { CloudinaryAssetDto } from './cloudinary.dto';
 
 export class TestimonialDto {
-  @IsMongoId()
-  @IsNotEmpty()
-  user_id!: string;
-
   @IsString()
   @IsNotEmpty()
   name!: string;
@@ -27,6 +25,11 @@ export class TestimonialDto {
   @IsString()
   designation?: string;
 
+  @IsOptional()
+  @ValidateNested({ message: 'image: image must be a valid object' })
+  @Type(() => CloudinaryAssetDto)
+  image?: CloudinaryAssetDto;
+
   @Type(() => Number)
   @IsInt()
   @Min(1)
@@ -38,10 +41,6 @@ export class TestimonialDto {
 }
 
 export class UpdateTestimonialDto {
-  @IsOptional()
-  @IsMongoId()
-  user_id?: string;
-
   @IsOptional()
   @IsString()
   @IsNotEmpty()
@@ -57,6 +56,11 @@ export class UpdateTestimonialDto {
   designation?: string;
 
   @IsOptional()
+  @ValidateNested({ message: 'image: image must be a valid object' })
+  @Type(() => CloudinaryAssetDto)
+  image?: CloudinaryAssetDto;
+
+  @IsOptional()
   @Type(() => Number)
   @IsInt()
   @Min(1)
@@ -68,11 +72,23 @@ export class UpdateTestimonialDto {
   testimonial_date?: string;
 }
 
-export class SearchTestimonialQueryDto {
-  @IsOptional()
-  @IsMongoId()
-  user_id?: string;
+export class TestimonialUserParamDto {
+  @IsMongoId({
+    message: 'user_id: user_id must be a valid',
+  })
+  @IsNotEmpty({ message: 'user_id: user_id is required' })
+  user_id!: string;
+}
 
+export class TestimonialScopedIdParamDto extends TestimonialUserParamDto {
+  @IsMongoId({
+    message: 'id: id must be a valid',
+  })
+  @IsNotEmpty({ message: 'id: id is required' })
+  id!: string;
+}
+
+export class SearchTestimonialQueryDto {
   @IsOptional()
   @IsString()
   name?: string;

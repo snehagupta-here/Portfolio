@@ -40,7 +40,7 @@ export class ExperienceSearchQueryRequiredException extends BadRequestException 
   constructor() {
     super({
       message:
-        'Either user_id, designation, or organization_name query parameter is required',
+        'Either designation or organization_name query parameter is required',
       error: 'Bad Request',
     });
   }

@@ -1,17 +1,19 @@
+import { CloudinaryImageAsset } from './image.interface';
+
 export interface CreateTestimonial {
-  user_id: string;
   name: string;
   description: string;
   designation?: string;
+  image?: CloudinaryImageAsset;
   rating: number;
   testimonial_date: string;
 }
 
 export interface UpdateTestimonial {
-  user_id?: string;
   name?: string;
   description?: string;
   designation?: string;
+  image?: CloudinaryImageAsset;
   rating?: number;
   testimonial_date?: string;
 }

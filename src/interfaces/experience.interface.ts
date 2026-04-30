@@ -15,7 +15,6 @@ export interface CreateExperience {
 }
 
 export interface UpdateExperience {
-  user_id?: string;
   start_date?: string;
   end_date?: string;
   location?: string;

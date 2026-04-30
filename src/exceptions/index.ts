@@ -6,4 +6,5 @@ export * from './experience.exceptions';
 export * from './project.exceptions';
 export * from './skill.exceptions';
 export * from './testimonial.exceptions';
+export * from './auth.exceptions';
 export * from './user.exceptions';

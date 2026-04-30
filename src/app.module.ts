@@ -23,6 +23,7 @@ import { AchievementModule } from './modules/achievement/achievement.module';
 import { TestimonialModule } from './modules/testimonial/testimonial.module';
 import { BlogModule } from './modules/blog/blog.module';
 import { ContactUsModule } from './modules/contact-us/contact-us.module';
+import { AuthModule } from './modules/auth/auth.module';
 
 @Module({
   controllers: [AppController],
@@ -33,6 +34,7 @@ import { ContactUsModule } from './modules/contact-us/contact-us.module';
       validate: validateEnv,
     }),
     DbModule,
+    AuthModule,
     UserModule,
     SkillModule,
     ExperienceModule,

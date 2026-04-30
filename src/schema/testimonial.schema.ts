@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Document, Types } from 'mongoose';
+import { ImageAsset, ImageAssetSchema } from './image-asset.schema';
 
 export type TestimonialDocument = HydratedDocument<Testimonial>;
 
@@ -16,6 +17,9 @@ export class Testimonial extends Document {
 
   @Prop({ type: String })
   designation!: string;
+
+  @Prop({ type: ImageAssetSchema })
+  image?: ImageAsset;
 
   @Prop({
     type: Number,

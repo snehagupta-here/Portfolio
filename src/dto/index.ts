@@ -5,5 +5,6 @@ export * from './experience.dto';
 export * from './skill.dto';
 export * from './blog.dto';
 export * from './user.dto';
+export * from './auth.dto';
 export * from './project.dto';
 export * from './cloudinary.dto';

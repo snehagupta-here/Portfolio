@@ -5,15 +5,17 @@ import {
   IsNumber,
   IsOptional,
   IsString,
-  IsUrl,
   Max,
   Min,
   ValidateNested,
 } from 'class-validator';
 import { Type } from 'class-transformer';
-import { CloudinaryAssetDto } from './cloudinary.dto';
 
 class SocialLinkDto {
+  @IsOptional()
+  @IsString()
+  id?: string;
+
   @IsString()
   name!: string;
 
@@ -21,8 +23,68 @@ class SocialLinkDto {
   @IsString()
   icon?: string;
 
-  @IsUrl()
+  @IsString()
   url!: string;
+}
+
+class UserFileAssetDto {
+  @IsOptional()
+  @IsString()
+  fileName?: string;
+
+  @IsOptional()
+  @IsString()
+  url?: string;
+
+  @IsOptional()
+  @IsString()
+  publicId?: string;
+
+  @IsOptional()
+  @IsString()
+  secureUrl?: string;
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  @Min(0)
+  width?: number;
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  @Min(0)
+  height?: number;
+
+  @IsOptional()
+  @IsString()
+  format?: string;
+
+  @IsOptional()
+  @IsString()
+  resourceType?: string;
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  @Min(0)
+  bytes?: number;
+
+  @IsOptional()
+  @IsString()
+  originalFilename?: string;
+}
+
+class UserHighlightDto {
+  @IsOptional()
+  @IsString()
+  id?: string;
+
+  @IsString()
+  title!: string;
+
+  @IsString()
+  description!: string;
 }
 
 class UserSkillDto {
@@ -37,37 +99,6 @@ class UserSkillDto {
   @Min(0)
   @Max(10)
   scale!: number;
-}
-
-export class UserDto {
-  @IsString()
-  name!: string;
-
-  @IsOptional()
-  @IsString()
-  about?: string;
-
-  @IsOptional()
-  @IsArray()
-  @ValidateNested({ each: true })
-  @Type(() => SocialLinkDto)
-  links?: SocialLinkDto[];
-
-  @IsOptional()
-  @IsArray()
-  @ValidateNested({ each: true })
-  @Type(() => UserSkillDto)
-  skills?: UserSkillDto[];
-
-  @IsOptional()
-  @ValidateNested()
-  @Type(() => CloudinaryAssetDto)
-  profile_image?: CloudinaryAssetDto;
-
-  @IsOptional()
-  @ValidateNested()
-  @Type(() => CloudinaryAssetDto)
-  resume?: CloudinaryAssetDto;
 }
 
 export class SearchUserQueryDto {
@@ -87,13 +118,61 @@ export class UpdateUserDto {
 
   @IsOptional()
   @IsString()
-  about?: string;
+  title?: string;
+
+  @IsOptional()
+  @IsString()
+  tagline?: string;
+
+  @IsOptional()
+  @IsString()
+  bio?: string;
+
+  @IsOptional()
+  @IsString()
+  email?: string;
+
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => UserFileAssetDto)
+  avatar?: UserFileAssetDto;
+
+  @IsOptional()
+  @IsString()
+  aboutHeading?: string;
+
+  @IsOptional()
+  @IsString()
+  aboutBio?: string;
+
+  @IsOptional()
+  @IsString()
+  totalYearsExperience?: string;
+
+  @IsOptional()
+  @IsString()
+  projectsCompleted?: string;
+
+  @IsOptional()
+  @IsString()
+  location?: string;
+
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  paragraphs?: string[];
+
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => UserHighlightDto)
+  highlights?: UserHighlightDto[];
 
   @IsOptional()
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => SocialLinkDto)
-  links?: SocialLinkDto[];
+  socialLinks?: SocialLinkDto[];
 
   @IsOptional()
   @IsArray()
@@ -103,11 +182,6 @@ export class UpdateUserDto {
 
   @IsOptional()
   @ValidateNested()
-  @Type(() => CloudinaryAssetDto)
-  profile_image?: CloudinaryAssetDto;
-
-  @IsOptional()
-  @ValidateNested()
-  @Type(() => CloudinaryAssetDto)
-  resume?: CloudinaryAssetDto;
+  @Type(() => UserFileAssetDto)
+  resume?: UserFileAssetDto;
 }

@@ -12,36 +12,54 @@ import {
 import { CloudinaryAssetDto } from './cloudinary.dto';
 
 export class ExperienceDto {
-  @IsMongoId()
-  @IsNotEmpty()
+  @IsMongoId({
+    message: 'user_id: user_id must be a valid ',
+  })
+  @IsNotEmpty({ message: 'user_id: user_id is required' })
   user_id!: string;
 
-  @IsDateString()
+  @IsNotEmpty({ message: 'start_date: start_date is required' })
+  @IsDateString(
+    {},
+    {
+      message: 'start_date: start_date must be a valid date string',
+    },
+  )
   start_date!: string;
 
   @IsOptional()
-  @IsDateString()
+  @IsDateString(
+    {},
+    {
+      message: 'end_date: end_date must be a valid date string',
+    },
+  )
   end_date?: string;
 
   @IsOptional()
-  @IsString()
+  @IsString({ message: 'location: location must be a string' })
   location?: string;
 
-  @IsString()
-  @IsNotEmpty()
+  @IsString({ message: 'designation: designation must be a string' })
+  @IsNotEmpty({ message: 'designation: designation is required' })
   designation!: string;
 
   @IsOptional()
-  @IsString()
+  @IsString({ message: 'description: description must be a string' })
   description?: string;
 
   @IsOptional()
-  @IsArray()
-  @IsString({ each: true })
+  @IsArray({ message: 'responsibilities: responsibilities must be an array' })
+  @IsString({
+    each: true,
+    message: 'responsibilities: each responsibility must be a string',
+  })
   responsibilities?: string[];
 
-  @IsString()
-  @IsNotEmpty()
+  @IsString({
+    message: 'organization_name: organization_name must be a string',
+  })
+  @IsNotEmpty({ message: 'organization_name: organization_name is required' })
   organization_name!: string;
 
   @ValidateNested()
@@ -49,47 +67,64 @@ export class ExperienceDto {
   organization_logo_url!: CloudinaryAssetDto;
 
   @IsOptional()
-  @IsUrl()
+  @IsUrl(
+    {},
+    { message: 'organization_url: organization_url must be a valid URL' },
+  )
   organization_url?: string;
 
   @IsOptional()
-  @IsArray()
-  @IsString({ each: true })
+  @IsArray({ message: 'tech_stack: tech_stack must be an array' })
+  @IsString({
+    each: true,
+    message: 'tech_stack: each tech stack item must be a string',
+  })
   tech_stack?: string[];
 }
 
 export class UpdateExperienceDto {
   @IsOptional()
-  @IsMongoId()
-  user_id?: string;
-
-  @IsOptional()
-  @IsDateString()
+  @IsDateString(
+    {},
+    {
+      message: 'start_date: start_date must be a valid date string',
+    },
+  )
   start_date?: string;
 
   @IsOptional()
-  @IsDateString()
+  @IsDateString(
+    {},
+    {
+      message: 'end_date: end_date must be a valid date string',
+    },
+  )
   end_date?: string;
 
   @IsOptional()
-  @IsString()
+  @IsString({ message: 'location: location must be a string' })
   location?: string;
 
   @IsOptional()
-  @IsString()
+  @IsString({ message: 'designation: designation must be a string' })
   designation?: string;
 
   @IsOptional()
-  @IsString()
+  @IsString({ message: 'description: description must be a string' })
   description?: string;
 
   @IsOptional()
-  @IsArray()
-  @IsString({ each: true })
+  @IsArray({ message: 'responsibilities: responsibilities must be an array' })
+  @IsString({
+    each: true,
+    message: 'responsibilities: each responsibility must be a string',
+  })
   responsibilities?: string[];
 
   @IsOptional()
-  @IsString()
+  @IsString({
+    message: 'organization_name: organization_name must be a string',
+  })
   organization_name?: string;
 
   @IsOptional()
@@ -98,25 +133,45 @@ export class UpdateExperienceDto {
   organization_logo_url?: CloudinaryAssetDto;
 
   @IsOptional()
-  @IsUrl()
+  @IsUrl(
+    {},
+    { message: 'organization_url: organization_url must be a valid URL' },
+  )
   organization_url?: string;
 
   @IsOptional()
-  @IsArray()
-  @IsString({ each: true })
+  @IsArray({ message: 'tech_stack: tech_stack must be an array' })
+  @IsString({
+    each: true,
+    message: 'tech_stack: each tech stack item must be a string',
+  })
   tech_stack?: string[];
+}
+
+export class ExperienceUserParamDto {
+  @IsMongoId({
+    message: 'user_id: user_id must be a valid',
+  })
+  @IsNotEmpty({ message: 'user_id: user_id is required' })
+  user_id!: string;
+}
+
+export class ExperienceScopedIdParamDto extends ExperienceUserParamDto {
+  @IsMongoId({
+    message: 'id: id must be a valid',
+  })
+  @IsNotEmpty({ message: 'id: id is required' })
+  id!: string;
 }
 
 export class SearchExperienceQueryDto {
   @IsOptional()
-  @IsMongoId()
-  user_id?: string;
-
-  @IsOptional()
-  @IsString()
+  @IsString({ message: 'designation: designation must be a string' })
   designation?: string;
 
   @IsOptional()
-  @IsString()
+  @IsString({
+    message: 'organization_name: organization_name must be a string',
+  })
   organization_name?: string;
 }

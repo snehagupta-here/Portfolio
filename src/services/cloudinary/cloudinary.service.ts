@@ -36,9 +36,7 @@ type CloudinaryCredentials = {
 };
 
 @Injectable()
-export class CloudinaryService
-  implements OnModuleInit, OnApplicationShutdown
-{
+export class CloudinaryService implements OnModuleInit, OnApplicationShutdown {
   private isConfigured = false;
   private isShuttingDown = false;
   private isConnectivityVerified = false;
@@ -256,9 +254,7 @@ export class CloudinaryService
     return credentials;
   }
 
-  private getCloudinaryCredentials(
-    throwIfMissing: true,
-  ): CloudinaryCredentials;
+  private getCloudinaryCredentials(throwIfMissing: true): CloudinaryCredentials;
   private getCloudinaryCredentials(
     throwIfMissing: false,
   ): CloudinaryCredentials | null;
@@ -314,7 +310,9 @@ export class CloudinaryService
           } catch (error: unknown) {
             const trace = error instanceof Error ? error.stack : undefined;
             const message =
-              error instanceof Error ? error.message : 'unknown cloudinary error';
+              error instanceof Error
+                ? error.message
+                : 'unknown cloudinary error';
 
             this.logger.error(
               `❌ [Cloudinary] Attempt ${attempt}/${maxRetries} failed -> ${target} | ${message}`,

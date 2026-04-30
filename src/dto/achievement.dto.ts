@@ -1,3 +1,4 @@
+import { Type } from 'class-transformer';
 import {
   IsArray,
   IsDateString,
@@ -6,10 +7,119 @@ import {
   IsNotEmpty,
   IsOptional,
   IsString,
-  IsUrl,
+  Validate,
+  ValidateNested,
+  ValidationArguments,
+  ValidatorConstraint,
+  ValidatorConstraintInterface,
 } from 'class-validator';
 import { PositionEnum } from 'src/enums';
-import { ImageAsset } from 'src/schema/image-asset.schema';
+import { CloudinaryAssetDto } from './cloudinary.dto';
+
+const ALLOWED_ASSET_KEYS = new Set([
+  'publicId',
+  'secureUrl',
+  'width',
+  'height',
+  'format',
+  'resourceType',
+  'bytes',
+  'originalFilename',
+]);
+
+const ALLOWED_RESOURCE_TYPES = new Set(['image', 'raw', 'video', 'auto']);
+
+function isValidUrl(value: unknown): value is string {
+  if (typeof value !== 'string' || value.trim().length === 0) {
+    return false;
+  }
+
+  try {
+    // eslint-disable-next-line no-new
+    new URL(value);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+@ValidatorConstraint({ name: 'isCloudinaryAssetOrUrl', async: false })
+class IsCloudinaryAssetOrUrlConstraint implements ValidatorConstraintInterface {
+  validate(value: unknown): boolean {
+    if (value === undefined || value === null) {
+      return true;
+    }
+
+    if (typeof value === 'string') {
+      return isValidUrl(value);
+    }
+
+    if (typeof value !== 'object' || Array.isArray(value)) {
+      return false;
+    }
+
+    const asset = value as Record<string, unknown>;
+    const keys = Object.keys(asset);
+
+    if (!keys.every((key) => ALLOWED_ASSET_KEYS.has(key))) {
+      return false;
+    }
+
+    if (
+      typeof asset.publicId !== 'string' ||
+      asset.publicId.trim().length === 0 ||
+      !isValidUrl(asset.secureUrl)
+    ) {
+      return false;
+    }
+
+    if (
+      asset.width !== undefined &&
+      (!Number.isInteger(asset.width) || (asset.width as number) < 0)
+    ) {
+      return false;
+    }
+
+    if (
+      asset.height !== undefined &&
+      (!Number.isInteger(asset.height) || (asset.height as number) < 0)
+    ) {
+      return false;
+    }
+
+    if (asset.format !== undefined && typeof asset.format !== 'string') {
+      return false;
+    }
+
+    if (
+      asset.resourceType !== undefined &&
+      (typeof asset.resourceType !== 'string' ||
+        !ALLOWED_RESOURCE_TYPES.has(asset.resourceType))
+    ) {
+      return false;
+    }
+
+    if (
+      asset.bytes !== undefined &&
+      (!Number.isInteger(asset.bytes) || (asset.bytes as number) < 0)
+    ) {
+      return false;
+    }
+
+    if (
+      asset.originalFilename !== undefined &&
+      typeof asset.originalFilename !== 'string'
+    ) {
+      return false;
+    }
+
+    return true;
+  }
+
+  defaultMessage(args: ValidationArguments): string {
+    return `${args.property}: ${args.property} must be a valid URL string or a valid cloudinary asset object`;
+  }
+}
 
 export class AchievementDto {
   @IsMongoId()
@@ -35,20 +145,17 @@ export class AchievementDto {
   competition_name!: string;
 
   @IsArray()
-  @IsUrl({}, { each: true })
   @IsOptional()
-  images?: string[];
+  @ValidateNested({ each: true })
+  @Type(() => CloudinaryAssetDto)
+  images?: CloudinaryAssetDto[];
 
-  @IsUrl()
   @IsOptional()
-  certificate_url?: string;
+  @Validate(IsCloudinaryAssetOrUrlConstraint)
+  certificate_url?: CloudinaryAssetDto | string;
 }
 
 export class UpdateAchievementDto {
-  @IsOptional()
-  @IsMongoId()
-  user_id?: string;
-
   @IsOptional()
   @IsDateString()
   achievement_date?: string;
@@ -73,19 +180,16 @@ export class UpdateAchievementDto {
 
   @IsOptional()
   @IsArray()
-  @IsUrl({}, { each: true })
-  images?: ImageAsset[];
+  @ValidateNested({ each: true })
+  @Type(() => CloudinaryAssetDto)
+  images?: CloudinaryAssetDto[];
 
   @IsOptional()
-  @IsUrl()
-  certificate_url?: ImageAsset;
+  @Validate(IsCloudinaryAssetOrUrlConstraint)
+  certificate_url?: CloudinaryAssetDto | string;
 }
 
 export class SearchAchievementQueryDto {
-  @IsOptional()
-  @IsMongoId()
-  user_id?: string;
-
   @IsOptional()
   @IsString()
   title?: string;
@@ -97,4 +201,20 @@ export class SearchAchievementQueryDto {
   @IsOptional()
   @IsString()
   competition_name?: string;
+}
+
+export class AchievementUserParamDto {
+  @IsMongoId({
+    message: 'user_id: user_id must be a valid',
+  })
+  @IsNotEmpty({ message: 'user_id: user_id is required' })
+  user_id!: string;
+}
+
+export class AchievementScopedIdParamDto extends AchievementUserParamDto {
+  @IsMongoId({
+    message: 'id: id must be a valid',
+  })
+  @IsNotEmpty({ message: 'id: id is required' })
+  id!: string;
 }

@@ -5,12 +5,11 @@ import { Model, Types } from 'mongoose';
 import {
   InvalidUserSkillIdException,
   InvalidUserIdException,
-  UserAlreadyExistsException,
   UserNotFoundException,
   UserSearchQueryRequiredException,
   UserSkillNotFoundException,
 } from 'src/exceptions/user.exceptions';
-import { ResolvedUserInput } from 'src/interfaces';
+import { UserUpdate } from 'src/interfaces';
 import { Skill } from 'src/schema/skill.schema';
 import { User, UserDocument } from 'src/schema/user.schema';
 import { handleError } from 'src/utils/error-handler';
@@ -23,42 +22,6 @@ export class UserService {
     @InjectModel(Skill.name)
     private readonly skillCollection: Model<Skill>,
   ) {}
-
-  async createUser(body: ResolvedUserInput) {
-    try {
-      const existingUser = await this.userCollection.findOne({
-        name: body.name,
-      });
-
-      if (existingUser) {
-        throw new UserAlreadyExistsException();
-      }
-
-      const resolvedLinks =
-        body.links !== undefined ? this.resolveLinks(body.links) : undefined;
-      const resolvedSkills =
-        body.skills !== undefined
-          ? await this.resolveSkills(body.skills)
-          : undefined;
-
-      const user = await this.userCollection.create({
-        name: body.name,
-        about: body.about,
-        links: resolvedLinks,
-        profile_image: body.profile_image,
-        resume: body.resume,
-        skills: resolvedSkills,
-      });
-
-      return {
-        success: true,
-        data: user,
-        message: 'User created successfully.',
-      };
-    } catch (e: unknown) {
-      handleError(e, 'Failed to create user');
-    }
-  }
 
   async getAllUsers() {
     try {
@@ -139,7 +102,7 @@ export class UserService {
     }
   }
 
-  async updateUser(id: string, body: Partial<ResolvedUserInput>) {
+  async updateUser(id: string, body: UserUpdate) {
     try {
       if (!Types.ObjectId.isValid(id)) {
         throw new InvalidUserIdException();
@@ -152,32 +115,63 @@ export class UserService {
       }
 
       if (body.name !== undefined) {
-        const existingUser = await this.userCollection.findOne({
-          name: body.name,
-          _id: { $ne: id },
-        });
-
-        if (existingUser) {
-          throw new UserAlreadyExistsException();
-        }
-
         user.name = body.name;
       }
 
-      if (body.about !== undefined) {
-        user.about = body.about;
+      if (body.title !== undefined) {
+        user.title = body.title;
       }
 
-      if (body.links !== undefined) {
-        user.links = this.resolveLinks(body.links);
+      if (body.tagline !== undefined) {
+        user.tagline = body.tagline;
+      }
+
+      if (body.bio !== undefined) {
+        user.bio = body.bio;
+      }
+
+      if (body.email !== undefined) {
+        user.email = body.email.trim() || undefined;
+      }
+
+      if (body.avatar !== undefined) {
+        user.avatar = body.avatar;
+      }
+
+      if (body.aboutHeading !== undefined) {
+        user.aboutHeading = body.aboutHeading;
+      }
+
+      if (body.aboutBio !== undefined) {
+        user.aboutBio = body.aboutBio;
+      }
+
+      if (body.totalYearsExperience !== undefined) {
+        user.totalYearsExperience = body.totalYearsExperience;
+      }
+
+      if (body.projectsCompleted !== undefined) {
+        user.projectsCompleted = body.projectsCompleted;
+      }
+
+      if (body.location !== undefined) {
+        user.location = body.location;
+      }
+
+      if (body.paragraphs !== undefined) {
+        user.paragraphs = body.paragraphs;
+      }
+
+      if (body.highlights !== undefined) {
+        user.highlights = this.resolveHighlights(body.highlights);
+      }
+
+      if (body.socialLinks !== undefined) {
+        user.socialLinks = this.resolveSocialLinks(body.socialLinks);
       }
 
       if (body.skills !== undefined) {
         user.skills = await this.resolveSkills(body.skills);
-      }
-
-      if (body.profile_image !== undefined) {
-        user.profile_image = body.profile_image;
       }
 
       if (body.resume !== undefined) {
@@ -217,18 +211,29 @@ export class UserService {
     }
   }
 
-  private resolveLinks(
-    links: NonNullable<ResolvedUserInput['links']>,
-  ): UserDocument['links'] {
+  private resolveSocialLinks(
+    links: NonNullable<UserUpdate['socialLinks']>,
+  ): UserDocument['socialLinks'] {
     return links.map((link) => ({
+      id: link.id,
       name: link.name,
       icon: link.icon,
       url: link.url,
     }));
   }
 
+  private resolveHighlights(
+    highlights: NonNullable<UserUpdate['highlights']>,
+  ): UserDocument['highlights'] {
+    return highlights.map((highlight) => ({
+      id: highlight.id,
+      title: highlight.title,
+      description: highlight.description,
+    }));
+  }
+
   private async resolveSkills(
-    skills: NonNullable<ResolvedUserInput['skills']>,
+    skills: NonNullable<UserUpdate['skills']>,
   ): Promise<UserDocument['skills']> {
     for (const skill of skills) {
       if (!Types.ObjectId.isValid(skill.skill_id)) {

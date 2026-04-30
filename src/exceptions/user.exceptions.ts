@@ -9,6 +9,24 @@ export class UserAlreadyExistsException extends BadRequestException {
   }
 }
 
+export class UserEmailAlreadyExistsException extends BadRequestException {
+  constructor() {
+    super({
+      message: 'Email already exists',
+      error: 'Bad Request',
+    });
+  }
+}
+
+export class UserCredentialsIncompleteException extends BadRequestException {
+  constructor() {
+    super({
+      message: 'Both email and password are required together',
+      error: 'Bad Request',
+    });
+  }
+}
+
 export class InvalidUserIdException extends BadRequestException {
   constructor() {
     super({

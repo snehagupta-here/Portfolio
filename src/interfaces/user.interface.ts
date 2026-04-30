@@ -1,9 +1,21 @@
 import { CloudinaryImageAsset } from 'src/interfaces/image.interface';
 
 export interface SocialLink {
+  id?: string;
   name: string;
   icon?: string;
   url: string;
+}
+
+export interface UserFileAsset extends Partial<CloudinaryImageAsset> {
+  fileName?: string;
+  url?: string;
+}
+
+export interface UserHighlight {
+  id?: string;
+  title: string;
+  description: string;
 }
 
 export interface UserSkill {
@@ -12,29 +24,21 @@ export interface UserSkill {
   scale: number;
 }
 
-export interface UserCreate {
-  about?: string;
-  name: string;
-  links?: SocialLink[];
-  skills?: UserSkill[];
-  profile_image?: CloudinaryImageAsset;
-  resume?: CloudinaryImageAsset;
-}
-
 export interface UserUpdate {
-  about?: string;
   name?: string;
-  links?: SocialLink[];
+  title?: string;
+  tagline?: string;
+  bio?: string;
+  email?: string;
+  avatar?: UserFileAsset;
+  aboutHeading?: string;
+  aboutBio?: string;
+  totalYearsExperience?: string;
+  projectsCompleted?: string;
+  location?: string;
+  paragraphs?: string[];
+  highlights?: UserHighlight[];
+  socialLinks?: SocialLink[];
   skills?: UserSkill[];
-  profile_image?: CloudinaryImageAsset;
-  resume?: CloudinaryImageAsset;
-}
-
-export interface ResolvedUserInput {
-  about?: string;
-  name: string;
-  links?: SocialLink[];
-  skills?: UserSkill[];
-  profile_image?: CloudinaryImageAsset;
-  resume?: CloudinaryImageAsset;
+  resume?: UserFileAsset;
 }

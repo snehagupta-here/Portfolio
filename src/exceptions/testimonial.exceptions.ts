@@ -39,7 +39,7 @@ export class InvalidTestimonialIdException extends BadRequestException {
 export class TestimonialSearchQueryRequiredException extends BadRequestException {
   constructor() {
     super({
-      message: 'Either user_id, name, or rating query parameter is required',
+      message: 'Either name or rating query parameter is required',
       error: 'Bad Request',
     });
   }

@@ -11,7 +11,9 @@ import {
 
 import {
   SearchTestimonialQueryDto,
+  TestimonialScopedIdParamDto,
   TestimonialDto,
+  TestimonialUserParamDto,
   UpdateTestimonialDto,
 } from 'src/dto';
 
@@ -21,36 +23,52 @@ import { TestimonialService } from './testimonial.service';
 export class TestimonialController {
   constructor(private readonly testimonialService: TestimonialService) {}
 
-  @Post()
-  async createTestimonial(@Body() body: TestimonialDto) {
-    return await this.testimonialService.addTestimonial(body);
+  @Post(':user_id')
+  async createTestimonial(
+    @Param() params: TestimonialUserParamDto,
+    @Body() body: TestimonialDto,
+  ) {
+    return await this.testimonialService.addTestimonial(params.user_id, body);
   }
 
-  @Get()
-  async getAllTestimonials() {
-    return await this.testimonialService.getAllTestimonials();
+  @Get(':user_id')
+  async getAllTestimonials(@Param() params: TestimonialUserParamDto) {
+    return await this.testimonialService.getAllTestimonials(params.user_id);
   }
 
-  @Get('search')
-  async searchTestimonials(@Query() query: SearchTestimonialQueryDto) {
-    return await this.testimonialService.searchTestimonials(query);
+  @Get(':user_id/search')
+  async searchTestimonials(
+    @Param() params: TestimonialUserParamDto,
+    @Query() query: SearchTestimonialQueryDto,
+  ) {
+    return await this.testimonialService.searchTestimonials(params.user_id, query);
   }
 
-  @Get(':id')
-  async getTestimonialById(@Param('id') id: string) {
-    return await this.testimonialService.getTestimonialById(id);
+  @Get(':user_id/:id')
+  async getTestimonialById(@Param() params: TestimonialScopedIdParamDto) {
+    return await this.testimonialService.getTestimonialById(
+      params.id,
+      params.user_id,
+    );
   }
 
-  @Patch(':id')
+  @Patch(':user_id/:id')
   async updateTestimonial(
-    @Param('id') id: string,
+    @Param() params: TestimonialScopedIdParamDto,
     @Body() body: UpdateTestimonialDto,
   ) {
-    return await this.testimonialService.updateTestimonial(id, body);
+    return await this.testimonialService.updateTestimonial(
+      params.id,
+      params.user_id,
+      body,
+    );
   }
 
-  @Delete(':id')
-  async deleteTestimonial(@Param('id') id: string) {
-    return await this.testimonialService.deleteTestimonial(id);
+  @Delete(':user_id/:id')
+  async deleteTestimonial(@Param() params: TestimonialScopedIdParamDto) {
+    return await this.testimonialService.deleteTestimonial(
+      params.id,
+      params.user_id,
+    );
   }
 }

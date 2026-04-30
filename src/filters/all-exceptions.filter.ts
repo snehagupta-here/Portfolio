@@ -16,9 +16,15 @@ const VALIDATION_CONSTRAINT_PRIORITY = [
   'isNotEmptyObject',
   'isString',
   'isEmail',
+  'isMongoId',
+  'isDateString',
+  'isUrl',
+  'isArray',
   'minLength',
+  'min',
   'length',
   'matches',
+  'max',
   'maxLength',
 ] as const;
 

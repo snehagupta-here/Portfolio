@@ -1,41 +1,60 @@
 import { Type } from 'class-transformer';
-import { IsEnum, IsOptional, IsString, ValidateNested } from 'class-validator';
+import {
+  IsDefined,
+  IsEnum,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  ValidateNested,
+} from 'class-validator';
 import { SkillCategoryEnum } from 'src/enums';
 import { CloudinaryAssetDto } from './cloudinary.dto';
 
 export class SkillDto {
-  @IsString()
+  @IsString({ message: 'name: name must be a string' })
+  @IsNotEmpty({ message: 'name: name is required' })
   name!: string;
 
-  @ValidateNested()
+  @IsDefined({ message: 'icon: icon is required' })
+  @ValidateNested({ message: 'icon: icon must be a valid object' })
   @Type(() => CloudinaryAssetDto)
   icon!: CloudinaryAssetDto;
 
-  @IsEnum(SkillCategoryEnum)
+  @IsDefined({ message: 'category: category is required' })
+  @IsEnum(SkillCategoryEnum, {
+    message:
+      'category: category must be one of frontend, language, backend, database, cloud, devops, design, other',
+  })
   category!: SkillCategoryEnum;
 }
 
 export class UpdateSkillDto {
   @IsOptional()
-  @IsString()
+  @IsString({ message: 'name: name must be a string' })
   name?: string;
 
   @IsOptional()
-  @ValidateNested()
+  @ValidateNested({ message: 'icon: icon must be a valid' })
   @Type(() => CloudinaryAssetDto)
   icon?: CloudinaryAssetDto;
 
   @IsOptional()
-  @IsEnum(SkillCategoryEnum)
+  @IsEnum(SkillCategoryEnum, {
+    message:
+      'category: category must be one of frontend, language, backend, database, cloud, devops, design, other',
+  })
   category?: SkillCategoryEnum;
 }
 
 export class SearchSkillQueryDto {
   @IsOptional()
-  @IsString()
+  @IsString({ message: 'name: name must be a string' })
   name?: string;
 
   @IsOptional()
-  @IsEnum(SkillCategoryEnum)
+  @IsEnum(SkillCategoryEnum, {
+    message:
+      'category: category must be one of frontend, language, backend, database, cloud, devops, design, other',
+  })
   category?: SkillCategoryEnum;
 }

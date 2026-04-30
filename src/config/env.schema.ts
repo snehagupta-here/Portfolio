@@ -7,7 +7,6 @@ export const envSchema = z.object({
     .enum(['development', 'test', 'production'])
     .default('development'),
   PORT: z.coerce.number().int().positive().default(configDefaults.app.port),
-  API_PREFIX: z.string().trim().min(1).default(configDefaults.app.apiPrefix),
   DB_URL: z
     .string()
     .trim()

@@ -14,7 +14,7 @@ import {
   Achievement,
   AchievementDocument,
 } from 'src/schema/achievement.schema';
-import { User } from 'src/schema/user.schema';
+import { User, UserDocument } from 'src/schema/user.schema';
 import { handleError } from 'src/utils/error-handler';
 
 @Injectable()
@@ -23,28 +23,23 @@ export class AchievementService {
     @InjectModel(Achievement.name)
     private readonly achievementCollection: Model<AchievementDocument>,
     @InjectModel(User.name)
-    private readonly userCollection: Model<User>,
+    private readonly userCollection: Model<UserDocument>,
   ) {}
 
   async createAchievement(body: CreateAchievement) {
     try {
-      if (!Types.ObjectId.isValid(body.user_id)) {
-        throw new InvalidAchievementUserIdException();
-      }
-
-      const userId = new Types.ObjectId(body.user_id);
-      await this.ensureUserExists(userId);
+      const scopedUserId = await this.resolveValidatedUserId(body.user_id);
 
       const achievementDate = new Date(body.achievement_date);
       await this.ensureAchievementDoesNotExist({
-        user_id: userId,
+        user_id: scopedUserId,
         title: body.title,
         competition_name: body.competition_name,
         achievement_date: achievementDate,
       });
 
       const achievement = await this.achievementCollection.create({
-        user_id: userId,
+        user_id: scopedUserId,
         achievement_date: achievementDate,
         title: body.title,
         position: body.position,
@@ -64,10 +59,11 @@ export class AchievementService {
     }
   }
 
-  async getAllAchievements() {
+  async getAllAchievements(userId: string) {
     try {
+      const scopedUserId = await this.resolveValidatedUserId(userId);
       const achievements = await this.achievementCollection
-        .find()
+        .find({ user_id: scopedUserId })
         .sort({ achievement_date: -1 });
 
       return {
@@ -79,31 +75,27 @@ export class AchievementService {
     }
   }
 
-  async searchAchievements(query: {
-    user_id?: string;
-    title?: string;
-    competition_name?: string;
-    position?: string;
-  }) {
+  async searchAchievements(
+    userId: string,
+    query: {
+      title?: string;
+      competition_name?: string;
+      position?: string;
+    },
+  ) {
     try {
-      const userId = query.user_id?.trim();
       const title = query.title?.trim();
       const competitionName = query.competition_name?.trim();
       const position = query.position?.trim();
+      const scopedUserId = await this.resolveValidatedUserId(userId);
 
-      if (!userId && !title && !competitionName && !position) {
+      if (!title && !competitionName && !position) {
         throw new AchievementSearchQueryRequiredException();
       }
 
-      const filters: Record<string, unknown> = {};
-
-      if (userId) {
-        if (!Types.ObjectId.isValid(userId)) {
-          throw new InvalidAchievementUserIdException();
-        }
-
-        filters.user_id = new Types.ObjectId(userId);
-      }
+      const filters: Record<string, unknown> = {
+        user_id: scopedUserId,
+      };
 
       if (title) {
         filters.title = {
@@ -136,13 +128,17 @@ export class AchievementService {
     }
   }
 
-  async getAchievementById(id: string) {
+  async getAchievementById(id: string, userId: string) {
     try {
       if (!Types.ObjectId.isValid(id)) {
         throw new InvalidAchievementIdException();
       }
 
-      const achievement = await this.achievementCollection.findById(id);
+      const scopedUserId = await this.resolveValidatedUserId(userId);
+      const achievement = await this.achievementCollection.findOne({
+        _id: id,
+        user_id: scopedUserId,
+      });
 
       if (!achievement) {
         throw new AchievementNotFoundException();
@@ -157,22 +153,22 @@ export class AchievementService {
     }
   }
 
-  async updateAchievement(id: string, body: UpdateAchievement) {
+  async updateAchievement(id: string, userId: string, body: UpdateAchievement) {
     try {
       if (!Types.ObjectId.isValid(id)) {
         throw new InvalidAchievementIdException();
       }
 
-      const achievement = await this.achievementCollection.findById(id);
+      const scopedUserId = await this.resolveValidatedUserId(userId);
+      const achievement = await this.achievementCollection.findOne({
+        _id: id,
+        user_id: scopedUserId,
+      });
 
       if (!achievement) {
         throw new AchievementNotFoundException();
       }
 
-      const nextUserId = await this.resolveUserId(
-        body.user_id,
-        achievement.user_id,
-      );
       const nextAchievementDate =
         body.achievement_date !== undefined
           ? new Date(body.achievement_date)
@@ -182,14 +178,12 @@ export class AchievementService {
         body.competition_name ?? achievement.competition_name;
 
       await this.ensureAchievementDoesNotExist({
-        user_id: nextUserId,
+        user_id: scopedUserId,
         title: nextTitle,
         competition_name: nextCompetitionName,
         achievement_date: nextAchievementDate,
         excludeId: achievement._id.toString(),
       });
-
-      achievement.user_id = nextUserId;
 
       if (body.achievement_date !== undefined) {
         achievement.achievement_date = nextAchievementDate;
@@ -231,13 +225,17 @@ export class AchievementService {
     }
   }
 
-  async deleteAchievement(id: string) {
+  async deleteAchievement(id: string, userId: string) {
     try {
       if (!Types.ObjectId.isValid(id)) {
         throw new InvalidAchievementIdException();
       }
 
-      const deleted = await this.achievementCollection.findByIdAndDelete(id);
+      const scopedUserId = await this.resolveValidatedUserId(userId);
+      const deleted = await this.achievementCollection.findOneAndDelete({
+        _id: id,
+        user_id: scopedUserId,
+      });
 
       if (!deleted) {
         throw new AchievementNotFoundException();
@@ -252,22 +250,17 @@ export class AchievementService {
     }
   }
 
-  private async resolveUserId(
-    nextUserId: string | undefined,
-    currentUserId: Types.ObjectId,
+  private async resolveValidatedUserId(
+    userId: string,
   ): Promise<Types.ObjectId> {
-    if (nextUserId === undefined) {
-      return currentUserId;
-    }
-
-    if (!Types.ObjectId.isValid(nextUserId)) {
+    if (!Types.ObjectId.isValid(userId)) {
       throw new InvalidAchievementUserIdException();
     }
 
-    const userId = new Types.ObjectId(nextUserId);
-    await this.ensureUserExists(userId);
+    const scopedUserId = new Types.ObjectId(userId);
+    await this.ensureUserExists(scopedUserId);
 
-    return userId;
+    return scopedUserId;
   }
 
   private async ensureUserExists(userId: Types.ObjectId) {
@@ -292,7 +285,10 @@ export class AchievementService {
       achievement_date: input.achievement_date,
     });
 
-    if (existingAchievement && existingAchievement.id !== input.excludeId) {
+    if (
+      existingAchievement &&
+      existingAchievement._id.toString() !== input.excludeId
+    ) {
       throw new AchievementAlreadyExistsException();
     }
   }

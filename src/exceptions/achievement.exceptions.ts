@@ -40,7 +40,7 @@ export class AchievementSearchQueryRequiredException extends BadRequestException
   constructor() {
     super({
       message:
-        'At least one of user_id, title, competition_name, or position query parameter is required',
+        'At least one of title, competition_name, or position query parameter is required',
       error: 'Bad Request',
     });
   }

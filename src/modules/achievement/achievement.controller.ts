@@ -10,7 +10,9 @@ import {
 } from '@nestjs/common';
 
 import {
+  AchievementScopedIdParamDto,
   AchievementDto,
+  AchievementUserParamDto,
   SearchAchievementQueryDto,
   UpdateAchievementDto,
 } from 'src/dto';
@@ -26,28 +28,47 @@ export class AchievementController {
     return await this.achievementService.createAchievement(body);
   }
 
-  @Get()
-  async findAll() {
-    return await this.achievementService.getAllAchievements();
+  @Get(':user_id')
+  async findAll(@Param() params: AchievementUserParamDto) {
+    return await this.achievementService.getAllAchievements(params.user_id);
   }
 
-  @Get('search')
-  async search(@Query() query: SearchAchievementQueryDto) {
-    return await this.achievementService.searchAchievements(query);
+  @Get(':user_id/search')
+  async search(
+    @Param() params: AchievementUserParamDto,
+    @Query() query: SearchAchievementQueryDto,
+  ) {
+    return await this.achievementService.searchAchievements(
+      params.user_id,
+      query,
+    );
   }
 
-  @Get(':id')
-  async findOne(@Param('id') id: string) {
-    return await this.achievementService.getAchievementById(id);
+  @Get(':user_id/:id')
+  async findOne(@Param() params: AchievementScopedIdParamDto) {
+    return await this.achievementService.getAchievementById(
+      params.id,
+      params.user_id,
+    );
   }
 
-  @Patch(':id')
-  async update(@Param('id') id: string, @Body() body: UpdateAchievementDto) {
-    return await this.achievementService.updateAchievement(id, body);
+  @Patch(':user_id/:id')
+  async update(
+    @Param() params: AchievementScopedIdParamDto,
+    @Body() body: UpdateAchievementDto,
+  ) {
+    return await this.achievementService.updateAchievement(
+      params.id,
+      params.user_id,
+      body,
+    );
   }
 
-  @Delete(':id')
-  async remove(@Param('id') id: string) {
-    return await this.achievementService.deleteAchievement(id);
+  @Delete(':user_id/:id')
+  async remove(@Param() params: AchievementScopedIdParamDto) {
+    return await this.achievementService.deleteAchievement(
+      params.id,
+      params.user_id,
+    );
   }
 }

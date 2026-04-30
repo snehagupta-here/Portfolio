@@ -2,13 +2,14 @@ openapi: 3.0.3
 info:
   title: Portfolio Server
   version: 1.0.0
-  description: Combined API reference for the user, skill, achievement, testimonial, experience, blog, project, contact-us, and Cloudinary flows.
+  description: Combined API reference for the auth, user, skill, achievement, testimonial, experience, blog, project, contact-us, and Cloudinary flows.
 
 servers:
   - url: http://localhost:4000/api/v1
     description: Local development server
 
 tags:
+  - name: Auth
   - name: Users
   - name: Skills
   - name: Achievements
@@ -21,89 +22,6 @@ tags:
 
 paths:
   /user:
-    post:
-      tags:
-        - Users
-      summary: Create a user
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UserCreateRequest'
-            examples:
-              default:
-                value:
-                  name: Ashu Goyal
-                  about: Full-stack developer building portfolio products.
-                  links:
-                    - name: GitHub
-                      icon: github
-                      url: https://github.com/ashugoyal
-                    - name: LinkedIn
-                      icon: linkedin
-                      url: https://www.linkedin.com/in/ashugoyal
-                  skills:
-                    - skill_id: 660f0c1f4d8c8b3c2adfd111
-                      yoe: 3
-                      scale: 8
-                    - skill_id: 660f0c1f4d8c8b3c2adfd112
-                      yoe: 2
-                      scale: 7
-                  profile_image:
-                    publicId: portfolio/user/profile-image
-                    secureUrl: https://res.cloudinary.com/demo/image/upload/v1/profile.jpg
-                    width: 512
-                    height: 512
-                    format: jpg
-                    resourceType: image
-                    bytes: 85432
-                    originalFilename: profile
-                  resume:
-                    publicId: portfolio/user/resume
-                    secureUrl: https://res.cloudinary.com/demo/raw/upload/v1/resume.pdf
-                    format: pdf
-                    resourceType: raw
-                    bytes: 240156
-                    originalFilename: ashu-goyal-resume
-      responses:
-        '201':
-          description: User created successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/UserMutationResponse'
-              examples:
-                default:
-                  value:
-                    success: true
-                    statusCode: 201
-                    message: User created successfully.
-                    data:
-                      _id: 660f0c1f4d8c8b3c2adfd001
-                      name: Ashu Goyal
-                      about: Full-stack developer building portfolio products.
-                      links:
-                        - name: GitHub
-                          icon: github
-                          url: https://github.com/ashugoyal
-                      skills:
-                        - skill_id: 660f0c1f4d8c8b3c2adfd111
-                          yoe: 3
-                          scale: 8
-                      profile_image:
-                        publicId: portfolio/user/profile-image
-                        secureUrl: https://res.cloudinary.com/demo/image/upload/v1/profile.jpg
-                      resume:
-                        publicId: portfolio/user/resume
-                        secureUrl: https://res.cloudinary.com/demo/raw/upload/v1/resume.pdf
-                      createdAt: '2026-04-08T06:10:00.000Z'
-                      updatedAt: '2026-04-08T06:10:00.000Z'
-                    timeStamp: '2026-04-08T06:10:00.000Z'
-                    path: /api/v1/user
-        '400':
-          $ref: '#/components/responses/ValidationError'
-
     get:
       tags:
         - Users
@@ -124,9 +42,31 @@ paths:
                     data:
                       - _id: 660f0c1f4d8c8b3c2adfd001
                         name: Ashu Goyal
-                        about: Full-stack developer building portfolio products.
-                        links:
-                          - name: GitHub
+                        title: Full-Stack Developer
+                        tagline: Building reliable product experiences end-to-end.
+                        bio: Full-stack developer building portfolio products and developer tools.
+                        email: ashu@example.com
+                        avatar:
+                          fileName: ashu-profile.png
+                          url: https://res.cloudinary.com/demo/image/upload/v1744096800/portfolio/users/avatar/ashu-goyal.png
+                        resume:
+                          fileName: ashu-resume.pdf
+                          url: https://res.cloudinary.com/demo/raw/upload/v1744096800/portfolio/users/resume/ashu-goyal.pdf
+                        aboutHeading: About Me
+                        aboutBio: I build products with a focus on clean architecture, performance, and usability.
+                        totalYearsExperience: 4+
+                        projectsCompleted: 12+
+                        location: Jaipur, India
+                        paragraphs:
+                          - I enjoy building polished web experiences.
+                          - I focus on maintainable backend services and product thinking.
+                        highlights:
+                          - id: highlight-1
+                            title: Backend Systems
+                            description: Built scalable NestJS services and deployment workflows.
+                        socialLinks:
+                          - id: social-1
+                            name: GitHub
                             icon: github
                             url: https://github.com/ashugoyal
                         skills:
@@ -136,9 +76,6 @@ paths:
                               category: backend
                             yoe: 3
                             scale: 8
-                        profile_image:
-                          publicId: portfolio/user/profile-image
-                          secureUrl: https://res.cloudinary.com/demo/image/upload/v1/profile.jpg
                         createdAt: '2026-04-08T06:10:00.000Z'
                         updatedAt: '2026-04-08T06:10:00.000Z'
                     timeStamp: '2026-04-08T06:10:01.000Z'
@@ -178,15 +115,62 @@ paths:
             examples:
               default:
                 value:
-                  about: Building scalable backend systems and product APIs.
-                  links:
-                    - name: Portfolio
-                      icon: globe
-                      url: https://portfolio.example.com
+                  name: Ashu Goyal
+                  title: Full-Stack Developer
+                  tagline: Building reliable product experiences end-to-end.
+                  bio: Building scalable backend systems and product APIs.
+                  email: ashu@example.com
+                  avatar:
+                    fileName: ashu-profile.png
+                    url: https://res.cloudinary.com/demo/image/upload/v1744096800/portfolio/users/avatar/ashu-goyal.png
+                    publicId: portfolio/users/avatar/ashu-goyal
+                    secureUrl: https://res.cloudinary.com/demo/image/upload/v1744096800/portfolio/users/avatar/ashu-goyal.png
+                    width: 512
+                    height: 512
+                    format: png
+                    resourceType: image
+                    bytes: 48212
+                    originalFilename: ashu-profile.png
+                  resume:
+                    fileName: ashu-resume.pdf
+                    url: https://res.cloudinary.com/demo/raw/upload/v1744096800/portfolio/users/resume/ashu-goyal.pdf
+                    publicId: portfolio/users/resume/ashu-goyal
+                    secureUrl: https://res.cloudinary.com/demo/raw/upload/v1744096800/portfolio/users/resume/ashu-goyal.pdf
+                    format: pdf
+                    resourceType: raw
+                    bytes: 240512
+                    originalFilename: ashu-resume.pdf
+                  aboutHeading: About Me
+                  aboutBio: I build products with a focus on clean architecture, performance, and usability.
+                  totalYearsExperience: 4+
+                  projectsCompleted: 12+
+                  location: Jaipur, India
+                  paragraphs:
+                    - I enjoy building polished web experiences.
+                    - I focus on maintainable backend services and product thinking.
+                  highlights:
+                    - id: highlight-1
+                      title: Backend Systems
+                      description: Built scalable NestJS services and deployment workflows.
+                    - id: highlight-2
+                      title: Product UI
+                      description: Designed and shipped portfolio and dashboard interfaces.
+                  socialLinks:
+                    - id: social-1
+                      name: GitHub
+                      icon: github
+                      url: https://github.com/ashugoyal
+                    - id: social-2
+                      name: LinkedIn
+                      icon: linkedin
+                      url: https://linkedin.com/in/ashugoyal
                   skills:
                     - skill_id: 660f0c1f4d8c8b3c2adfd111
                       yoe: 4
                       scale: 9
+                    - skill_id: 660f0c1f4d8c8b3c2adfd112
+                      yoe: 2
+                      scale: 7
       responses:
         '200':
           description: User updated successfully
@@ -261,7 +245,14 @@ paths:
                     data:
                       - _id: 660f0c1f4d8c8b3c2adfd001
                         name: Ashu Goyal
-                        about: Full-stack developer building portfolio products.
+                        title: Full-Stack Developer
+                        bio: Full-stack developer building portfolio products and developer tools.
+                        email: ashu@example.com
+                        socialLinks:
+                          - id: social-1
+                            name: GitHub
+                            icon: github
+                            url: https://github.com/ashugoyal
                         skills:
                           - skill_id:
                               _id: 660f0c1f4d8c8b3c2adfd111
@@ -279,6 +270,7 @@ paths:
                     data:
                       - _id: 660f0c1f4d8c8b3c2adfd001
                         name: Ashu Goyal
+                        email: ashu@example.com
                         skills:
                           - skill_id:
                               _id: 660f0c1f4d8c8b3c2adfd111
@@ -290,6 +282,81 @@ paths:
                     path: /api/v1/user/search?skill_id=660f0c1f4d8c8b3c2adfd111
         '400':
           $ref: '#/components/responses/UserSearchBadRequestError'
+
+  /auth/register:
+    post:
+      tags:
+        - Auth
+      summary: Register a user with name, email, and password
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthRegisterRequest'
+            examples:
+              default:
+                value:
+                  name: Ashu Goyal
+                  email: ashu@example.com
+                  password: strongPass123
+      responses:
+        '201':
+          description: User registered successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+              examples:
+                default:
+                  value:
+                    success: true
+                    statusCode: 201
+                    message: User registered successfully.
+                    data:
+                      userId: 660f0c1f4d8c8b3c2adfd001
+                    timeStamp: '2026-04-08T06:09:00.000Z'
+                    path: /api/v1/auth/register
+        '400':
+          $ref: '#/components/responses/AuthRegisterBadRequestError'
+
+  /auth/login:
+    post:
+      tags:
+        - Auth
+      summary: Authenticate a user with email and password
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthLoginRequest'
+            examples:
+              default:
+                value:
+                  email: ashu@example.com
+                  password: strongPass123
+      responses:
+        '200':
+          description: Authentication successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+              examples:
+                default:
+                  value:
+                    success: true
+                    statusCode: 200
+                    message: Authentication successful.
+                    data:
+                      userId: 660f0c1f4d8c8b3c2adfd001
+                    timeStamp: '2026-04-08T06:09:30.000Z'
+                    path: /api/v1/auth/login
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/InvalidCredentialsError'
 
   /skills:
     post:
@@ -539,8 +606,29 @@ paths:
                   description: Won the national product engineering challenge.
                   competition_name: Build Bharat Hackathon
                   images:
-                    - https://res.cloudinary.com/demo/image/upload/v1/achievement-1.jpg
-                  certificate_url: https://example.com/certificates/build-bharat.pdf
+                    - publicId: portfolio/achievements/build-bharat-hackathon/award-photo
+                      secureUrl: https://res.cloudinary.com/demo/image/upload/v1744096800/portfolio/achievements/build-bharat-hackathon/award-photo.jpg
+                      width: 1600
+                      height: 900
+                      format: jpg
+                      resourceType: image
+                      bytes: 325841
+                      originalFilename: award-photo.jpg
+                  certificate_url:
+                    publicId: portfolio/achievements/build-bharat-hackathon/certificate
+                    secureUrl: https://res.cloudinary.com/demo/raw/upload/v1744096800/portfolio/achievements/build-bharat-hackathon/certificate.pdf
+                    format: pdf
+                    resourceType: raw
+                    bytes: 240512
+                    originalFilename: certificate.pdf
+              stringCertificate:
+                value:
+                  user_id: 660f0c1f4d8c8b3c2adfd001
+                  achievement_date: '2025-11-10'
+                  title: Hackathon Finals
+                  position: winner
+                  competition_name: Build Bharat Hackathon
+                  certificate_url: https://res.cloudinary.com/demo/raw/upload/v1744096800/portfolio/achievements/build-bharat-hackathon/certificate.pdf
       responses:
         '201':
           description: Achievement created successfully
@@ -563,8 +651,21 @@ paths:
                       description: Won the national product engineering challenge.
                       competition_name: Build Bharat Hackathon
                       images:
-                        - https://res.cloudinary.com/demo/image/upload/v1/achievement-1.jpg
-                      certificate_url: https://example.com/certificates/build-bharat.pdf
+                        - publicId: portfolio/achievements/build-bharat-hackathon/award-photo
+                          secureUrl: https://res.cloudinary.com/demo/image/upload/v1744096800/portfolio/achievements/build-bharat-hackathon/award-photo.jpg
+                          width: 1600
+                          height: 900
+                          format: jpg
+                          resourceType: image
+                          bytes: 325841
+                          originalFilename: award-photo.jpg
+                      certificate_url:
+                        publicId: portfolio/achievements/build-bharat-hackathon/certificate
+                        secureUrl: https://res.cloudinary.com/demo/raw/upload/v1744096800/portfolio/achievements/build-bharat-hackathon/certificate.pdf
+                        format: pdf
+                        resourceType: raw
+                        bytes: 240512
+                        originalFilename: certificate.pdf
                       createdAt: '2026-04-08T06:14:00.000Z'
                       updatedAt: '2026-04-08T06:14:00.000Z'
                     timeStamp: '2026-04-08T06:14:00.000Z'
@@ -572,10 +673,13 @@ paths:
         '400':
           $ref: '#/components/responses/ValidationError'
 
+  /achievement/{user_id}:
     get:
       tags:
         - Achievements
-      summary: Get all achievements
+      summary: Get all achievements for a user
+      parameters:
+        - $ref: '#/components/parameters/UserIdPathParam'
       responses:
         '200':
           description: Achievements fetched successfully
@@ -597,26 +701,35 @@ paths:
                         position: winner
                         competition_name: Build Bharat Hackathon
                         images:
-                          - https://res.cloudinary.com/demo/image/upload/v1/achievement-1.jpg
-                        certificate_url: https://example.com/certificates/build-bharat.pdf
+                          - publicId: portfolio/achievements/build-bharat-hackathon/award-photo
+                            secureUrl: https://res.cloudinary.com/demo/image/upload/v1744096800/portfolio/achievements/build-bharat-hackathon/award-photo.jpg
+                            width: 1600
+                            height: 900
+                            format: jpg
+                            resourceType: image
+                            bytes: 325841
+                            originalFilename: award-photo.jpg
+                        certificate_url:
+                          publicId: portfolio/achievements/build-bharat-hackathon/certificate
+                          secureUrl: https://res.cloudinary.com/demo/raw/upload/v1744096800/portfolio/achievements/build-bharat-hackathon/certificate.pdf
+                          format: pdf
+                          resourceType: raw
+                          bytes: 240512
+                          originalFilename: certificate.pdf
                         createdAt: '2026-04-08T06:14:00.000Z'
                         updatedAt: '2026-04-08T06:14:00.000Z'
                     timeStamp: '2026-04-08T06:14:01.000Z'
-                    path: /api/v1/achievement
+                    path: /api/v1/achievement/660f0c1f4d8c8b3c2adfd001
+        '400':
+          $ref: '#/components/responses/ValidationError'
 
-  /achievement/search:
+  /achievement/{user_id}/search:
     get:
       tags:
         - Achievements
-      summary: Search achievements by user, title, competition, or position
+      summary: Search achievements for a user by title, competition, or position
       parameters:
-        - name: user_id
-          in: query
-          required: false
-          description: Filter achievements for a specific user.
-          schema:
-            type: string
-            example: 660f0c1f4d8c8b3c2adfd001
+        - $ref: '#/components/parameters/UserIdPathParam'
         - name: title
           in: query
           required: false
@@ -658,8 +771,8 @@ paths:
                         position: winner
                         competition_name: Build Bharat Hackathon
                     timeStamp: '2026-04-08T06:14:02.000Z'
-                    path: /api/v1/achievement/search?title=hackathon
-                byUser:
+                    path: /api/v1/achievement/660f0c1f4d8c8b3c2adfd001/search?title=hackathon
+                byCompetition:
                   value:
                     success: true
                     statusCode: 200
@@ -672,16 +785,17 @@ paths:
                         position: winner
                         competition_name: Build Bharat Hackathon
                     timeStamp: '2026-04-08T06:14:02.000Z'
-                    path: /api/v1/achievement/search?user_id=660f0c1f4d8c8b3c2adfd001
+                    path: /api/v1/achievement/660f0c1f4d8c8b3c2adfd001/search?competition_name=bharat
         '400':
           $ref: '#/components/responses/AchievementSearchQueryRequiredError'
 
-  /achievement/{id}:
+  /achievement/{user_id}/{id}:
     get:
       tags:
         - Achievements
-      summary: Get an achievement by id
+      summary: Get a user achievement by id
       parameters:
+        - $ref: '#/components/parameters/UserIdPathParam'
         - $ref: '#/components/parameters/MongoIdPathParam'
       responses:
         '200':
@@ -698,8 +812,9 @@ paths:
     patch:
       tags:
         - Achievements
-      summary: Update an achievement
+      summary: Update a user achievement
       parameters:
+        - $ref: '#/components/parameters/UserIdPathParam'
         - $ref: '#/components/parameters/MongoIdPathParam'
       requestBody:
         required: true
@@ -712,6 +827,26 @@ paths:
                 value:
                   position: 1st
                   description: Secured first place after the final pitching round.
+                  images:
+                    - publicId: portfolio/achievements/build-bharat-hackathon/finals-stage
+                      secureUrl: https://res.cloudinary.com/demo/image/upload/v1744096800/portfolio/achievements/build-bharat-hackathon/finals-stage.jpg
+                      width: 1920
+                      height: 1080
+                      format: jpg
+                      resourceType: image
+                      bytes: 402914
+                      originalFilename: finals-stage.jpg
+                  certificate_url:
+                    publicId: portfolio/achievements/build-bharat-hackathon/certificate-v2
+                    secureUrl: https://res.cloudinary.com/demo/raw/upload/v1744096800/portfolio/achievements/build-bharat-hackathon/certificate-v2.pdf
+                    format: pdf
+                    resourceType: raw
+                    bytes: 252338
+                    originalFilename: certificate-v2.pdf
+              stringCertificate:
+                value:
+                  position: 1st
+                  certificate_url: https://res.cloudinary.com/demo/raw/upload/v1744096800/portfolio/achievements/build-bharat-hackathon/certificate-v2.pdf
       responses:
         '200':
           description: Achievement updated successfully
@@ -727,8 +862,9 @@ paths:
     delete:
       tags:
         - Achievements
-      summary: Delete an achievement
+      summary: Delete a user achievement
       parameters:
+        - $ref: '#/components/parameters/UserIdPathParam'
         - $ref: '#/components/parameters/MongoIdPathParam'
       responses:
         '200':
@@ -744,23 +880,42 @@ paths:
                     statusCode: 200
                     message: Achievement deleted successfully.
                     timeStamp: '2026-04-08T06:14:03.000Z'
-                    path: /api/v1/achievement/660f0c1f4d8c8b3c2adfd301
+                    path: /api/v1/achievement/660f0c1f4d8c8b3c2adfd001/660f0c1f4d8c8b3c2adfd301
         '400':
           $ref: '#/components/responses/InvalidAchievementIdError'
         '404':
           $ref: '#/components/responses/AchievementNotFoundError'
 
-  /testimonial:
+  /testimonial/{user_id}:
     post:
       tags:
         - Testimonials
-      summary: Create a testimonial
+      summary: Create a testimonial for a user
+      parameters:
+        - $ref: '#/components/parameters/UserIdPathParam'
       requestBody:
         required: true
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/TestimonialCreateRequest'
+            examples:
+              default:
+                value:
+                  name: Riya Sharma
+                  description: Delivered clean backend APIs and communicated clearly throughout the project.
+                  designation: Product Manager
+                  image:
+                    publicId: portfolio/testimonials/riya-sharma
+                    secureUrl: https://res.cloudinary.com/demo/image/upload/v1744096800/portfolio/testimonials/riya-sharma.jpg
+                    width: 400
+                    height: 400
+                    format: jpg
+                    resourceType: image
+                    bytes: 28124
+                    originalFilename: riya-sharma.jpg
+                  rating: 5
+                  testimonial_date: '2026-04-10'
       responses:
         '201':
           description: Testimonial created successfully
@@ -774,7 +929,9 @@ paths:
     get:
       tags:
         - Testimonials
-      summary: Get all testimonials
+      summary: Get all testimonials for a user
+      parameters:
+        - $ref: '#/components/parameters/UserIdPathParam'
       responses:
         '200':
           description: Testimonials fetched successfully
@@ -782,18 +939,16 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/TestimonialListResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
 
-  /testimonial/search:
+  /testimonial/{user_id}/search:
     get:
       tags:
         - Testimonials
-      summary: Search testimonials by user, name, or rating
+      summary: Search testimonials for a user by name or rating
       parameters:
-        - name: user_id
-          in: query
-          required: false
-          schema:
-            type: string
+        - $ref: '#/components/parameters/UserIdPathParam'
         - name: name
           in: query
           required: false
@@ -816,12 +971,13 @@ paths:
         '400':
           $ref: '#/components/responses/TestimonialSearchQueryRequiredError'
 
-  /testimonial/{id}:
+  /testimonial/{user_id}/{id}:
     get:
       tags:
         - Testimonials
-      summary: Get a testimonial by id
+      summary: Get a user testimonial by id
       parameters:
+        - $ref: '#/components/parameters/UserIdPathParam'
         - $ref: '#/components/parameters/MongoIdPathParam'
       responses:
         '200':
@@ -831,15 +987,16 @@ paths:
               schema:
                 $ref: '#/components/schemas/TestimonialFetchResponse'
         '400':
-          $ref: '#/components/responses/InvalidTestimonialIdError'
+          $ref: '#/components/responses/ValidationError'
         '404':
           $ref: '#/components/responses/TestimonialNotFoundError'
 
     patch:
       tags:
         - Testimonials
-      summary: Update a testimonial
+      summary: Update a user testimonial
       parameters:
+        - $ref: '#/components/parameters/UserIdPathParam'
         - $ref: '#/components/parameters/MongoIdPathParam'
       requestBody:
         required: true
@@ -847,6 +1004,20 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/TestimonialUpdateRequest'
+            examples:
+              default:
+                value:
+                  designation: Senior Product Manager
+                  image:
+                    publicId: portfolio/testimonials/riya-sharma-v2
+                    secureUrl: https://res.cloudinary.com/demo/image/upload/v1744096800/portfolio/testimonials/riya-sharma-v2.jpg
+                    width: 400
+                    height: 400
+                    format: jpg
+                    resourceType: image
+                    bytes: 30214
+                    originalFilename: riya-sharma-v2.jpg
+                  rating: 5
       responses:
         '200':
           description: Testimonial updated successfully
@@ -855,15 +1026,16 @@ paths:
               schema:
                 $ref: '#/components/schemas/TestimonialMutationResponse'
         '400':
-          $ref: '#/components/responses/InvalidTestimonialIdError'
+          $ref: '#/components/responses/ValidationError'
         '404':
           $ref: '#/components/responses/TestimonialNotFoundError'
 
     delete:
       tags:
         - Testimonials
-      summary: Delete a testimonial
+      summary: Delete a user testimonial
       parameters:
+        - $ref: '#/components/parameters/UserIdPathParam'
         - $ref: '#/components/parameters/MongoIdPathParam'
       responses:
         '200':
@@ -873,7 +1045,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/DeleteResponse'
         '400':
-          $ref: '#/components/responses/InvalidTestimonialIdError'
+          $ref: '#/components/responses/ValidationError'
         '404':
           $ref: '#/components/responses/TestimonialNotFoundError'
 
@@ -898,10 +1070,13 @@ paths:
         '400':
           $ref: '#/components/responses/ValidationError'
 
+  /experience/{user_id}:
     get:
       tags:
         - Experiences
-      summary: Get all experiences
+      summary: Get all experiences for a user
+      parameters:
+        - $ref: '#/components/parameters/UserIdPathParam'
       responses:
         '200':
           description: Experiences fetched successfully
@@ -909,18 +1084,16 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ExperienceListResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
 
-  /experience/search:
+  /experience/{user_id}/search:
     get:
       tags:
         - Experiences
-      summary: Search experiences by user, designation, or organization
+      summary: Search experiences for a user by designation or organization
       parameters:
-        - name: user_id
-          in: query
-          required: false
-          schema:
-            type: string
+        - $ref: '#/components/parameters/UserIdPathParam'
         - name: designation
           in: query
           required: false
@@ -941,12 +1114,13 @@ paths:
         '400':
           $ref: '#/components/responses/ExperienceSearchQueryRequiredError'
 
-  /experience/{id}:
+  /experience/{user_id}/{id}:
     get:
       tags:
         - Experiences
-      summary: Get an experience by id
+      summary: Get a user experience by id
       parameters:
+        - $ref: '#/components/parameters/UserIdPathParam'
         - $ref: '#/components/parameters/MongoIdPathParam'
       responses:
         '200':
@@ -963,8 +1137,9 @@ paths:
     patch:
       tags:
         - Experiences
-      summary: Update an experience
+      summary: Update a user experience
       parameters:
+        - $ref: '#/components/parameters/UserIdPathParam'
         - $ref: '#/components/parameters/MongoIdPathParam'
       requestBody:
         required: true
@@ -987,8 +1162,9 @@ paths:
     delete:
       tags:
         - Experiences
-      summary: Delete an experience
+      summary: Delete a user experience
       parameters:
+        - $ref: '#/components/parameters/UserIdPathParam'
         - $ref: '#/components/parameters/MongoIdPathParam'
       responses:
         '200':
@@ -1469,6 +1645,15 @@ paths:
 
 components:
   parameters:
+    UserIdPathParam:
+      name: user_id
+      in: path
+      required: true
+      description: User document id
+      schema:
+        type: string
+        example: 660f0c1f4d8c8b3c2adfd001
+
     MongoIdPathParam:
       name: id
       in: path
@@ -1513,11 +1698,50 @@ components:
               value:
                 success: false
                 statusCode: 400
-                message:
-                  - name must be a string
+                message: 'name: name must be a string'
                 error: Bad Request
                 timeStamp: '2026-04-08T06:12:00.000Z'
                 path: /api/v1/user
+
+    AuthRegisterBadRequestError:
+      description: Auth register request is invalid
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            duplicateEmail:
+              value:
+                success: false
+                statusCode: 400
+                message: Email already exists
+                error: Bad Request
+                timeStamp: '2026-04-08T06:09:05.000Z'
+                path: /api/v1/auth/register
+            validation:
+              value:
+                success: false
+                statusCode: 400
+                message: 'password: password must be at least 8 characters long'
+                error: Bad Request
+                timeStamp: '2026-04-08T06:09:06.000Z'
+                path: /api/v1/auth/register
+
+    InvalidCredentialsError:
+      description: Invalid login credentials
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            default:
+              value:
+                success: false
+                statusCode: 401
+                message: Invalid email or password
+                error: Unauthorized
+                timeStamp: '2026-04-08T06:09:35.000Z'
+                path: /api/v1/auth/login
 
     InvalidUserIdError:
       description: Invalid user id
@@ -1685,7 +1909,7 @@ components:
                 message: Invalid achievement ID
                 error: Bad Request
                 timeStamp: '2026-04-08T06:12:06.000Z'
-                path: /api/v1/achievement/invalid-id
+                path: /api/v1/achievement/660f0c1f4d8c8b3c2adfd001/invalid-id
 
     AchievementNotFoundError:
       description: Achievement not found
@@ -1701,7 +1925,7 @@ components:
                 message: Achievement not found
                 error: Not Found
                 timeStamp: '2026-04-08T06:12:06.250Z'
-                path: /api/v1/achievement/660f0c1f4d8c8b3c2adfd399
+                path: /api/v1/achievement/660f0c1f4d8c8b3c2adfd001/660f0c1f4d8c8b3c2adfd399
 
     AchievementSearchQueryRequiredError:
       description: At least one search query parameter is required for achievements
@@ -1714,18 +1938,10 @@ components:
               value:
                 success: false
                 statusCode: 400
-                message: At least one of user_id, title, competition_name, or position query parameter is required
+                message: At least one of title, competition_name, or position query parameter is required
                 error: Bad Request
                 timeStamp: '2026-04-08T06:12:06.500Z'
-                path: /api/v1/achievement/search
-            invalidUserId:
-              value:
-                success: false
-                statusCode: 400
-                message: Invalid user_id
-                error: Bad Request
-                timeStamp: '2026-04-08T06:12:06.750Z'
-                path: /api/v1/achievement/search?user_id=invalid-id
+                path: /api/v1/achievement/660f0c1f4d8c8b3c2adfd001/search
 
     InvalidTestimonialIdError:
       description: Invalid testimonial id
@@ -1741,7 +1957,7 @@ components:
                 message: Invalid testimonial ID
                 error: Bad Request
                 timeStamp: '2026-04-09T07:00:00.000Z'
-                path: /api/v1/testimonial/invalid-id
+                path: /api/v1/testimonial/660f0c1f4d8c8b3c2adfd001/invalid-id
 
     TestimonialNotFoundError:
       description: Testimonial not found
@@ -1757,7 +1973,7 @@ components:
                 message: Testimonial not found
                 error: Not Found
                 timeStamp: '2026-04-09T07:00:01.000Z'
-                path: /api/v1/testimonial/660f0c1f4d8c8b3c2adfd401
+                path: /api/v1/testimonial/660f0c1f4d8c8b3c2adfd001/660f0c1f4d8c8b3c2adfd401
 
     TestimonialSearchQueryRequiredError:
       description: At least one search query parameter is required for testimonials
@@ -1770,10 +1986,10 @@ components:
               value:
                 success: false
                 statusCode: 400
-                message: Either user_id, name, or rating query parameter is required
+                message: Either name or rating query parameter is required
                 error: Bad Request
                 timeStamp: '2026-04-09T07:00:02.000Z'
-                path: /api/v1/testimonial/search
+                path: /api/v1/testimonial/660f0c1f4d8c8b3c2adfd001/search
 
     InvalidExperienceIdError:
       description: Invalid experience id
@@ -1789,7 +2005,7 @@ components:
                 message: Invalid experience ID
                 error: Bad Request
                 timeStamp: '2026-04-09T07:01:00.000Z'
-                path: /api/v1/experience/invalid-id
+                path: /api/v1/experience/user/660f0c1f4d8c8b3c2adfd001/invalid-id
 
     ExperienceNotFoundError:
       description: Experience not found
@@ -1805,7 +2021,7 @@ components:
                 message: Experience not found
                 error: Not Found
                 timeStamp: '2026-04-09T07:01:01.000Z'
-                path: /api/v1/experience/660f0c1f4d8c8b3c2adfd501
+                path: /api/v1/experience/user/660f0c1f4d8c8b3c2adfd001/660f0c1f4d8c8b3c2adfd501
 
     ExperienceSearchQueryRequiredError:
       description: At least one search query parameter is required for experiences
@@ -1818,10 +2034,10 @@ components:
               value:
                 success: false
                 statusCode: 400
-                message: Either user_id, designation, or organization_name query parameter is required
+                message: Either designation or organization_name query parameter is required
                 error: Bad Request
                 timeStamp: '2026-04-09T07:01:02.000Z'
-                path: /api/v1/experience/search
+                path: /api/v1/experience/user/660f0c1f4d8c8b3c2adfd001/search
 
     InvalidBlogIdError:
       description: Invalid blog id
@@ -2041,6 +2257,9 @@ components:
         - name
         - url
       properties:
+        id:
+          type: string
+          example: social-1
         name:
           type: string
           example: GitHub
@@ -2051,6 +2270,61 @@ components:
           type: string
           format: uri
           example: https://github.com/ashugoyal
+
+    UserFileAsset:
+      type: object
+      properties:
+        fileName:
+          type: string
+          example: ashu-profile.png
+        url:
+          type: string
+          format: uri
+          example: https://res.cloudinary.com/demo/image/upload/v1744096800/portfolio/users/avatar/ashu-goyal.png
+        publicId:
+          type: string
+          example: portfolio/users/avatar/ashu-goyal
+        secureUrl:
+          type: string
+          format: uri
+          example: https://res.cloudinary.com/demo/image/upload/v1744096800/portfolio/users/avatar/ashu-goyal.png
+        width:
+          type: integer
+          minimum: 0
+          example: 512
+        height:
+          type: integer
+          minimum: 0
+          example: 512
+        format:
+          type: string
+          example: png
+        resourceType:
+          type: string
+          example: image
+        bytes:
+          type: integer
+          minimum: 0
+          example: 48212
+        originalFilename:
+          type: string
+          example: ashu-profile.png
+
+    UserHighlight:
+      type: object
+      required:
+        - title
+        - description
+      properties:
+        id:
+          type: string
+          example: highlight-1
+        title:
+          type: string
+          example: Backend Systems
+        description:
+          type: string
+          example: Built scalable NestJS services and deployment workflows.
 
     UserSkill:
       type: object
@@ -2073,18 +2347,54 @@ components:
           maximum: 10
           example: 8
 
-    UserCreateRequest:
+    UserProfileRequest:
       type: object
-      required:
-        - name
       properties:
         name:
           type: string
           example: Ashu Goyal
-        about:
+        title:
           type: string
-          example: Full-stack developer building portfolio products.
-        links:
+          example: Full-Stack Developer
+        tagline:
+          type: string
+          example: Building reliable product experiences end-to-end.
+        bio:
+          type: string
+          example: Full-stack developer building portfolio products and developer tools.
+        email:
+          type: string
+          format: email
+          example: ashu@example.com
+        avatar:
+          $ref: '#/components/schemas/UserFileAsset'
+        resume:
+          $ref: '#/components/schemas/UserFileAsset'
+        aboutHeading:
+          type: string
+          example: About Me
+        aboutBio:
+          type: string
+          example: I build products with a focus on clean architecture, performance, and usability.
+        totalYearsExperience:
+          type: string
+          example: 4+
+        projectsCompleted:
+          type: string
+          example: 12+
+        location:
+          type: string
+          example: Jaipur, India
+        paragraphs:
+          type: array
+          items:
+            type: string
+            example: I enjoy building polished web experiences.
+        highlights:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserHighlight'
+        socialLinks:
           type: array
           items:
             $ref: '#/components/schemas/SocialLink'
@@ -2092,19 +2402,56 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/UserSkill'
-        profile_image:
-          $ref: '#/components/schemas/CloudinaryAsset'
-        resume:
-          $ref: '#/components/schemas/CloudinaryAsset'
 
     UserUpdateRequest:
       type: object
+      description: All fields are optional. Send only the fields that should be updated.
       properties:
         name:
           type: string
-        about:
+          example: Ashu Goyal
+        title:
           type: string
-        links:
+          example: Full-Stack Developer
+        tagline:
+          type: string
+          example: Building reliable product experiences end-to-end.
+        bio:
+          type: string
+          example: Building scalable backend systems and product APIs.
+        email:
+          type: string
+          format: email
+          example: ashu@example.com
+        avatar:
+          $ref: '#/components/schemas/UserFileAsset'
+        resume:
+          $ref: '#/components/schemas/UserFileAsset'
+        aboutHeading:
+          type: string
+          example: About Me
+        aboutBio:
+          type: string
+          example: I build products with a focus on clean architecture, performance, and usability.
+        totalYearsExperience:
+          type: string
+          example: 4+
+        projectsCompleted:
+          type: string
+          example: 12+
+        location:
+          type: string
+          example: Jaipur, India
+        paragraphs:
+          type: array
+          items:
+            type: string
+            example: I enjoy building polished web experiences.
+        highlights:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserHighlight'
+        socialLinks:
           type: array
           items:
             $ref: '#/components/schemas/SocialLink'
@@ -2112,14 +2459,67 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/UserSkill'
-        profile_image:
-          $ref: '#/components/schemas/CloudinaryAsset'
+      example:
+        name: Ashu Goyal
+        title: Full-Stack Developer
+        tagline: Building reliable product experiences end-to-end.
+        bio: Building scalable backend systems and product APIs.
+        email: ashu@example.com
+        avatar:
+          fileName: ashu-profile.png
+          url: https://res.cloudinary.com/demo/image/upload/v1744096800/portfolio/users/avatar/ashu-goyal.png
+          publicId: portfolio/users/avatar/ashu-goyal
+          secureUrl: https://res.cloudinary.com/demo/image/upload/v1744096800/portfolio/users/avatar/ashu-goyal.png
+          width: 512
+          height: 512
+          format: png
+          resourceType: image
+          bytes: 48212
+          originalFilename: ashu-profile.png
         resume:
-          $ref: '#/components/schemas/CloudinaryAsset'
+          fileName: ashu-resume.pdf
+          url: https://res.cloudinary.com/demo/raw/upload/v1744096800/portfolio/users/resume/ashu-goyal.pdf
+          publicId: portfolio/users/resume/ashu-goyal
+          secureUrl: https://res.cloudinary.com/demo/raw/upload/v1744096800/portfolio/users/resume/ashu-goyal.pdf
+          format: pdf
+          resourceType: raw
+          bytes: 240512
+          originalFilename: ashu-resume.pdf
+        aboutHeading: About Me
+        aboutBio: I build products with a focus on clean architecture, performance, and usability.
+        totalYearsExperience: 4+
+        projectsCompleted: 12+
+        location: Jaipur, India
+        paragraphs:
+          - I enjoy building polished web experiences.
+          - I focus on maintainable backend services and product thinking.
+        highlights:
+          - id: highlight-1
+            title: Backend Systems
+            description: Built scalable NestJS services and deployment workflows.
+          - id: highlight-2
+            title: Product UI
+            description: Designed and shipped portfolio and dashboard interfaces.
+        socialLinks:
+          - id: social-1
+            name: GitHub
+            icon: github
+            url: https://github.com/ashugoyal
+          - id: social-2
+            name: LinkedIn
+            icon: linkedin
+            url: https://linkedin.com/in/ashugoyal
+        skills:
+          - skill_id: 660f0c1f4d8c8b3c2adfd111
+            yoe: 4
+            scale: 9
+          - skill_id: 660f0c1f4d8c8b3c2adfd112
+            yoe: 2
+            scale: 7
 
     UserDocument:
       allOf:
-        - $ref: '#/components/schemas/UserCreateRequest'
+        - $ref: '#/components/schemas/UserProfileRequest'
         - type: object
           properties:
             _id:
@@ -2131,6 +2531,49 @@ components:
             updatedAt:
               type: string
               format: date-time
+
+    AuthRegisterRequest:
+      type: object
+      required:
+        - name
+        - email
+        - password
+      properties:
+        name:
+          type: string
+          example: Ashu Goyal
+        email:
+          type: string
+          format: email
+          example: ashu@example.com
+        password:
+          type: string
+          minLength: 8
+          example: strongPass123
+
+    AuthLoginRequest:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+          example: ashu@example.com
+        password:
+          type: string
+          minLength: 8
+          example: strongPass123
+
+    AuthResponseData:
+      type: object
+      required:
+        - userId
+      properties:
+        userId:
+          type: string
+          example: 660f0c1f4d8c8b3c2adfd001
 
     AchievementPosition:
       type: string
@@ -2178,19 +2621,16 @@ components:
         images:
           type: array
           items:
-            type: string
-            format: uri
+            $ref: '#/components/schemas/CloudinaryAsset'
         certificate_url:
-          type: string
-          format: uri
-          example: https://example.com/certificates/build-bharat.pdf
+          oneOf:
+            - $ref: '#/components/schemas/CloudinaryAsset'
+            - type: string
+              format: uri
 
     AchievementUpdateRequest:
       type: object
       properties:
-        user_id:
-          type: string
-          example: 660f0c1f4d8c8b3c2adfd001
         achievement_date:
           type: string
           format: date
@@ -2209,12 +2649,12 @@ components:
         images:
           type: array
           items:
-            type: string
-            format: uri
+            $ref: '#/components/schemas/CloudinaryAsset'
         certificate_url:
-          type: string
-          format: uri
-          example: https://example.com/certificates/build-bharat.pdf
+          oneOf:
+            - $ref: '#/components/schemas/CloudinaryAsset'
+            - type: string
+              format: uri
 
     AchievementDocument:
       allOf:
@@ -2234,20 +2674,19 @@ components:
     TestimonialCreateRequest:
       type: object
       required:
-        - user_id
         - name
         - description
         - rating
         - testimonial_date
       properties:
-        user_id:
-          type: string
         name:
           type: string
         description:
           type: string
         designation:
           type: string
+        image:
+          $ref: '#/components/schemas/CloudinaryAsset'
         rating:
           type: integer
           minimum: 1
@@ -2259,14 +2698,14 @@ components:
     TestimonialUpdateRequest:
       type: object
       properties:
-        user_id:
-          type: string
         name:
           type: string
         description:
           type: string
         designation:
           type: string
+        image:
+          $ref: '#/components/schemas/CloudinaryAsset'
         rating:
           type: integer
           minimum: 1
@@ -2279,6 +2718,25 @@ components:
       allOf:
         - $ref: '#/components/schemas/TestimonialCreateRequest'
         - type: object
+          example:
+            _id: 660f0c1f4d8c8b3c2adfd401
+            user_id: 660f0c1f4d8c8b3c2adfd001
+            name: Riya Sharma
+            description: Delivered clean backend APIs and communicated clearly throughout the project.
+            designation: Product Manager
+            image:
+              publicId: portfolio/testimonials/riya-sharma
+              secureUrl: https://res.cloudinary.com/demo/image/upload/v1744096800/portfolio/testimonials/riya-sharma.jpg
+              width: 400
+              height: 400
+              format: jpg
+              resourceType: image
+              bytes: 28124
+              originalFilename: riya-sharma.jpg
+            rating: 5
+            testimonial_date: '2026-04-10'
+            createdAt: '2026-04-10T09:30:00.000Z'
+            updatedAt: '2026-04-10T09:30:00.000Z'
           properties:
             _id:
               type: string
@@ -2331,8 +2789,6 @@ components:
     ExperienceUpdateRequest:
       type: object
       properties:
-        user_id:
-          type: string
         start_date:
           type: string
           format: date
@@ -3182,7 +3638,7 @@ components:
           properties:
             message:
               type: string
-              example: User created successfully.
+              example: User updated successfully.
             data:
               $ref: '#/components/schemas/UserDocument'
 
@@ -3203,6 +3659,17 @@ components:
               type: array
               items:
                 $ref: '#/components/schemas/UserDocument'
+
+    AuthResponse:
+      allOf:
+        - $ref: '#/components/schemas/SuccessEnvelope'
+        - type: object
+          properties:
+            message:
+              type: string
+              example: Authentication successful.
+            data:
+              $ref: '#/components/schemas/AuthResponseData'
 
     SkillMutationResponse:
       allOf:

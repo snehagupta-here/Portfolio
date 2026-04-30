@@ -1,5 +1,10 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document, HydratedDocument, Types } from 'mongoose';
+import {
+  Document,
+  HydratedDocument,
+  Schema as MongooseSchema,
+  Types,
+} from 'mongoose';
 import { PositionEnum } from 'src/enums';
 import { ImageAsset, ImageAssetSchema } from './image-asset.schema';
 
@@ -30,10 +35,10 @@ export class Achievement extends Document {
   competition_name!: string;
 
   @Prop({ type: [ImageAssetSchema], default: [] })
-  images!: ImageAsset[];
+  images!: ImageAsset[] | string[];
 
-  @Prop({ type: ImageAssetSchema })
-  certificate_url!: ImageAsset;
+  @Prop({ type: MongooseSchema.Types.Mixed })
+  certificate_url!: ImageAsset | string;
 }
 
 export const AchievementSchema = SchemaFactory.createForClass(Achievement);

@@ -10,7 +10,9 @@ import {
 } from '@nestjs/common';
 
 import {
+  ExperienceScopedIdParamDto,
   ExperienceDto,
+  ExperienceUserParamDto,
   SearchExperienceQueryDto,
   UpdateExperienceDto,
 } from 'src/dto';
@@ -26,28 +28,47 @@ export class ExperienceController {
     return await this.experienceService.createExperience(body);
   }
 
-  @Get()
-  async findAll() {
-    return await this.experienceService.getAllExperiences();
+  @Get(':user_id')
+  async findAll(@Param() params: ExperienceUserParamDto) {
+    return await this.experienceService.getAllExperiences(params.user_id);
   }
 
-  @Get('search')
-  async search(@Query() query: SearchExperienceQueryDto) {
-    return await this.experienceService.searchExperiences(query);
+  @Get(':user_id/search')
+  async search(
+    @Param() params: ExperienceUserParamDto,
+    @Query() query: SearchExperienceQueryDto,
+  ) {
+    return await this.experienceService.searchExperiences(
+      params.user_id,
+      query,
+    );
   }
 
-  @Get(':id')
-  async findOne(@Param('id') id: string) {
-    return await this.experienceService.getExperienceById(id);
+  @Get(':user_id/:id')
+  async findOne(@Param() params: ExperienceScopedIdParamDto) {
+    return await this.experienceService.getExperienceById(
+      params.id,
+      params.user_id,
+    );
   }
 
-  @Patch(':id')
-  async update(@Param('id') id: string, @Body() body: UpdateExperienceDto) {
-    return await this.experienceService.updateExperience(id, body);
+  @Patch(':user_id/:id')
+  async update(
+    @Param() params: ExperienceScopedIdParamDto,
+    @Body() body: UpdateExperienceDto,
+  ) {
+    return await this.experienceService.updateExperience(
+      params.id,
+      params.user_id,
+      body,
+    );
   }
 
-  @Delete(':id')
-  async remove(@Param('id') id: string) {
-    return await this.experienceService.deleteExperience(id);
+  @Delete(':user_id/:id')
+  async remove(@Param() params: ExperienceScopedIdParamDto) {
+    return await this.experienceService.deleteExperience(
+      params.id,
+      params.user_id,
+    );
   }
 }

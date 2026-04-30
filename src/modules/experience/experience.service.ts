@@ -10,7 +10,7 @@ import {
   InvalidExperienceIdException,
   InvalidExperienceUserIdException,
 } from 'src/exceptions/experience.exceptions';
-import { ResolvedExperienceInput } from 'src/interfaces';
+import { ResolvedExperienceInput, UpdateExperience } from 'src/interfaces';
 import { Experience, ExperienceDocument } from 'src/schema/experience.schema';
 import { User, UserDocument } from 'src/schema/user.schema';
 import { handleError } from 'src/utils/error-handler';
@@ -26,12 +26,7 @@ export class ExperienceService {
 
   async createExperience(body: ResolvedExperienceInput) {
     try {
-      if (!Types.ObjectId.isValid(body.user_id)) {
-        throw new InvalidExperienceUserIdException();
-      }
-
-      const userId = new Types.ObjectId(body.user_id);
-      await this.ensureUserExists(userId);
+      const userId = await this.resolveValidatedUserId(body.user_id);
 
       const startDate = new Date(body.start_date);
       const existingExperience = await this.experienceCollection.findOne({
@@ -69,10 +64,11 @@ export class ExperienceService {
     }
   }
 
-  async getAllExperiences() {
+  async getAllExperiences(userId: string) {
     try {
+      const scopedUserId = await this.resolveValidatedUserId(userId);
       const experiences = await this.experienceCollection
-        .find()
+        .find({ user_id: scopedUserId })
         .sort({ start_date: -1 });
 
       return {
@@ -84,29 +80,25 @@ export class ExperienceService {
     }
   }
 
-  async searchExperiences(query: {
-    user_id?: string;
-    designation?: string;
-    organization_name?: string;
-  }) {
+  async searchExperiences(
+    userId: string,
+    query: {
+      designation?: string;
+      organization_name?: string;
+    },
+  ) {
     try {
-      const userId = query.user_id?.trim();
       const designation = query.designation?.trim();
       const organizationName = query.organization_name?.trim();
+      const scopedUserId = await this.resolveValidatedUserId(userId);
 
-      if (!userId && !designation && !organizationName) {
+      if (!designation && !organizationName) {
         throw new ExperienceSearchQueryRequiredException();
       }
 
-      const filters: Record<string, unknown> = {};
-
-      if (userId) {
-        if (!Types.ObjectId.isValid(userId)) {
-          throw new InvalidExperienceUserIdException();
-        }
-
-        filters.user_id = new Types.ObjectId(userId);
-      }
+      const filters: Record<string, unknown> = {
+        user_id: scopedUserId,
+      };
 
       if (designation) {
         filters.designation = {
@@ -135,13 +127,17 @@ export class ExperienceService {
     }
   }
 
-  async getExperienceById(id: string) {
+  async getExperienceById(id: string, userId: string) {
     try {
       if (!Types.ObjectId.isValid(id)) {
         throw new InvalidExperienceIdException();
       }
 
-      const experience = await this.experienceCollection.findById(id);
+      const scopedUserId = await this.resolveValidatedUserId(userId);
+      const experience = await this.experienceCollection.findOne({
+        _id: id,
+        user_id: scopedUserId,
+      });
 
       if (!experience) {
         throw new ExperienceNotFoundException();
@@ -156,22 +152,21 @@ export class ExperienceService {
     }
   }
 
-  async updateExperience(id: string, body: Partial<ResolvedExperienceInput>) {
+  async updateExperience(id: string, userId: string, body: UpdateExperience) {
     try {
       if (!Types.ObjectId.isValid(id)) {
         throw new InvalidExperienceIdException();
       }
 
-      const experience = await this.experienceCollection.findById(id);
+      const scopedUserId = await this.resolveValidatedUserId(userId);
+      const experience = await this.experienceCollection.findOne({
+        _id: id,
+        user_id: scopedUserId,
+      });
 
       if (!experience) {
         throw new ExperienceNotFoundException();
       }
-
-      const nextUserId = await this.resolveUserId(
-        body.user_id,
-        experience.user_id,
-      );
       const nextStartDate =
         body.start_date !== undefined
           ? new Date(body.start_date)
@@ -181,16 +176,12 @@ export class ExperienceService {
       const nextDesignation = body.designation ?? experience.designation;
 
       await this.ensureExperienceDoesNotExist({
-        user_id: nextUserId,
+        user_id: scopedUserId,
         organization_name: nextOrganizationName,
         designation: nextDesignation,
         start_date: nextStartDate,
         excludeId: experience._id.toString(),
       });
-
-      if (body.user_id !== undefined) {
-        experience.user_id = nextUserId;
-      }
 
       if (body.start_date !== undefined) {
         experience.start_date = nextStartDate;
@@ -244,13 +235,17 @@ export class ExperienceService {
     }
   }
 
-  async deleteExperience(id: string) {
+  async deleteExperience(id: string, userId: string) {
     try {
       if (!Types.ObjectId.isValid(id)) {
         throw new InvalidExperienceIdException();
       }
 
-      const deleted = await this.experienceCollection.findByIdAndDelete(id);
+      const scopedUserId = await this.resolveValidatedUserId(userId);
+      const deleted = await this.experienceCollection.findOneAndDelete({
+        _id: id,
+        user_id: scopedUserId,
+      });
 
       if (!deleted) {
         throw new ExperienceNotFoundException();
@@ -265,22 +260,17 @@ export class ExperienceService {
     }
   }
 
-  private async resolveUserId(
-    nextUserId: string | undefined,
-    currentUserId: Types.ObjectId,
+  private async resolveValidatedUserId(
+    userId: string,
   ): Promise<Types.ObjectId> {
-    if (nextUserId === undefined) {
-      return currentUserId;
-    }
-
-    if (!Types.ObjectId.isValid(nextUserId)) {
+    if (!Types.ObjectId.isValid(userId)) {
       throw new InvalidExperienceUserIdException();
     }
 
-    const userId = new Types.ObjectId(nextUserId);
-    await this.ensureUserExists(userId);
+    const resolvedUserId = new Types.ObjectId(userId);
+    await this.ensureUserExists(resolvedUserId);
 
-    return userId;
+    return resolvedUserId;
   }
 
   private async ensureUserExists(userId: Types.ObjectId) {

@@ -30,27 +30,23 @@ export class TestimonialService {
     private readonly userCollection: Model<UserDocument>,
   ) {}
 
-  async addTestimonial(body: CreateTestimonial) {
+  async addTestimonial(userId: string, body: CreateTestimonial) {
     try {
-      if (!Types.ObjectId.isValid(body.user_id)) {
-        throw new InvalidTestimonialUserIdException();
-      }
-
-      const userId = new Types.ObjectId(body.user_id);
-      await this.ensureUserExists(userId);
+      const scopedUserId = await this.resolveValidatedUserId(userId);
 
       const testimonialDate = new Date(body.testimonial_date);
       await this.ensureTestimonialDoesNotExist({
-        user_id: userId,
+        user_id: scopedUserId,
         name: body.name,
         testimonial_date: testimonialDate,
       });
 
       const testimonial = await this.testimonialCollection.create({
-        user_id: userId,
+        user_id: scopedUserId,
         name: body.name,
         description: body.description,
         designation: body.designation,
+        image: body.image,
         rating: body.rating,
         testimonial_date: testimonialDate,
       });
@@ -65,10 +61,11 @@ export class TestimonialService {
     }
   }
 
-  async getAllTestimonials() {
+  async getAllTestimonials(userId: string) {
     try {
+      const scopedUserId = await this.resolveValidatedUserId(userId);
       const testimonials = await this.testimonialCollection
-        .find()
+        .find({ user_id: scopedUserId })
         .sort({ testimonial_date: -1 });
 
       return {
@@ -80,29 +77,25 @@ export class TestimonialService {
     }
   }
 
-  async searchTestimonials(query: {
-    user_id?: string;
-    name?: string;
-    rating?: number;
-  }) {
+  async searchTestimonials(
+    userId: string,
+    query: {
+      name?: string;
+      rating?: number;
+    },
+  ) {
     try {
-      const userId = query.user_id?.trim();
       const name = query.name?.trim();
       const rating = query.rating;
+      const scopedUserId = await this.resolveValidatedUserId(userId);
 
-      if (!userId && !name && rating === undefined) {
+      if (!name && rating === undefined) {
         throw new TestimonialSearchQueryRequiredException();
       }
 
-      const filters: Record<string, unknown> = {};
-
-      if (userId) {
-        if (!Types.ObjectId.isValid(userId)) {
-          throw new InvalidTestimonialUserIdException();
-        }
-
-        filters.user_id = new Types.ObjectId(userId);
-      }
+      const filters: Record<string, unknown> = {
+        user_id: scopedUserId,
+      };
 
       if (name) {
         filters.name = {
@@ -128,13 +121,17 @@ export class TestimonialService {
     }
   }
 
-  async getTestimonialById(id: string) {
+  async getTestimonialById(id: string, userId: string) {
     try {
       if (!Types.ObjectId.isValid(id)) {
         throw new InvalidTestimonialIdException();
       }
 
-      const testimonial = await this.testimonialCollection.findById(id);
+      const scopedUserId = await this.resolveValidatedUserId(userId);
+      const testimonial = await this.testimonialCollection.findOne({
+        _id: id,
+        user_id: scopedUserId,
+      });
 
       if (!testimonial) {
         throw new TestimonialNotFoundException();
@@ -149,22 +146,22 @@ export class TestimonialService {
     }
   }
 
-  async updateTestimonial(id: string, body: UpdateTestimonial) {
+  async updateTestimonial(id: string, userId: string, body: UpdateTestimonial) {
     try {
       if (!Types.ObjectId.isValid(id)) {
         throw new InvalidTestimonialIdException();
       }
 
-      const testimonial = await this.testimonialCollection.findById(id);
+      const scopedUserId = await this.resolveValidatedUserId(userId);
+      const testimonial = await this.testimonialCollection.findOne({
+        _id: id,
+        user_id: scopedUserId,
+      });
 
       if (!testimonial) {
         throw new TestimonialNotFoundException();
       }
 
-      const nextUserId = await this.resolveUserId(
-        body.user_id,
-        testimonial.user_id,
-      );
       const nextName = body.name ?? testimonial.name;
       const nextTestimonialDate =
         body.testimonial_date !== undefined
@@ -172,13 +169,11 @@ export class TestimonialService {
           : testimonial.testimonial_date;
 
       await this.ensureTestimonialDoesNotExist({
-        user_id: nextUserId,
+        user_id: scopedUserId,
         name: nextName,
         testimonial_date: nextTestimonialDate,
         excludeId: testimonial._id.toString(),
       });
-
-      testimonial.user_id = nextUserId;
 
       if (body.name !== undefined) {
         testimonial.name = body.name;
@@ -190,6 +185,10 @@ export class TestimonialService {
 
       if (body.designation !== undefined) {
         testimonial.designation = body.designation;
+      }
+
+      if (body.image !== undefined) {
+        testimonial.image = body.image;
       }
 
       if (body.rating !== undefined) {
@@ -212,13 +211,17 @@ export class TestimonialService {
     }
   }
 
-  async deleteTestimonial(id: string) {
+  async deleteTestimonial(id: string, userId: string) {
     try {
       if (!Types.ObjectId.isValid(id)) {
         throw new InvalidTestimonialIdException();
       }
 
-      const deleted = await this.testimonialCollection.findByIdAndDelete(id);
+      const scopedUserId = await this.resolveValidatedUserId(userId);
+      const deleted = await this.testimonialCollection.findOneAndDelete({
+        _id: id,
+        user_id: scopedUserId,
+      });
 
       if (!deleted) {
         throw new TestimonialNotFoundException();
@@ -233,22 +236,17 @@ export class TestimonialService {
     }
   }
 
-  private async resolveUserId(
-    nextUserId: string | undefined,
-    currentUserId: Types.ObjectId,
+  private async resolveValidatedUserId(
+    userId: string,
   ): Promise<Types.ObjectId> {
-    if (nextUserId === undefined) {
-      return currentUserId;
-    }
-
-    if (!Types.ObjectId.isValid(nextUserId)) {
+    if (!Types.ObjectId.isValid(userId)) {
       throw new InvalidTestimonialUserIdException();
     }
 
-    const userId = new Types.ObjectId(nextUserId);
-    await this.ensureUserExists(userId);
+    const resolvedUserId = new Types.ObjectId(userId);
+    await this.ensureUserExists(resolvedUserId);
 
-    return userId;
+    return resolvedUserId;
   }
 
   private async ensureUserExists(userId: Types.ObjectId) {
