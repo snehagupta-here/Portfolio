@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
-import { CloudinaryAssetDto } from 'src/dto/cloudinary.dto';
+import { CloudinaryAssetDto } from 'src/dto';
 
 import {
   InvalidSkillIdException,

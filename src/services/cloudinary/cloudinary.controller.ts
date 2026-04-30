@@ -1,6 +1,6 @@
 import { Body, Controller, Post } from '@nestjs/common';
 
-import { GenerateSignedUploadDto } from 'src/dto/cloudinary.dto';
+import { GenerateSignedUploadDto } from 'src/dto';
 import { CloudinaryService } from './cloudinary.service';
 
 @Controller('api/v1/cloudinary')
