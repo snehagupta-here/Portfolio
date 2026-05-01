@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document, HydratedDocument } from 'mongoose';
+import { Document, HydratedDocument, Types } from 'mongoose';
 import { ContentTypeEnum, SectionTypeEnum } from 'src/enums';
 import { ImageAssetSchema, ImageAsset } from './image-asset.schema';
 
@@ -138,10 +138,13 @@ const SEOSchema = SchemaFactory.createForClass(SEO);
 
 @Schema({ collection: 'blogs', timestamps: true })
 export class Blog extends Document {
+  @Prop({ type: Types.ObjectId, ref: 'User', required: true, index: true })
+  user_id!: Types.ObjectId;
+
   @Prop({ type: String, required: true })
   title!: string;
 
-  @Prop({ type: String, unique: true, index: true, required: true })
+  @Prop({ type: String, index: true, required: true })
   slug!: string;
 
   @Prop({ type: String, required: true })
@@ -167,3 +170,4 @@ export class Blog extends Document {
 }
 
 export const BlogSchema = SchemaFactory.createForClass(Blog);
+BlogSchema.index({ user_id: 1, slug: 1 }, { unique: true });

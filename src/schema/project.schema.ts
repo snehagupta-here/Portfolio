@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document, HydratedDocument } from 'mongoose';
+import { Document, HydratedDocument, Types } from 'mongoose';
 
 import type {
   ProjectAuthor as ProjectAuthorShape,
@@ -260,10 +260,13 @@ const ProjectSeoSchema = SchemaFactory.createForClass(ProjectSeo);
 
 @Schema({ collection: 'projects', timestamps: true })
 export class Project extends Document {
+  @Prop({ type: Types.ObjectId, ref: 'User', required: true, index: true })
+  user_id!: Types.ObjectId;
+
   @Prop({ type: String, required: true })
   title!: string;
 
-  @Prop({ type: String, required: true, unique: true, index: true })
+  @Prop({ type: String, required: true, index: true })
   slug!: string;
 
   @Prop({ type: String })
@@ -331,3 +334,4 @@ export class Project extends Document {
 }
 
 export const ProjectSchema = SchemaFactory.createForClass(Project);
+ProjectSchema.index({ user_id: 1, slug: 1 }, { unique: true });

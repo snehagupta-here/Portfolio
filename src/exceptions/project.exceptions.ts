@@ -1,5 +1,23 @@
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 
+export class InvalidProjectUserIdException extends BadRequestException {
+  constructor() {
+    super({
+      message: 'Invalid user',
+      error: 'Bad Request',
+    });
+  }
+}
+
+export class ProjectUserNotFoundException extends BadRequestException {
+  constructor() {
+    super({
+      message: 'User not found',
+      error: 'Bad Request',
+    });
+  }
+}
+
 export class ProjectSlugAlreadyExistsException extends BadRequestException {
   constructor() {
     super({

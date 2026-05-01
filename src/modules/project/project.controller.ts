@@ -9,7 +9,13 @@ import {
   Query,
 } from '@nestjs/common';
 
-import { ProjectDto, SearchProjectQueryDto, UpdateProjectDto } from 'src/dto';
+import {
+  ProjectDto,
+  ProjectScopedIdParamDto,
+  ProjectUserParamDto,
+  SearchProjectQueryDto,
+  UpdateProjectDto,
+} from 'src/dto';
 
 import { ProjectService } from './project.service';
 
@@ -17,33 +23,42 @@ import { ProjectService } from './project.service';
 export class ProjectController {
   constructor(private readonly projectService: ProjectService) {}
 
-  @Post()
-  async createProject(@Body() body: ProjectDto) {
-    return this.projectService.createProject(body);
+  @Post(':user_id')
+  async createProject(
+    @Param() params: ProjectUserParamDto,
+    @Body() body: ProjectDto,
+  ) {
+    return this.projectService.createProject(params.user_id, body);
   }
 
-  @Get()
-  async getAllProjects() {
-    return this.projectService.getAllProjects();
+  @Get(':user_id')
+  async getAllProjects(@Param() params: ProjectUserParamDto) {
+    return this.projectService.getAllProjects(params.user_id);
   }
 
-  @Get('search')
-  async searchProjects(@Query() query: SearchProjectQueryDto) {
-    return this.projectService.searchProjects(query);
+  @Get(':user_id/search')
+  async searchProjects(
+    @Param() params: ProjectUserParamDto,
+    @Query() query: SearchProjectQueryDto,
+  ) {
+    return this.projectService.searchProjects(params.user_id, query);
   }
 
-  @Get(':id')
-  async getProjectById(@Param('id') id: string) {
-    return this.projectService.getProjectById(id);
+  @Get(':user_id/:id')
+  async getProjectById(@Param() params: ProjectScopedIdParamDto) {
+    return this.projectService.getProjectById(params.id, params.user_id);
   }
 
-  @Patch(':id')
-  async updateProject(@Param('id') id: string, @Body() body: UpdateProjectDto) {
-    return this.projectService.updateProject(id, body);
+  @Patch(':user_id/:id')
+  async updateProject(
+    @Param() params: ProjectScopedIdParamDto,
+    @Body() body: UpdateProjectDto,
+  ) {
+    return this.projectService.updateProject(params.id, params.user_id, body);
   }
 
-  @Delete(':id')
-  async deleteProject(@Param('id') id: string) {
-    return this.projectService.deleteProject(id);
+  @Delete(':user_id/:id')
+  async deleteProject(@Param() params: ProjectScopedIdParamDto) {
+    return this.projectService.deleteProject(params.id, params.user_id);
   }
 }

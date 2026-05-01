@@ -4,6 +4,8 @@ import {
   IsDateString,
   IsEnum,
   IsIn,
+  IsMongoId,
+  IsNotEmpty,
   IsNumber,
   IsString,
   IsOptional,
@@ -251,4 +253,20 @@ export class SearchBlogQueryDto {
   @IsOptional()
   @IsIn(['true', 'false'])
   isActive?: string;
+}
+
+export class BlogUserParamDto {
+  @IsMongoId({
+    message: 'user: user must be a valid',
+  })
+  @IsNotEmpty({ message: 'user: user is required' })
+  user_id!: string;
+}
+
+export class BlogScopedIdParamDto extends BlogUserParamDto {
+  @IsMongoId({
+    message: 'id: id must be a valid',
+  })
+  @IsNotEmpty({ message: 'id: id is required' })
+  id!: string;
 }

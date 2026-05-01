@@ -1,5 +1,23 @@
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 
+export class InvalidBlogUserIdException extends BadRequestException {
+  constructor() {
+    super({
+      message: 'Invalid user',
+      error: 'Bad Request',
+    });
+  }
+}
+
+export class BlogUserNotFoundException extends BadRequestException {
+  constructor() {
+    super({
+      message: 'User not found',
+      error: 'Bad Request',
+    });
+  }
+}
+
 export class BlogSlugAlreadyExistsException extends BadRequestException {
   constructor() {
     super({

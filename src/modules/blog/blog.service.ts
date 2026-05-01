@@ -3,13 +3,16 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 
 import {
+  BlogUserNotFoundException,
   BlogNotFoundException,
   BlogSearchQueryRequiredException,
   BlogSlugAlreadyExistsException,
+  InvalidBlogUserIdException,
   InvalidBlogIdException,
 } from 'src/exceptions/blog.exceptions';
 import { CreateBlog, UpdateBlog } from 'src/interfaces';
 import { Blog, BlogDocument } from 'src/schema/blog.schema';
+import { User, UserDocument } from 'src/schema/user.schema';
 import { handleError } from 'src/utils/error-handler';
 
 @Injectable()
@@ -17,11 +20,15 @@ export class BlogService {
   constructor(
     @InjectModel(Blog.name)
     private readonly blogCollection: Model<BlogDocument>,
+    @InjectModel(User.name)
+    private readonly userCollection: Model<UserDocument>,
   ) {}
 
-  async createBlog(body: CreateBlog) {
+  async createBlog(userId: string, body: CreateBlog) {
     try {
+      const scopedUserId = await this.resolveValidatedUserId(userId);
       const existing = await this.blogCollection.findOne({
+        user_id: scopedUserId,
         slug: body.slug,
       });
 
@@ -30,6 +37,7 @@ export class BlogService {
       }
 
       const blog = await this.blogCollection.create({
+        user_id: scopedUserId,
         ...body,
         metadata: {
           ...body.metadata,
@@ -50,9 +58,12 @@ export class BlogService {
     }
   }
 
-  async getAllBlogs() {
+  async getAllBlogs(userId: string) {
     try {
-      const blogs = await this.blogCollection.find().sort({ createdAt: -1 });
+      const scopedUserId = await this.resolveValidatedUserId(userId);
+      const blogs = await this.blogCollection
+        .find({ user_id: scopedUserId })
+        .sort({ createdAt: -1 });
 
       return {
         success: true,
@@ -63,21 +74,27 @@ export class BlogService {
     }
   }
 
-  async searchBlogs(query: {
-    title?: string;
-    slug?: string;
-    isActive?: string;
-  }) {
+  async searchBlogs(
+    userId: string,
+    query: {
+      title?: string;
+      slug?: string;
+      isActive?: string;
+    },
+  ) {
     try {
       const title = query.title?.trim();
       const slug = query.slug?.trim();
       const isActive = query.isActive?.trim();
+      const scopedUserId = await this.resolveValidatedUserId(userId);
 
       if (!title && !slug && isActive === undefined) {
         throw new BlogSearchQueryRequiredException();
       }
 
-      const filters: Record<string, unknown> = {};
+      const filters: Record<string, unknown> = {
+        user_id: scopedUserId,
+      };
 
       if (title) {
         filters.title = {
@@ -110,13 +127,17 @@ export class BlogService {
     }
   }
 
-  async getBlogById(id: string) {
+  async getBlogById(id: string, userId: string) {
     try {
       if (!Types.ObjectId.isValid(id)) {
         throw new InvalidBlogIdException();
       }
 
-      const blog = await this.blogCollection.findById(id);
+      const scopedUserId = await this.resolveValidatedUserId(userId);
+      const blog = await this.blogCollection.findOne({
+        _id: id,
+        user_id: scopedUserId,
+      });
 
       if (!blog) {
         throw new BlogNotFoundException();
@@ -131,13 +152,17 @@ export class BlogService {
     }
   }
 
-  async updateBlog(id: string, body: UpdateBlog) {
+  async updateBlog(id: string, userId: string, body: UpdateBlog) {
     try {
       if (!Types.ObjectId.isValid(id)) {
         throw new InvalidBlogIdException();
       }
 
-      const blog = await this.blogCollection.findById(id);
+      const scopedUserId = await this.resolveValidatedUserId(userId);
+      const blog = await this.blogCollection.findOne({
+        _id: id,
+        user_id: scopedUserId,
+      });
 
       if (!blog) {
         throw new BlogNotFoundException();
@@ -145,6 +170,7 @@ export class BlogService {
 
       if (body.slug !== undefined && body.slug !== blog.slug) {
         const existing = await this.blogCollection.findOne({
+          user_id: scopedUserId,
           slug: body.slug,
         });
 
@@ -169,8 +195,8 @@ export class BlogService {
         updatePayload['metadata.lastModified'] = new Date();
       }
 
-      const updated = await this.blogCollection.findByIdAndUpdate(
-        id,
+      const updated = await this.blogCollection.findOneAndUpdate(
+        { _id: id, user_id: scopedUserId },
         updatePayload,
         { new: true },
       );
@@ -189,13 +215,17 @@ export class BlogService {
     }
   }
 
-  async deleteBlog(id: string) {
+  async deleteBlog(id: string, userId: string) {
     try {
       if (!Types.ObjectId.isValid(id)) {
         throw new InvalidBlogIdException();
       }
 
-      const deleted = await this.blogCollection.findByIdAndDelete(id);
+      const scopedUserId = await this.resolveValidatedUserId(userId);
+      const deleted = await this.blogCollection.findOneAndDelete({
+        _id: id,
+        user_id: scopedUserId,
+      });
 
       if (!deleted) {
         throw new BlogNotFoundException();
@@ -212,5 +242,26 @@ export class BlogService {
 
   private escapeRegex(value: string): string {
     return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  }
+
+  private async resolveValidatedUserId(
+    userId: string,
+  ): Promise<Types.ObjectId> {
+    if (!Types.ObjectId.isValid(userId)) {
+      throw new InvalidBlogUserIdException();
+    }
+
+    const scopedUserId = new Types.ObjectId(userId);
+    await this.ensureUserExists(scopedUserId);
+
+    return scopedUserId;
+  }
+
+  private async ensureUserExists(userId: Types.ObjectId) {
+    const user = await this.userCollection.findById(userId);
+
+    if (!user) {
+      throw new BlogUserNotFoundException();
+    }
   }
 }

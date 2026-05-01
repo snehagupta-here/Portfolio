@@ -4,12 +4,15 @@ import { Model, Types } from 'mongoose';
 
 import { CreateProject, UpdateProject } from 'src/interfaces';
 import {
+  InvalidProjectUserIdException,
   InvalidProjectIdException,
+  ProjectUserNotFoundException,
   ProjectSearchQueryRequiredException,
   ProjectSlugAlreadyExistsException,
   ProjectNotFoundException,
 } from 'src/exceptions/project.exceptions';
 import { Project, ProjectDocument } from 'src/schema/project.schema';
+import { User, UserDocument } from 'src/schema/user.schema';
 import { handleError } from 'src/utils/error-handler';
 
 @Injectable()
@@ -17,11 +20,15 @@ export class ProjectService {
   constructor(
     @InjectModel(Project.name)
     private readonly projectCollection: Model<ProjectDocument>,
+    @InjectModel(User.name)
+    private readonly userCollection: Model<UserDocument>,
   ) {}
 
-  async createProject(body: CreateProject) {
+  async createProject(userId: string, body: CreateProject) {
     try {
+      const scopedUserId = await this.resolveValidatedUserId(userId);
       const existingProject = await this.projectCollection.findOne({
+        user_id: scopedUserId,
         slug: body.slug,
       });
 
@@ -31,6 +38,7 @@ export class ProjectService {
 
       const now = new Date();
       const project = await this.projectCollection.create({
+        user_id: scopedUserId,
         ...body,
         meta: body.meta
           ? {
@@ -59,10 +67,11 @@ export class ProjectService {
     }
   }
 
-  async getAllProjects() {
+  async getAllProjects(userId: string) {
     try {
+      const scopedUserId = await this.resolveValidatedUserId(userId);
       const projects = await this.projectCollection
-        .find({ isActive: true })
+        .find({ user_id: scopedUserId, isActive: true })
         .sort({ createdAt: -1 });
 
       return {
@@ -74,21 +83,27 @@ export class ProjectService {
     }
   }
 
-  async searchProjects(query: {
-    title?: string;
-    slug?: string;
-    isActive?: string;
-  }) {
+  async searchProjects(
+    userId: string,
+    query: {
+      title?: string;
+      slug?: string;
+      isActive?: string;
+    },
+  ) {
     try {
       const title = query.title?.trim();
       const slug = query.slug?.trim();
       const isActive = query.isActive?.trim();
+      const scopedUserId = await this.resolveValidatedUserId(userId);
 
       if (!title && !slug && isActive === undefined) {
         throw new ProjectSearchQueryRequiredException();
       }
 
-      const filters: Record<string, unknown> = {};
+      const filters: Record<string, unknown> = {
+        user_id: scopedUserId,
+      };
 
       if (title) {
         filters.title = {
@@ -121,13 +136,17 @@ export class ProjectService {
     }
   }
 
-  async getProjectById(id: string) {
+  async getProjectById(id: string, userId: string) {
     try {
       if (!Types.ObjectId.isValid(id)) {
         throw new InvalidProjectIdException();
       }
 
-      const project = await this.projectCollection.findById(id);
+      const scopedUserId = await this.resolveValidatedUserId(userId);
+      const project = await this.projectCollection.findOne({
+        _id: id,
+        user_id: scopedUserId,
+      });
 
       if (!project) {
         throw new ProjectNotFoundException();
@@ -142,13 +161,17 @@ export class ProjectService {
     }
   }
 
-  async updateProject(id: string, body: UpdateProject) {
+  async updateProject(id: string, userId: string, body: UpdateProject) {
     try {
       if (!Types.ObjectId.isValid(id)) {
         throw new InvalidProjectIdException();
       }
 
-      const project = await this.projectCollection.findById(id);
+      const scopedUserId = await this.resolveValidatedUserId(userId);
+      const project = await this.projectCollection.findOne({
+        _id: id,
+        user_id: scopedUserId,
+      });
 
       if (!project) {
         throw new ProjectNotFoundException();
@@ -156,6 +179,7 @@ export class ProjectService {
 
       if (body.slug !== undefined && body.slug !== project.slug) {
         const existingProject = await this.projectCollection.findOne({
+          user_id: scopedUserId,
           slug: body.slug,
         });
 
@@ -198,8 +222,8 @@ export class ProjectService {
         updatePayload['metadata.lastModified'] = now;
       }
 
-      const updated = await this.projectCollection.findByIdAndUpdate(
-        id,
+      const updated = await this.projectCollection.findOneAndUpdate(
+        { _id: id, user_id: scopedUserId },
         updatePayload,
         {
           new: true,
@@ -220,13 +244,17 @@ export class ProjectService {
     }
   }
 
-  async deleteProject(id: string) {
+  async deleteProject(id: string, userId: string) {
     try {
       if (!Types.ObjectId.isValid(id)) {
         throw new InvalidProjectIdException();
       }
 
-      const deleted = await this.projectCollection.findByIdAndDelete(id);
+      const scopedUserId = await this.resolveValidatedUserId(userId);
+      const deleted = await this.projectCollection.findOneAndDelete({
+        _id: id,
+        user_id: scopedUserId,
+      });
 
       if (!deleted) {
         throw new ProjectNotFoundException();
@@ -243,5 +271,26 @@ export class ProjectService {
 
   private escapeRegex(value: string): string {
     return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  }
+
+  private async resolveValidatedUserId(
+    userId: string,
+  ): Promise<Types.ObjectId> {
+    if (!Types.ObjectId.isValid(userId)) {
+      throw new InvalidProjectUserIdException();
+    }
+
+    const scopedUserId = new Types.ObjectId(userId);
+    await this.ensureUserExists(scopedUserId);
+
+    return scopedUserId;
+  }
+
+  private async ensureUserExists(userId: Types.ObjectId) {
+    const user = await this.userCollection.findById(userId);
+
+    if (!user) {
+      throw new ProjectUserNotFoundException();
+    }
   }
 }

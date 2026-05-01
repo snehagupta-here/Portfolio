@@ -4,6 +4,8 @@ import {
   IsBoolean,
   IsDateString,
   IsIn,
+  IsMongoId,
+  IsNotEmpty,
   IsNumber,
   IsObject,
   IsOptional,
@@ -519,4 +521,20 @@ export class SearchProjectQueryDto {
   @IsOptional()
   @IsIn(['true', 'false'])
   isActive?: string;
+}
+
+export class ProjectUserParamDto {
+  @IsMongoId({
+    message: 'user: user must be a valid',
+  })
+  @IsNotEmpty({ message: 'user: user is required' })
+  user_id!: string;
+}
+
+export class ProjectScopedIdParamDto extends ProjectUserParamDto {
+  @IsMongoId({
+    message: 'id: id must be a valid',
+  })
+  @IsNotEmpty({ message: 'id: id is required' })
+  id!: string;
 }

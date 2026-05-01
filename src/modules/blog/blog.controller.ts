@@ -9,7 +9,13 @@ import {
   Query,
 } from '@nestjs/common';
 
-import { BlogDto, SearchBlogQueryDto, UpdateBlogDto } from 'src/dto';
+import {
+  BlogDto,
+  BlogScopedIdParamDto,
+  BlogUserParamDto,
+  SearchBlogQueryDto,
+  UpdateBlogDto,
+} from 'src/dto';
 
 import { BlogService } from './blog.service';
 
@@ -17,33 +23,39 @@ import { BlogService } from './blog.service';
 export class BlogController {
   constructor(private readonly blogService: BlogService) {}
 
-  @Post()
-  async create(@Body() body: BlogDto) {
-    return await this.blogService.createBlog(body);
+  @Post(':user_id')
+  async create(@Param() params: BlogUserParamDto, @Body() body: BlogDto) {
+    return await this.blogService.createBlog(params.user_id, body);
   }
 
-  @Get()
-  async findAll() {
-    return await this.blogService.getAllBlogs();
+  @Get(':user_id')
+  async findAll(@Param() params: BlogUserParamDto) {
+    return await this.blogService.getAllBlogs(params.user_id);
   }
 
-  @Get('search')
-  async search(@Query() query: SearchBlogQueryDto) {
-    return await this.blogService.searchBlogs(query);
+  @Get(':user_id/search')
+  async search(
+    @Param() params: BlogUserParamDto,
+    @Query() query: SearchBlogQueryDto,
+  ) {
+    return await this.blogService.searchBlogs(params.user_id, query);
   }
 
-  @Get(':id')
-  async findOne(@Param('id') id: string) {
-    return await this.blogService.getBlogById(id);
+  @Get(':user_id/:id')
+  async findOne(@Param() params: BlogScopedIdParamDto) {
+    return await this.blogService.getBlogById(params.id, params.user_id);
   }
 
-  @Patch(':id')
-  async update(@Param('id') id: string, @Body() body: UpdateBlogDto) {
-    return await this.blogService.updateBlog(id, body);
+  @Patch(':user_id/:id')
+  async update(
+    @Param() params: BlogScopedIdParamDto,
+    @Body() body: UpdateBlogDto,
+  ) {
+    return await this.blogService.updateBlog(params.id, params.user_id, body);
   }
 
-  @Delete(':id')
-  async remove(@Param('id') id: string) {
-    return await this.blogService.deleteBlog(id);
+  @Delete(':user_id/:id')
+  async remove(@Param() params: BlogScopedIdParamDto) {
+    return await this.blogService.deleteBlog(params.id, params.user_id);
   }
 }
