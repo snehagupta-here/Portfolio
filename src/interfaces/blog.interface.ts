@@ -1,3 +1,5 @@
+import { CloudinaryImageAsset } from './image.interface';
+
 export interface BlogCodeSnippet {
   language: string;
   code: string;
@@ -12,7 +14,7 @@ export interface BlogSubItem {
   subHeading: string;
   description?: string;
   points?: string[];
-  images?: string[];
+  images?: Array<CloudinaryImageAsset | string>;
   codeSnippet?: BlogCodeSnippet[];
 }
 
@@ -25,18 +27,18 @@ export interface BlogContentSection {
   points?: string[];
   items?: BlogSubItem[];
   questions?: BlogFAQ[];
-  images?: string[];
+  images?: Array<CloudinaryImageAsset | string>;
   codeSnippet?: BlogCodeSnippet[];
 }
 
 export interface BlogMedia {
   type?: string;
-  thumbnail?: string;
+  thumbnail?: CloudinaryImageAsset | string;
 }
 
 export interface BlogAuthor {
   name?: string;
-  avatar?: string;
+  avatar?: CloudinaryImageAsset | string;
 }
 
 export interface BlogMetadata {
@@ -60,6 +62,7 @@ export interface CreateBlog {
   description?: string;
   content?: BlogContentSection[];
   media?: BlogMedia;
+  thumbnail?: CloudinaryImageAsset | string;
   author?: BlogAuthor;
   metadata?: BlogMetadata;
   seo?: BlogSeo;

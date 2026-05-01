@@ -1,3 +1,5 @@
+import { CloudinaryImageAsset } from './image.interface';
+
 export type ProjectFlexibleObject = Record<string, unknown>;
 
 export interface ProjectMeta {
@@ -11,10 +13,7 @@ export interface ProjectMeta {
   duration?: string;
 }
 
-export interface ProjectThumbnail {
-  url?: string;
-  alt?: string;
-}
+export type ProjectThumbnail = CloudinaryImageAsset | string;
 
 export interface ProjectCodeSnippet {
   filename?: string;
@@ -24,7 +23,8 @@ export interface ProjectCodeSnippet {
 }
 
 export interface ProjectImage {
-  url?: string;
+  url?: CloudinaryImageAsset | string;
+  alt?: string;
   caption?: string;
 }
 
@@ -73,7 +73,7 @@ export interface ProjectRepository {
 
 export interface ProjectAuthor {
   name?: string;
-  avatar?: string;
+  avatar?: CloudinaryImageAsset | string;
   github?: string;
   linkedin?: string;
 }

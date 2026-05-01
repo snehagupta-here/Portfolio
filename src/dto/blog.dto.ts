@@ -9,9 +9,12 @@ import {
   IsNumber,
   IsString,
   IsOptional,
+  Validate,
   ValidateNested,
 } from 'class-validator';
 import { Type } from 'class-transformer';
+import { CloudinaryAssetDto } from './cloudinary.dto';
+import { IsImageAssetOrStringConstraint } from './image-asset-or-string.validator';
 import { SectionTypeEnum, ContentTypeEnum } from 'src/enums';
 
 class CodeSnippetDto {
@@ -45,8 +48,8 @@ class SubItemDto {
 
   @IsOptional()
   @IsArray()
-  @IsString({ each: true })
-  images?: string[];
+  @Validate(IsImageAssetOrStringConstraint, { each: true })
+  images?: Array<CloudinaryAssetDto | string>;
 
   @IsOptional()
   @IsArray()
@@ -92,8 +95,8 @@ class ContentSectionDto {
 
   @IsOptional()
   @IsArray()
-  @IsString({ each: true })
-  images?: string[];
+  @Validate(IsImageAssetOrStringConstraint, { each: true })
+  images?: Array<CloudinaryAssetDto | string>;
 
   @IsOptional()
   @IsArray()
@@ -108,8 +111,8 @@ class MediaDto {
   type?: string;
 
   @IsOptional()
-  @IsString()
-  thumbnail?: string;
+  @Validate(IsImageAssetOrStringConstraint)
+  thumbnail?: CloudinaryAssetDto | string;
 }
 
 class AuthorDto {
@@ -118,8 +121,8 @@ class AuthorDto {
   name?: string;
 
   @IsOptional()
-  @IsString()
-  avatar?: string;
+  @Validate(IsImageAssetOrStringConstraint)
+  avatar?: CloudinaryAssetDto | string;
 }
 
 class MetadataDto {
@@ -178,6 +181,10 @@ export class BlogDto {
   media?: MediaDto;
 
   @IsOptional()
+  @Validate(IsImageAssetOrStringConstraint)
+  thumbnail?: CloudinaryAssetDto | string;
+
+  @IsOptional()
   @ValidateNested()
   @Type(() => AuthorDto)
   author?: AuthorDto;
@@ -220,6 +227,10 @@ export class UpdateBlogDto {
   @ValidateNested()
   @Type(() => MediaDto)
   media?: MediaDto;
+
+  @IsOptional()
+  @Validate(IsImageAssetOrStringConstraint)
+  thumbnail?: CloudinaryAssetDto | string;
 
   @IsOptional()
   @ValidateNested()

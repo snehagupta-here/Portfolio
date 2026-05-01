@@ -10,7 +10,7 @@ import {
   InvalidBlogUserIdException,
   InvalidBlogIdException,
 } from 'src/exceptions/blog.exceptions';
-import { CreateBlog, UpdateBlog } from 'src/interfaces';
+import { CloudinaryImageAsset, CreateBlog, UpdateBlog } from 'src/interfaces';
 import { Blog, BlogDocument } from 'src/schema/blog.schema';
 import { User, UserDocument } from 'src/schema/user.schema';
 import { handleError } from 'src/utils/error-handler';
@@ -27,9 +27,10 @@ export class BlogService {
   async createBlog(userId: string, body: CreateBlog) {
     try {
       const scopedUserId = await this.resolveValidatedUserId(userId);
+      const normalizedBody = this.normalizeBlogPayload(body);
       const existing = await this.blogCollection.findOne({
         user_id: scopedUserId,
-        slug: body.slug,
+        slug: normalizedBody.slug,
       });
 
       if (existing) {
@@ -38,11 +39,11 @@ export class BlogService {
 
       const blog = await this.blogCollection.create({
         user_id: scopedUserId,
-        ...body,
+        ...normalizedBody,
         metadata: {
-          ...body.metadata,
-          publishedDate: body.metadata?.publishedDate
-            ? new Date(body.metadata.publishedDate)
+          ...normalizedBody.metadata,
+          publishedDate: normalizedBody.metadata?.publishedDate
+            ? new Date(normalizedBody.metadata.publishedDate)
             : undefined,
           lastModified: new Date(),
         },
@@ -159,6 +160,7 @@ export class BlogService {
       }
 
       const scopedUserId = await this.resolveValidatedUserId(userId);
+      const normalizedBody = this.normalizeBlogPayload(body);
       const blog = await this.blogCollection.findOne({
         _id: id,
         user_id: scopedUserId,
@@ -168,10 +170,13 @@ export class BlogService {
         throw new BlogNotFoundException();
       }
 
-      if (body.slug !== undefined && body.slug !== blog.slug) {
+      if (
+        normalizedBody.slug !== undefined &&
+        normalizedBody.slug !== blog.slug
+      ) {
         const existing = await this.blogCollection.findOne({
           user_id: scopedUserId,
-          slug: body.slug,
+          slug: normalizedBody.slug,
         });
 
         if (existing) {
@@ -180,14 +185,14 @@ export class BlogService {
       }
 
       const updatePayload: Record<string, unknown> = {
-        ...body,
+        ...normalizedBody,
       };
 
-      if (body.metadata !== undefined) {
+      if (normalizedBody.metadata !== undefined) {
         updatePayload.metadata = {
-          ...body.metadata,
-          publishedDate: body.metadata?.publishedDate
-            ? new Date(body.metadata.publishedDate)
+          ...normalizedBody.metadata,
+          publishedDate: normalizedBody.metadata?.publishedDate
+            ? new Date(normalizedBody.metadata.publishedDate)
             : undefined,
           lastModified: new Date(),
         };
@@ -242,6 +247,60 @@ export class BlogService {
 
   private escapeRegex(value: string): string {
     return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  }
+
+  private normalizeBlogPayload<T extends CreateBlog | UpdateBlog>(body: T): T {
+    const { media, thumbnail, author, content, ...rest } = body;
+
+    return {
+      ...rest,
+      content: content?.map((section) => ({
+        ...section,
+        images: this.normalizeImageArray(section.images),
+        items: section.items?.map((item) => ({
+          ...item,
+          images: this.normalizeImageArray(item.images),
+        })),
+      })),
+      thumbnail: this.normalizeImageAsset(thumbnail ?? media?.thumbnail),
+      author: author
+        ? {
+            ...author,
+            avatar: this.normalizeImageAsset(author.avatar),
+          }
+        : undefined,
+    } as T;
+  }
+
+  private normalizeImageArray(
+    images?: Array<CloudinaryImageAsset | string>,
+  ): CloudinaryImageAsset[] | undefined {
+    return images?.map((image) => this.normalizeRequiredImageAsset(image));
+  }
+
+  private normalizeImageAsset(
+    image?: CloudinaryImageAsset | string,
+  ): CloudinaryImageAsset | undefined {
+    if (image === undefined || image === null) {
+      return undefined;
+    }
+
+    if (typeof image === 'string') {
+      const trimmedImage = image.trim();
+
+      return {
+        publicId: trimmedImage,
+        secureUrl: trimmedImage,
+      };
+    }
+
+    return image;
+  }
+
+  private normalizeRequiredImageAsset(
+    image: CloudinaryImageAsset | string,
+  ): CloudinaryImageAsset {
+    return this.normalizeImageAsset(image) as CloudinaryImageAsset;
   }
 
   private async resolveValidatedUserId(

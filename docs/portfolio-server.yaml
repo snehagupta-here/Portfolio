@@ -1178,11 +1178,13 @@ paths:
         '404':
           $ref: '#/components/responses/ExperienceNotFoundError'
 
-  /blog:
+  /blog/{user_id}:
     post:
       tags:
         - Blogs
-      summary: Create a blog
+      summary: Create a blog for a user
+      parameters:
+        - $ref: '#/components/parameters/UserIdPathParam'
       requestBody:
         required: true
         content:
@@ -1202,7 +1204,9 @@ paths:
     get:
       tags:
         - Blogs
-      summary: Get all blogs
+      summary: Get all blogs for a user
+      parameters:
+        - $ref: '#/components/parameters/UserIdPathParam'
       responses:
         '200':
           description: Blogs fetched successfully
@@ -1211,12 +1215,13 @@ paths:
               schema:
                 $ref: '#/components/schemas/BlogListResponse'
 
-  /blog/search:
+  /blog/{user_id}/search:
     get:
       tags:
         - Blogs
-      summary: Search blogs by title, slug, or active state
+      summary: Search blogs for a user by title, slug, or active state
       parameters:
+        - $ref: '#/components/parameters/UserIdPathParam'
         - name: title
           in: query
           required: false
@@ -1245,12 +1250,13 @@ paths:
         '400':
           $ref: '#/components/responses/BlogSearchQueryRequiredError'
 
-  /blog/{id}:
+  /blog/{user_id}/{id}:
     get:
       tags:
         - Blogs
-      summary: Get a blog by id
+      summary: Get a user blog by id
       parameters:
+        - $ref: '#/components/parameters/UserIdPathParam'
         - $ref: '#/components/parameters/MongoIdPathParam'
       responses:
         '200':
@@ -1267,8 +1273,9 @@ paths:
     patch:
       tags:
         - Blogs
-      summary: Update a blog
+      summary: Update a user blog
       parameters:
+        - $ref: '#/components/parameters/UserIdPathParam'
         - $ref: '#/components/parameters/MongoIdPathParam'
       requestBody:
         required: true
@@ -1291,8 +1298,9 @@ paths:
     delete:
       tags:
         - Blogs
-      summary: Delete a blog
+      summary: Delete a user blog
       parameters:
+        - $ref: '#/components/parameters/UserIdPathParam'
         - $ref: '#/components/parameters/MongoIdPathParam'
       responses:
         '200':
@@ -1306,11 +1314,13 @@ paths:
         '404':
           $ref: '#/components/responses/BlogNotFoundError'
 
-  /project:
+  /project/{user_id}:
     post:
       tags:
         - Projects
-      summary: Create a project
+      summary: Create a project for a user
+      parameters:
+        - $ref: '#/components/parameters/UserIdPathParam'
       requestBody:
         required: true
         content:
@@ -1330,7 +1340,9 @@ paths:
     get:
       tags:
         - Projects
-      summary: Get all active projects
+      summary: Get all active projects for a user
+      parameters:
+        - $ref: '#/components/parameters/UserIdPathParam'
       responses:
         '200':
           description: Projects fetched successfully
@@ -1339,12 +1351,13 @@ paths:
               schema:
                 $ref: '#/components/schemas/ProjectListResponse'
 
-  /project/search:
+  /project/{user_id}/search:
     get:
       tags:
         - Projects
-      summary: Search projects by title, slug, or active state
+      summary: Search projects for a user by title, slug, or active state
       parameters:
+        - $ref: '#/components/parameters/UserIdPathParam'
         - name: title
           in: query
           required: false
@@ -1373,12 +1386,13 @@ paths:
         '400':
           $ref: '#/components/responses/ProjectSearchQueryRequiredError'
 
-  /project/{id}:
+  /project/{user_id}/{id}:
     get:
       tags:
         - Projects
-      summary: Get a project by id
+      summary: Get a user project by id
       parameters:
+        - $ref: '#/components/parameters/UserIdPathParam'
         - $ref: '#/components/parameters/MongoIdPathParam'
       responses:
         '200':
@@ -1395,8 +1409,9 @@ paths:
     patch:
       tags:
         - Projects
-      summary: Update a project
+      summary: Update a user project
       parameters:
+        - $ref: '#/components/parameters/UserIdPathParam'
         - $ref: '#/components/parameters/MongoIdPathParam'
       requestBody:
         required: true
@@ -1419,8 +1434,9 @@ paths:
     delete:
       tags:
         - Projects
-      summary: Delete a project
+      summary: Delete a user project
       parameters:
+        - $ref: '#/components/parameters/UserIdPathParam'
         - $ref: '#/components/parameters/MongoIdPathParam'
       responses:
         '200':
@@ -2053,7 +2069,7 @@ components:
                 message: Invalid blog ID
                 error: Bad Request
                 timeStamp: '2026-04-09T07:02:00.000Z'
-                path: /api/v1/blog/invalid-id
+                path: /api/v1/blog/660f0c1f4d8c8b3c2adfd001/invalid-id
 
     BlogNotFoundError:
       description: Blog not found
@@ -2069,7 +2085,7 @@ components:
                 message: Blog not found
                 error: Not Found
                 timeStamp: '2026-04-09T07:02:01.000Z'
-                path: /api/v1/blog/660f0c1f4d8c8b3c2adfd601
+                path: /api/v1/blog/660f0c1f4d8c8b3c2adfd001/660f0c1f4d8c8b3c2adfd601
 
     BlogSearchQueryRequiredError:
       description: At least one search query parameter is required for blogs
@@ -2085,7 +2101,7 @@ components:
                 message: Either title, slug, or isActive query parameter is required
                 error: Bad Request
                 timeStamp: '2026-04-09T07:02:02.000Z'
-                path: /api/v1/blog/search
+                path: /api/v1/blog/660f0c1f4d8c8b3c2adfd001/search
 
     InvalidProjectIdError:
       description: Invalid project id
@@ -2101,7 +2117,7 @@ components:
                 message: Invalid project id
                 error: Bad Request
                 timeStamp: '2026-04-09T07:03:00.000Z'
-                path: /api/v1/project/invalid-id
+                path: /api/v1/project/660f0c1f4d8c8b3c2adfd001/invalid-id
 
     ProjectNotFoundError:
       description: Project not found
@@ -2117,7 +2133,7 @@ components:
                 message: Project not found
                 error: Not Found
                 timeStamp: '2026-04-09T07:03:01.000Z'
-                path: /api/v1/project/660f0c1f4d8c8b3c2adfd701
+                path: /api/v1/project/660f0c1f4d8c8b3c2adfd001/660f0c1f4d8c8b3c2adfd701
 
     ProjectSearchQueryRequiredError:
       description: At least one search query parameter is required for projects
@@ -2133,7 +2149,7 @@ components:
                 message: Either title, slug, or isActive query parameter is required
                 error: Bad Request
                 timeStamp: '2026-04-09T07:03:02.000Z'
-                path: /api/v1/project/search
+                path: /api/v1/project/660f0c1f4d8c8b3c2adfd001/search
 
     ContactUsSubmissionFailedError:
       description: Contact submission could not be stored
@@ -2250,6 +2266,11 @@ components:
         originalFilename:
           type: string
           example: example-file
+
+    CloudinaryAssetOrString:
+      oneOf:
+        - type: string
+        - $ref: '#/components/schemas/CloudinaryAsset'
 
     SocialLink:
       type: object
@@ -2907,6 +2928,9 @@ components:
         - $ref: '#/components/schemas/BlogCreateRequest'
         - type: object
           properties:
+            user_id:
+              type: string
+              example: 660f0c1f4d8c8b3c2adfd001
             _id:
               type: string
             createdAt:
@@ -2936,7 +2960,7 @@ components:
       type: object
       properties:
         url:
-          type: string
+          $ref: '#/components/schemas/CloudinaryAssetOrString'
         alt:
           type: string
         caption:
@@ -2987,8 +3011,20 @@ components:
           type: string
         contentType:
           type: string
+          enum:
+            - headingBased
+            - subHeadingBased
+            - pointBased
+            - questionBased
+            - conclusionBased
         type:
           type: string
+          enum:
+            - intro
+            - section
+            - faq
+            - questions
+            - conclusion
         heading:
           type: string
         paragraphs:
@@ -3042,12 +3078,9 @@ components:
           type: string
 
     ProjectThumbnail:
-      type: object
-      properties:
-        url:
-          type: string
-        alt:
-          type: string
+      oneOf:
+        - type: string
+        - $ref: '#/components/schemas/CloudinaryAsset'
 
     ProjectFutureImprovement:
       type: object
@@ -3075,7 +3108,7 @@ components:
         name:
           type: string
         avatar:
-          type: string
+          $ref: '#/components/schemas/CloudinaryAssetOrString'
         github:
           type: string
         linkedin:
@@ -3260,6 +3293,9 @@ components:
         - $ref: '#/components/schemas/ProjectCreateRequest'
         - type: object
           properties:
+            user_id:
+              type: string
+              example: 660f0c1f4d8c8b3c2adfd001
             _id:
               type: string
             createdAt:

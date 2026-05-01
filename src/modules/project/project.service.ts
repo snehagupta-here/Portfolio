@@ -2,7 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 
-import { CreateProject, UpdateProject } from 'src/interfaces';
+import { CreateProject, ProjectImage, UpdateProject } from 'src/interfaces';
+import { CloudinaryImageAsset } from 'src/interfaces/image.interface';
 import {
   InvalidProjectUserIdException,
   InvalidProjectIdException,
@@ -27,9 +28,10 @@ export class ProjectService {
   async createProject(userId: string, body: CreateProject) {
     try {
       const scopedUserId = await this.resolveValidatedUserId(userId);
+      const normalizedBody = this.normalizeProjectPayload(body);
       const existingProject = await this.projectCollection.findOne({
         user_id: scopedUserId,
-        slug: body.slug,
+        slug: normalizedBody.slug,
       });
 
       if (existingProject) {
@@ -39,19 +41,19 @@ export class ProjectService {
       const now = new Date();
       const project = await this.projectCollection.create({
         user_id: scopedUserId,
-        ...body,
-        meta: body.meta
+        ...normalizedBody,
+        meta: normalizedBody.meta
           ? {
-              ...body.meta,
-              completedAt: body.meta.completedAt
-                ? new Date(body.meta.completedAt)
+              ...normalizedBody.meta,
+              completedAt: normalizedBody.meta.completedAt
+                ? new Date(normalizedBody.meta.completedAt)
                 : undefined,
             }
           : undefined,
         metadata: {
-          ...body.metadata,
-          publishedDate: body.metadata?.publishedDate
-            ? new Date(body.metadata.publishedDate)
+          ...normalizedBody.metadata,
+          publishedDate: normalizedBody.metadata?.publishedDate
+            ? new Date(normalizedBody.metadata.publishedDate)
             : now,
           lastModified: now,
         },
@@ -177,10 +179,15 @@ export class ProjectService {
         throw new ProjectNotFoundException();
       }
 
-      if (body.slug !== undefined && body.slug !== project.slug) {
+      const normalizedBody = this.normalizeProjectPayload(body);
+
+      if (
+        normalizedBody.slug !== undefined &&
+        normalizedBody.slug !== project.slug
+      ) {
         const existingProject = await this.projectCollection.findOne({
           user_id: scopedUserId,
-          slug: body.slug,
+          slug: normalizedBody.slug,
         });
 
         if (existingProject) {
@@ -189,20 +196,20 @@ export class ProjectService {
       }
 
       const updatePayload: Record<string, unknown> = {
-        ...body,
+        ...normalizedBody,
       };
       const now = new Date();
 
-      if (body.meta !== undefined) {
+      if (normalizedBody.meta !== undefined) {
         updatePayload.meta = {
-          ...body.meta,
-          completedAt: body.meta.completedAt
-            ? new Date(body.meta.completedAt)
+          ...normalizedBody.meta,
+          completedAt: normalizedBody.meta.completedAt
+            ? new Date(normalizedBody.meta.completedAt)
             : undefined,
         };
       }
 
-      if (body.metadata !== undefined) {
+      if (normalizedBody.metadata !== undefined) {
         const currentProject = project.toObject() as {
           createdAt?: Date;
           metadata?: UpdateProject['metadata'];
@@ -210,9 +217,9 @@ export class ProjectService {
 
         updatePayload.metadata = {
           ...currentProject.metadata,
-          ...body.metadata,
-          publishedDate: body.metadata.publishedDate
-            ? new Date(body.metadata.publishedDate)
+          ...normalizedBody.metadata,
+          publishedDate: normalizedBody.metadata.publishedDate
+            ? new Date(normalizedBody.metadata.publishedDate)
             : currentProject.metadata?.publishedDate ||
               currentProject.createdAt ||
               now,
@@ -271,6 +278,73 @@ export class ProjectService {
 
   private escapeRegex(value: string): string {
     return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  }
+
+  private normalizeProjectPayload<T extends CreateProject | UpdateProject>(
+    body: T,
+  ): T {
+    const { thumbnail, author, content, ...rest } = body;
+
+    return {
+      ...rest,
+      content: content?.map((section) => ({
+        ...section,
+        images: this.normalizeProjectImages(section.images),
+        items: section.items?.map((item) => ({
+          ...item,
+          images: this.normalizeProjectImages(item.images),
+        })),
+      })),
+      thumbnail: this.normalizeImageAsset(thumbnail),
+      author: author
+        ? {
+            ...author,
+            avatar: this.normalizeImageUrl(author.avatar),
+          }
+        : undefined,
+    } as T;
+  }
+
+  private normalizeProjectImages(
+    images?: ProjectImage[],
+  ): ProjectImage[] | undefined {
+    return images?.map((image) => ({
+      ...image,
+      url: this.normalizeImageUrl(image.url),
+    }));
+  }
+
+  private normalizeImageAsset(
+    image?: CloudinaryImageAsset | string,
+  ): CloudinaryImageAsset | undefined {
+    if (image === undefined || image === null) {
+      return undefined;
+    }
+
+    if (typeof image === 'string') {
+      const trimmedImage = image.trim();
+
+      return {
+        publicId: trimmedImage,
+        secureUrl: trimmedImage,
+      };
+    }
+
+    return image;
+  }
+
+  private normalizeImageUrl(
+    image?: CloudinaryImageAsset | string,
+  ): string | undefined {
+    if (image === undefined || image === null) {
+      return undefined;
+    }
+
+    if (typeof image === 'string') {
+      return image.trim();
+    }
+
+    return image.secureUrl;
   }
 
   private async resolveValidatedUserId(

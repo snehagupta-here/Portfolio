@@ -24,6 +24,7 @@ import { TestimonialModule } from './modules/testimonial/testimonial.module';
 import { BlogModule } from './modules/blog/blog.module';
 import { ContactUsModule } from './modules/contact-us/contact-us.module';
 import { AuthModule } from './modules/auth/auth.module';
+import { ProjectModule } from './modules/project/project.module';
 
 @Module({
   controllers: [AppController],
@@ -41,6 +42,7 @@ import { AuthModule } from './modules/auth/auth.module';
     AchievementModule,
     TestimonialModule,
     BlogModule,
+    ProjectModule,
     ContactUsModule,
     CloudinaryModule,
   ],

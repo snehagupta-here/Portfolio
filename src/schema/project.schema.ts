@@ -45,6 +45,9 @@ class ProjectImage implements ProjectImageShape {
   url!: string;
 
   @Prop({ type: String })
+  alt!: string;
+
+  @Prop({ type: String })
   caption!: string;
 }
 

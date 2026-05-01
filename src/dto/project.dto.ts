@@ -3,6 +3,7 @@ import {
   IsArray,
   IsBoolean,
   IsDateString,
+  IsEnum,
   IsIn,
   IsMongoId,
   IsNotEmpty,
@@ -10,8 +11,12 @@ import {
   IsObject,
   IsOptional,
   IsString,
+  Validate,
   ValidateNested,
 } from 'class-validator';
+import { ContentTypeEnum, SectionTypeEnum } from 'src/enums';
+import { CloudinaryAssetDto } from './cloudinary.dto';
+import { IsImageAssetOrStringConstraint } from './image-asset-or-string.validator';
 
 class ProjectCodeSnippetDto {
   @IsOptional()
@@ -35,8 +40,8 @@ class ProjectCodeSnippetDto {
 
 class ProjectImageDto {
   @IsOptional()
-  @IsString()
-  url?: string;
+  @Validate(IsImageAssetOrStringConstraint)
+  url?: CloudinaryAssetDto | string;
 
   @IsOptional()
   @IsString()
@@ -100,13 +105,11 @@ class ProjectContentSectionDto {
   @IsString()
   id?: string;
 
-  @IsOptional()
-  @IsString()
-  contentType?: string;
+  @IsEnum(ContentTypeEnum)
+  contentType!: ContentTypeEnum;
 
-  @IsOptional()
-  @IsString()
-  type?: string;
+  @IsEnum(SectionTypeEnum)
+  type!: SectionTypeEnum;
 
   @IsOptional()
   @IsString()
@@ -184,16 +187,6 @@ class ProjectMetaDto {
   duration?: string;
 }
 
-class ProjectThumbnailDto {
-  @IsOptional()
-  @IsString()
-  url?: string;
-
-  @IsOptional()
-  @IsString()
-  alt?: string;
-}
-
 class ProjectFutureImprovementDto {
   @IsOptional()
   @IsString()
@@ -228,8 +221,8 @@ class ProjectAuthorDto {
   name?: string;
 
   @IsOptional()
-  @IsString()
-  avatar?: string;
+  @Validate(IsImageAssetOrStringConstraint)
+  avatar?: CloudinaryAssetDto | string;
 
   @IsOptional()
   @IsString()
@@ -310,9 +303,8 @@ export class ProjectDto {
   meta?: ProjectMetaDto;
 
   @IsOptional()
-  @ValidateNested()
-  @Type(() => ProjectThumbnailDto)
-  thumbnail?: ProjectThumbnailDto;
+  @Validate(IsImageAssetOrStringConstraint)
+  thumbnail?: CloudinaryAssetDto | string;
 
   @IsOptional()
   @IsArray()
@@ -421,9 +413,8 @@ export class UpdateProjectDto {
   meta?: ProjectMetaDto;
 
   @IsOptional()
-  @ValidateNested()
-  @Type(() => ProjectThumbnailDto)
-  thumbnail?: ProjectThumbnailDto;
+  @Validate(IsImageAssetOrStringConstraint)
+  thumbnail?: CloudinaryAssetDto | string;
 
   @IsOptional()
   @IsArray()
