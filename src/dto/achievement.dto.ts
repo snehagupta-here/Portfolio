@@ -35,7 +35,6 @@ function isValidUrl(value: unknown): value is string {
   }
 
   try {
-    // eslint-disable-next-line no-new
     new URL(value);
     return true;
   } catch {

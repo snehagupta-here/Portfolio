@@ -55,7 +55,7 @@ export class AuthService {
 
       const isPasswordValid = await verifyPassword(
         body.password,
-        user.password_hash as string,
+        user.password_hash,
       );
 
       if (!isPasswordValid) {

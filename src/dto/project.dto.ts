@@ -14,7 +14,11 @@ import {
   Validate,
   ValidateNested,
 } from 'class-validator';
-import { ContentTypeEnum, SectionTypeEnum } from 'src/enums';
+import {
+  ContentTypeEnum,
+  ProjectCategoryEnum,
+  SectionTypeEnum,
+} from 'src/enums';
 import { CloudinaryAssetDto } from './cloudinary.dto';
 import { IsImageAssetOrStringConstraint } from './image-asset-or-string.validator';
 
@@ -153,8 +157,8 @@ class ProjectContentSectionDto {
 
 class ProjectMetaDto {
   @IsOptional()
-  @IsString()
-  category?: string;
+  @IsEnum(ProjectCategoryEnum)
+  category?: ProjectCategoryEnum;
 
   @IsOptional()
   @IsArray()
@@ -307,6 +311,10 @@ export class ProjectDto {
   thumbnail?: CloudinaryAssetDto | string;
 
   @IsOptional()
+  @IsString()
+  bannerImageUrl?: string;
+
+  @IsOptional()
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => ProjectContentSectionDto)
@@ -415,6 +423,10 @@ export class UpdateProjectDto {
   @IsOptional()
   @Validate(IsImageAssetOrStringConstraint)
   thumbnail?: CloudinaryAssetDto | string;
+
+  @IsOptional()
+  @IsString()
+  bannerImageUrl?: string;
 
   @IsOptional()
   @IsArray()

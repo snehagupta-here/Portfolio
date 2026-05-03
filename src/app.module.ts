@@ -25,6 +25,7 @@ import { BlogModule } from './modules/blog/blog.module';
 import { ContactUsModule } from './modules/contact-us/contact-us.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { ProjectModule } from './modules/project/project.module';
+import { AnalyticsModule } from './modules/analytics/analytics.module';
 
 @Module({
   controllers: [AppController],
@@ -40,6 +41,7 @@ import { ProjectModule } from './modules/project/project.module';
     SkillModule,
     ExperienceModule,
     AchievementModule,
+    AnalyticsModule,
     TestimonialModule,
     BlogModule,
     ProjectModule,

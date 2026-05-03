@@ -1,9 +1,10 @@
 import { CloudinaryImageAsset } from './image.interface';
+import { ProjectCategoryEnum } from 'src/enums';
 
 export type ProjectFlexibleObject = Record<string, unknown>;
 
 export interface ProjectMeta {
-  category?: string;
+  category?: ProjectCategoryEnum;
   projectType?: string[];
   difficulty?: string;
   status?: string;
@@ -102,6 +103,7 @@ export interface CreateProject {
   shortDescription?: string;
   meta?: ProjectMeta;
   thumbnail?: ProjectThumbnail;
+  bannerImageUrl?: string;
   content?: ProjectContentSection[];
   database?: ProjectFlexibleObject;
   apis?: ProjectFlexibleObject;

@@ -19,6 +19,7 @@ tags:
   - name: Projects
   - name: Contact Us
   - name: Cloudinary
+  - name: Analytics
 
 paths:
   /user:
@@ -95,6 +96,34 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/UserFetchResponse'
+              examples:
+                default:
+                  value:
+                    success: true
+                    statusCode: 200
+                    message: Request successful
+                    data:
+                      _id: 660f0c1f4d8c8b3c2adfd001
+                      name: Ashu Goyal
+                      title: Full-Stack Developer
+                      tagline: Building reliable product experiences end-to-end.
+                      bio: Full-stack developer building portfolio products and developer tools.
+                      email: ashu@example.com
+                      avatar:
+                        fileName: ashu-profile.png
+                        url: https://res.cloudinary.com/demo/image/upload/v1744096800/portfolio/users/avatar/ashu-goyal.png
+                      resume:
+                        fileName: ashu-resume.pdf
+                        url: https://res.cloudinary.com/demo/raw/upload/v1744096800/portfolio/users/resume/ashu-goyal.pdf
+                      aboutHeading: About Me
+                      aboutBio: I build products with a focus on clean architecture, performance, and usability.
+                      totalYearsExperience: 4+
+                      projectsCompleted: 12+
+                      location: Jaipur, India
+                      createdAt: '2026-04-08T06:10:00.000Z'
+                      updatedAt: '2026-04-08T06:10:00.000Z'
+                    timeStamp: '2026-04-08T06:10:01.000Z'
+                    path: /api/v1/user/660f0c1f4d8c8b3c2adfd001
         '400':
           $ref: '#/components/responses/InvalidUserIdError'
         '404':
@@ -178,6 +207,22 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/UserMutationResponse'
+              examples:
+                default:
+                  value:
+                    success: true
+                    statusCode: 200
+                    message: User updated successfully.
+                    data:
+                      _id: 660f0c1f4d8c8b3c2adfd001
+                      name: Ashu Goyal
+                      title: Full-Stack Developer
+                      email: ashu@example.com
+                      location: Jaipur, India
+                      createdAt: '2026-04-08T06:10:00.000Z'
+                      updatedAt: '2026-04-08T06:10:05.000Z'
+                    timeStamp: '2026-04-08T06:10:05.000Z'
+                    path: /api/v1/user/660f0c1f4d8c8b3c2adfd001
         '400':
           $ref: '#/components/responses/InvalidUserIdError'
         '404':
@@ -453,6 +498,23 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SkillFetchResponse'
+              examples:
+                default:
+                  value:
+                    success: true
+                    statusCode: 200
+                    message: Request successful
+                    data:
+                      _id: 660f0c1f4d8c8b3c2adfd111
+                      name: NestJS
+                      category: backend
+                      icon:
+                        publicId: portfolio/skills/nestjs
+                        secureUrl: https://res.cloudinary.com/demo/image/upload/v1/nestjs.png
+                      createdAt: '2026-04-08T06:11:00.000Z'
+                      updatedAt: '2026-04-08T06:11:00.000Z'
+                    timeStamp: '2026-04-08T06:11:01.000Z'
+                    path: /api/v1/skills/660f0c1f4d8c8b3c2adfd111
         '400':
           $ref: '#/components/responses/InvalidSkillIdError'
         '404':
@@ -554,6 +616,23 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SkillMutationResponse'
+              examples:
+                default:
+                  value:
+                    success: true
+                    statusCode: 200
+                    message: Skill updated successfully.
+                    data:
+                      _id: 660f0c1f4d8c8b3c2adfd111
+                      name: NestJS Framework
+                      category: backend
+                      icon:
+                        publicId: portfolio/skills/nestjs
+                        secureUrl: https://res.cloudinary.com/demo/image/upload/v1/nestjs.png
+                      createdAt: '2026-04-08T06:11:00.000Z'
+                      updatedAt: '2026-04-08T06:11:05.000Z'
+                    timeStamp: '2026-04-08T06:11:05.000Z'
+                    path: /api/v1/skills/660f0c1f4d8c8b3c2adfd111
         '400':
           $ref: '#/components/responses/InvalidSkillIdError'
         '404':
@@ -804,6 +883,33 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AchievementFetchResponse'
+              examples:
+                default:
+                  value:
+                    success: true
+                    statusCode: 200
+                    message: Request successful
+                    data:
+                      _id: 660f0c1f4d8c8b3c2adfd301
+                      user_id: 660f0c1f4d8c8b3c2adfd001
+                      achievement_date: '2025-11-10T00:00:00.000Z'
+                      title: Hackathon Finals
+                      position: winner
+                      description: Won the national product engineering challenge.
+                      competition_name: Build Bharat Hackathon
+                      images:
+                        - publicId: portfolio/achievements/build-bharat-hackathon/award-photo
+                          secureUrl: https://res.cloudinary.com/demo/image/upload/v1744096800/portfolio/achievements/build-bharat-hackathon/award-photo.jpg
+                          width: 1600
+                          height: 900
+                          format: jpg
+                          resourceType: image
+                          bytes: 325841
+                          originalFilename: award-photo.jpg
+                      createdAt: '2026-04-08T06:14:00.000Z'
+                      updatedAt: '2026-04-08T06:14:00.000Z'
+                    timeStamp: '2026-04-08T06:14:01.000Z'
+                    path: /api/v1/achievement/660f0c1f4d8c8b3c2adfd001/660f0c1f4d8c8b3c2adfd301
         '400':
           $ref: '#/components/responses/InvalidAchievementIdError'
         '404':
@@ -854,6 +960,24 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AchievementMutationResponse'
+              examples:
+                default:
+                  value:
+                    success: true
+                    statusCode: 200
+                    message: Achievement updated successfully.
+                    data:
+                      _id: 660f0c1f4d8c8b3c2adfd301
+                      user_id: 660f0c1f4d8c8b3c2adfd001
+                      achievement_date: '2025-11-10T00:00:00.000Z'
+                      title: Hackathon Finals
+                      position: 1st
+                      description: Secured first place after the final pitching round.
+                      competition_name: Build Bharat Hackathon
+                      createdAt: '2026-04-08T06:14:00.000Z'
+                      updatedAt: '2026-04-08T06:14:05.000Z'
+                    timeStamp: '2026-04-08T06:14:05.000Z'
+                    path: /api/v1/achievement/660f0c1f4d8c8b3c2adfd001/660f0c1f4d8c8b3c2adfd301
         '400':
           $ref: '#/components/responses/InvalidAchievementIdError'
         '404':
@@ -939,6 +1063,24 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/TestimonialListResponse'
+              examples:
+                default:
+                  value:
+                    success: true
+                    statusCode: 200
+                    message: Request successful
+                    data:
+                      - _id: 660f0c1f4d8c8b3c2adfd401
+                        user_id: 660f0c1f4d8c8b3c2adfd001
+                        name: Riya Sharma
+                        description: Delivered clean backend APIs and communicated clearly throughout the project.
+                        designation: Product Manager
+                        rating: 5
+                        testimonial_date: '2026-04-10T00:00:00.000Z'
+                        createdAt: '2026-04-10T09:30:00.000Z'
+                        updatedAt: '2026-04-10T09:30:00.000Z'
+                    timeStamp: '2026-04-10T09:30:01.000Z'
+                    path: /api/v1/testimonial/660f0c1f4d8c8b3c2adfd001
         '400':
           $ref: '#/components/responses/ValidationError'
 
@@ -968,6 +1110,35 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/TestimonialListResponse'
+              examples:
+                byName:
+                  value:
+                    success: true
+                    statusCode: 200
+                    message: Request successful
+                    data:
+                      - _id: 660f0c1f4d8c8b3c2adfd401
+                        user_id: 660f0c1f4d8c8b3c2adfd001
+                        name: Riya Sharma
+                        description: Delivered clean backend APIs and communicated clearly throughout the project.
+                        designation: Product Manager
+                        rating: 5
+                        testimonial_date: '2026-04-10T00:00:00.000Z'
+                    timeStamp: '2026-04-10T09:30:02.000Z'
+                    path: /api/v1/testimonial/660f0c1f4d8c8b3c2adfd001/search?name=riya
+                byRating:
+                  value:
+                    success: true
+                    statusCode: 200
+                    message: Request successful
+                    data:
+                      - _id: 660f0c1f4d8c8b3c2adfd401
+                        user_id: 660f0c1f4d8c8b3c2adfd001
+                        name: Riya Sharma
+                        rating: 5
+                        testimonial_date: '2026-04-10T00:00:00.000Z'
+                    timeStamp: '2026-04-10T09:30:02.000Z'
+                    path: /api/v1/testimonial/660f0c1f4d8c8b3c2adfd001/search?rating=5
         '400':
           $ref: '#/components/responses/TestimonialSearchQueryRequiredError'
 
@@ -986,6 +1157,33 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/TestimonialFetchResponse'
+              examples:
+                default:
+                  value:
+                    success: true
+                    statusCode: 200
+                    message: Request successful
+                    data:
+                      _id: 660f0c1f4d8c8b3c2adfd401
+                      user_id: 660f0c1f4d8c8b3c2adfd001
+                      name: Riya Sharma
+                      description: Delivered clean backend APIs and communicated clearly throughout the project.
+                      designation: Product Manager
+                      image:
+                        publicId: portfolio/testimonials/riya-sharma
+                        secureUrl: https://res.cloudinary.com/demo/image/upload/v1744096800/portfolio/testimonials/riya-sharma.jpg
+                        width: 400
+                        height: 400
+                        format: jpg
+                        resourceType: image
+                        bytes: 28124
+                        originalFilename: riya-sharma.jpg
+                      rating: 5
+                      testimonial_date: '2026-04-10T00:00:00.000Z'
+                      createdAt: '2026-04-10T09:30:00.000Z'
+                      updatedAt: '2026-04-10T09:30:00.000Z'
+                    timeStamp: '2026-04-10T09:30:01.000Z'
+                    path: /api/v1/testimonial/660f0c1f4d8c8b3c2adfd001/660f0c1f4d8c8b3c2adfd401
         '400':
           $ref: '#/components/responses/ValidationError'
         '404':
@@ -1025,6 +1223,24 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/TestimonialMutationResponse'
+              examples:
+                default:
+                  value:
+                    success: true
+                    statusCode: 200
+                    message: Testimonial updated successfully.
+                    data:
+                      _id: 660f0c1f4d8c8b3c2adfd401
+                      user_id: 660f0c1f4d8c8b3c2adfd001
+                      name: Riya Sharma
+                      description: Delivered clean backend APIs and communicated clearly throughout the project.
+                      designation: Senior Product Manager
+                      rating: 5
+                      testimonial_date: '2026-04-10T00:00:00.000Z'
+                      createdAt: '2026-04-10T09:30:00.000Z'
+                      updatedAt: '2026-04-10T09:35:00.000Z'
+                    timeStamp: '2026-04-10T09:35:00.000Z'
+                    path: /api/v1/testimonial/660f0c1f4d8c8b3c2adfd001/660f0c1f4d8c8b3c2adfd401
         '400':
           $ref: '#/components/responses/ValidationError'
         '404':
@@ -1044,6 +1260,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/DeleteResponse'
+              examples:
+                default:
+                  value:
+                    success: true
+                    statusCode: 200
+                    message: Testimonial deleted successfully.
+                    timeStamp: '2026-04-10T09:36:00.000Z'
+                    path: /api/v1/testimonial/660f0c1f4d8c8b3c2adfd001/660f0c1f4d8c8b3c2adfd401
         '400':
           $ref: '#/components/responses/ValidationError'
         '404':
@@ -1060,6 +1284,35 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/ExperienceCreateRequest'
+            examples:
+              default:
+                value:
+                  user_id: 660f0c1f4d8c8b3c2adfd001
+                  start_date: '2023-06-01'
+                  end_date: '2024-12-31'
+                  location: Bengaluru, India
+                  designation: Backend Engineer
+                  description: Built and maintained scalable NestJS microservices.
+                  responsibilities:
+                    - Designed REST APIs for the core product
+                    - Integrated MongoDB with Mongoose ODM
+                    - Deployed services on AWS ECS
+                  organization_name: TechCorp India
+                  organization_logo_url:
+                    publicId: portfolio/experience/techcorp/logo
+                    secureUrl: https://res.cloudinary.com/demo/image/upload/v1744096800/portfolio/experience/techcorp/logo.png
+                    width: 200
+                    height: 200
+                    format: png
+                    resourceType: image
+                    bytes: 14200
+                    originalFilename: techcorp-logo.png
+                  organization_url: https://techcorp.example.com
+                  tech_stack:
+                    - NestJS
+                    - MongoDB
+                    - AWS
+                    - TypeScript
       responses:
         '201':
           description: Experience created successfully
@@ -1067,6 +1320,38 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ExperienceMutationResponse'
+              examples:
+                default:
+                  value:
+                    success: true
+                    statusCode: 201
+                    message: Experience created successfully.
+                    data:
+                      _id: 660f0c1f4d8c8b3c2adfd501
+                      user_id: 660f0c1f4d8c8b3c2adfd001
+                      start_date: '2023-06-01T00:00:00.000Z'
+                      end_date: '2024-12-31T00:00:00.000Z'
+                      location: Bengaluru, India
+                      designation: Backend Engineer
+                      description: Built and maintained scalable NestJS microservices.
+                      responsibilities:
+                        - Designed REST APIs for the core product
+                        - Integrated MongoDB with Mongoose ODM
+                        - Deployed services on AWS ECS
+                      organization_name: TechCorp India
+                      organization_logo_url:
+                        publicId: portfolio/experience/techcorp/logo
+                        secureUrl: https://res.cloudinary.com/demo/image/upload/v1744096800/portfolio/experience/techcorp/logo.png
+                      organization_url: https://techcorp.example.com
+                      tech_stack:
+                        - NestJS
+                        - MongoDB
+                        - AWS
+                        - TypeScript
+                      createdAt: '2026-04-08T06:15:00.000Z'
+                      updatedAt: '2026-04-08T06:15:00.000Z'
+                    timeStamp: '2026-04-08T06:15:00.000Z'
+                    path: /api/v1/experience
         '400':
           $ref: '#/components/responses/ValidationError'
 
@@ -1084,6 +1369,28 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ExperienceListResponse'
+              examples:
+                default:
+                  value:
+                    success: true
+                    statusCode: 200
+                    message: Request successful
+                    data:
+                      - _id: 660f0c1f4d8c8b3c2adfd501
+                        user_id: 660f0c1f4d8c8b3c2adfd001
+                        start_date: '2023-06-01T00:00:00.000Z'
+                        end_date: '2024-12-31T00:00:00.000Z'
+                        location: Bengaluru, India
+                        designation: Backend Engineer
+                        organization_name: TechCorp India
+                        tech_stack:
+                          - NestJS
+                          - MongoDB
+                          - AWS
+                        createdAt: '2026-04-08T06:15:00.000Z'
+                        updatedAt: '2026-04-08T06:15:00.000Z'
+                    timeStamp: '2026-04-08T06:15:01.000Z'
+                    path: /api/v1/experience/660f0c1f4d8c8b3c2adfd001
         '400':
           $ref: '#/components/responses/ValidationError'
 
@@ -1111,6 +1418,35 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ExperienceListResponse'
+              examples:
+                byDesignation:
+                  value:
+                    success: true
+                    statusCode: 200
+                    message: Request successful
+                    data:
+                      - _id: 660f0c1f4d8c8b3c2adfd501
+                        user_id: 660f0c1f4d8c8b3c2adfd001
+                        designation: Backend Engineer
+                        organization_name: TechCorp India
+                        start_date: '2023-06-01T00:00:00.000Z'
+                        end_date: '2024-12-31T00:00:00.000Z'
+                    timeStamp: '2026-04-08T06:15:02.000Z'
+                    path: /api/v1/experience/660f0c1f4d8c8b3c2adfd001/search?designation=backend
+                byOrganization:
+                  value:
+                    success: true
+                    statusCode: 200
+                    message: Request successful
+                    data:
+                      - _id: 660f0c1f4d8c8b3c2adfd501
+                        user_id: 660f0c1f4d8c8b3c2adfd001
+                        designation: Backend Engineer
+                        organization_name: TechCorp India
+                        start_date: '2023-06-01T00:00:00.000Z'
+                        end_date: '2024-12-31T00:00:00.000Z'
+                    timeStamp: '2026-04-08T06:15:02.000Z'
+                    path: /api/v1/experience/660f0c1f4d8c8b3c2adfd001/search?organization_name=techcorp
         '400':
           $ref: '#/components/responses/ExperienceSearchQueryRequiredError'
 
@@ -1129,6 +1465,33 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ExperienceFetchResponse'
+              examples:
+                default:
+                  value:
+                    success: true
+                    statusCode: 200
+                    message: Request successful
+                    data:
+                      _id: 660f0c1f4d8c8b3c2adfd501
+                      user_id: 660f0c1f4d8c8b3c2adfd001
+                      start_date: '2023-06-01T00:00:00.000Z'
+                      end_date: '2024-12-31T00:00:00.000Z'
+                      location: Bengaluru, India
+                      designation: Backend Engineer
+                      description: Built and maintained scalable NestJS microservices.
+                      responsibilities:
+                        - Designed REST APIs for the core product
+                        - Integrated MongoDB with Mongoose ODM
+                      organization_name: TechCorp India
+                      organization_url: https://techcorp.example.com
+                      tech_stack:
+                        - NestJS
+                        - MongoDB
+                        - AWS
+                      createdAt: '2026-04-08T06:15:00.000Z'
+                      updatedAt: '2026-04-08T06:15:00.000Z'
+                    timeStamp: '2026-04-08T06:15:01.000Z'
+                    path: /api/v1/experience/660f0c1f4d8c8b3c2adfd001/660f0c1f4d8c8b3c2adfd501
         '400':
           $ref: '#/components/responses/InvalidExperienceIdError'
         '404':
@@ -1154,6 +1517,23 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ExperienceMutationResponse'
+              examples:
+                default:
+                  value:
+                    success: true
+                    statusCode: 200
+                    message: Experience updated successfully.
+                    data:
+                      _id: 660f0c1f4d8c8b3c2adfd501
+                      user_id: 660f0c1f4d8c8b3c2adfd001
+                      designation: Senior Backend Engineer
+                      organization_name: TechCorp India
+                      start_date: '2023-06-01T00:00:00.000Z'
+                      end_date: '2025-03-31T00:00:00.000Z'
+                      createdAt: '2026-04-08T06:15:00.000Z'
+                      updatedAt: '2026-04-08T06:16:00.000Z'
+                    timeStamp: '2026-04-08T06:16:00.000Z'
+                    path: /api/v1/experience/660f0c1f4d8c8b3c2adfd001/660f0c1f4d8c8b3c2adfd501
         '400':
           $ref: '#/components/responses/InvalidExperienceIdError'
         '404':
@@ -1173,6 +1553,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/DeleteResponse'
+              examples:
+                default:
+                  value:
+                    success: true
+                    statusCode: 200
+                    message: Experience deleted successfully.
+                    timeStamp: '2026-04-08T06:17:00.000Z'
+                    path: /api/v1/experience/660f0c1f4d8c8b3c2adfd001/660f0c1f4d8c8b3c2adfd501
         '400':
           $ref: '#/components/responses/InvalidExperienceIdError'
         '404':
@@ -1191,6 +1579,49 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/BlogCreateRequest'
+            examples:
+              default:
+                value:
+                  title: Building a REST API with NestJS
+                  slug: building-rest-api-nestjs
+                  description: A step-by-step guide to building a production-ready REST API using NestJS, MongoDB, and TypeScript.
+                  thumbnail:
+                    publicId: portfolio/blogs/building-rest-api-nestjs/thumbnail
+                    secureUrl: https://res.cloudinary.com/demo/image/upload/v1744096800/portfolio/blogs/building-rest-api-nestjs/thumbnail.jpg
+                    width: 1280
+                    height: 720
+                    format: jpg
+                    resourceType: image
+                    bytes: 184320
+                    originalFilename: thumbnail.jpg
+                  content:
+                    - id: section-1
+                      contentType: headingBased
+                      type: intro
+                      heading: Introduction
+                      text: NestJS is a progressive Node.js framework built with TypeScript.
+                    - id: section-2
+                      contentType: conclusionBased
+                      type: conclusion
+                      heading: Conclusion
+                      text: NestJS provides a solid foundation for scalable server-side applications.
+                  author:
+                    name: Ashu Goyal
+                    avatar:
+                      publicId: portfolio/users/avatar/ashu-goyal
+                      secureUrl: https://res.cloudinary.com/demo/image/upload/v1744096800/portfolio/users/avatar/ashu-goyal.png
+                  metadata:
+                    publishedDate: '2026-04-08T06:00:00.000Z'
+                    featured: false
+                    readTime: 6
+                  seo:
+                    metaTitle: Building a REST API with NestJS
+                    metaDescription: Learn how to build a production-ready REST API using NestJS and MongoDB.
+                    keywords:
+                      - nestjs
+                      - rest api
+                      - typescript
+                  isActive: true
       responses:
         '201':
           description: Blog created successfully
@@ -1198,6 +1629,23 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/BlogMutationResponse'
+              examples:
+                default:
+                  value:
+                    success: true
+                    statusCode: 201
+                    message: Blog created successfully.
+                    data:
+                      _id: 660f0c1f4d8c8b3c2adfd601
+                      user_id: 660f0c1f4d8c8b3c2adfd001
+                      title: Building a REST API with NestJS
+                      slug: building-rest-api-nestjs
+                      description: A step-by-step guide to building a production-ready REST API using NestJS, MongoDB, and TypeScript.
+                      isActive: true
+                      createdAt: '2026-04-08T06:18:00.000Z'
+                      updatedAt: '2026-04-08T06:18:00.000Z'
+                    timeStamp: '2026-04-08T06:18:00.000Z'
+                    path: /api/v1/blog/660f0c1f4d8c8b3c2adfd001
         '400':
           $ref: '#/components/responses/ValidationError'
 
@@ -1214,6 +1662,26 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/BlogListResponse'
+              examples:
+                default:
+                  value:
+                    success: true
+                    statusCode: 200
+                    message: Request successful
+                    data:
+                      - _id: 660f0c1f4d8c8b3c2adfd601
+                        user_id: 660f0c1f4d8c8b3c2adfd001
+                        title: Building a REST API with NestJS
+                        slug: building-rest-api-nestjs
+                        description: A step-by-step guide to building a production-ready REST API.
+                        thumbnail:
+                          publicId: portfolio/blogs/building-rest-api-nestjs/thumbnail
+                          secureUrl: https://res.cloudinary.com/demo/image/upload/v1744096800/portfolio/blogs/building-rest-api-nestjs/thumbnail.jpg
+                        isActive: true
+                        createdAt: '2026-04-08T06:18:00.000Z'
+                        updatedAt: '2026-04-08T06:18:00.000Z'
+                    timeStamp: '2026-04-08T06:18:01.000Z'
+                    path: /api/v1/blog/660f0c1f4d8c8b3c2adfd001
 
   /blog/{user_id}/search:
     get:
@@ -1247,6 +1715,33 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/BlogListResponse'
+              examples:
+                byTitle:
+                  value:
+                    success: true
+                    statusCode: 200
+                    message: Request successful
+                    data:
+                      - _id: 660f0c1f4d8c8b3c2adfd601
+                        user_id: 660f0c1f4d8c8b3c2adfd001
+                        title: Building a REST API with NestJS
+                        slug: building-rest-api-nestjs
+                        isActive: true
+                    timeStamp: '2026-04-08T06:18:02.000Z'
+                    path: /api/v1/blog/660f0c1f4d8c8b3c2adfd001/search?title=nestjs
+                byActive:
+                  value:
+                    success: true
+                    statusCode: 200
+                    message: Request successful
+                    data:
+                      - _id: 660f0c1f4d8c8b3c2adfd601
+                        user_id: 660f0c1f4d8c8b3c2adfd001
+                        title: Building a REST API with NestJS
+                        slug: building-rest-api-nestjs
+                        isActive: true
+                    timeStamp: '2026-04-08T06:18:02.000Z'
+                    path: /api/v1/blog/660f0c1f4d8c8b3c2adfd001/search?isActive=true
         '400':
           $ref: '#/components/responses/BlogSearchQueryRequiredError'
 
@@ -1265,6 +1760,34 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/BlogFetchResponse'
+              examples:
+                default:
+                  value:
+                    success: true
+                    statusCode: 200
+                    message: Request successful
+                    data:
+                      _id: 660f0c1f4d8c8b3c2adfd601
+                      user_id: 660f0c1f4d8c8b3c2adfd001
+                      title: Building a REST API with NestJS
+                      slug: building-rest-api-nestjs
+                      description: A step-by-step guide to building a production-ready REST API.
+                      thumbnail:
+                        publicId: portfolio/blogs/building-rest-api-nestjs/thumbnail
+                        secureUrl: https://res.cloudinary.com/demo/image/upload/v1744096800/portfolio/blogs/building-rest-api-nestjs/thumbnail.jpg
+                        width: 1280
+                        height: 720
+                        format: jpg
+                        resourceType: image
+                        bytes: 184320
+                        originalFilename: thumbnail.jpg
+                      author:
+                        name: Ashu Goyal
+                      isActive: true
+                      createdAt: '2026-04-08T06:18:00.000Z'
+                      updatedAt: '2026-04-08T06:18:00.000Z'
+                    timeStamp: '2026-04-08T06:18:01.000Z'
+                    path: /api/v1/blog/660f0c1f4d8c8b3c2adfd001/660f0c1f4d8c8b3c2adfd601
         '400':
           $ref: '#/components/responses/InvalidBlogIdError'
         '404':
@@ -1290,6 +1813,22 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/BlogMutationResponse'
+              examples:
+                default:
+                  value:
+                    success: true
+                    statusCode: 200
+                    message: Blog updated successfully.
+                    data:
+                      _id: 660f0c1f4d8c8b3c2adfd601
+                      user_id: 660f0c1f4d8c8b3c2adfd001
+                      title: Building a REST API with NestJS — Updated
+                      slug: building-rest-api-nestjs
+                      isActive: true
+                      createdAt: '2026-04-08T06:18:00.000Z'
+                      updatedAt: '2026-04-08T06:19:00.000Z'
+                    timeStamp: '2026-04-08T06:19:00.000Z'
+                    path: /api/v1/blog/660f0c1f4d8c8b3c2adfd001/660f0c1f4d8c8b3c2adfd601
         '400':
           $ref: '#/components/responses/InvalidBlogIdError'
         '404':
@@ -1309,6 +1848,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/DeleteResponse'
+              examples:
+                default:
+                  value:
+                    success: true
+                    statusCode: 200
+                    message: Blog deleted successfully.
+                    timeStamp: '2026-04-08T06:20:00.000Z'
+                    path: /api/v1/blog/660f0c1f4d8c8b3c2adfd001/660f0c1f4d8c8b3c2adfd601
         '400':
           $ref: '#/components/responses/InvalidBlogIdError'
         '404':
@@ -1327,6 +1874,171 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/ProjectCreateRequest'
+            examples:
+              default:
+                value:
+                  title: Portfolio Server
+                  slug: portfolio-server
+                  tagline: A production-ready NestJS backend for portfolio management.
+                  shortDescription: REST API built with NestJS, MongoDB, and TypeScript.
+                  meta:
+                    category: software
+                    projectType:
+                      - backend
+                      - api
+                    difficulty: intermediate
+                    status: completed
+                    estimatedReadTime: 12 min
+                    tags:
+                      - nestjs
+                      - mongodb
+                      - typescript
+                      - swagger
+                    completedAt: '2026-04-08T06:21:00.000Z'
+                    duration: 3 months
+                  thumbnail:
+                    publicId: portfolio/projects/portfolio-server/thumbnail
+                    secureUrl: https://res.cloudinary.com/demo/image/upload/v1744096800/portfolio/projects/portfolio-server/thumbnail.jpg
+                    width: 1280
+                    height: 720
+                    format: jpg
+                    resourceType: image
+                    bytes: 210000
+                    originalFilename: thumbnail.jpg
+                  content:
+                    - id: overview
+                      contentType: headingBased
+                      type: intro
+                      heading: Overview
+                      paragraphs:
+                        - Portfolio Server is a NestJS backend that manages portfolio content such as projects, blogs, skills, and testimonials.
+                        - It exposes validated REST APIs, stores data in MongoDB, and supports Cloudinary-backed media assets.
+                      images:
+                        - url: https://res.cloudinary.com/demo/image/upload/v1744096800/portfolio/projects/portfolio-server/overview.jpg
+                          alt: Portfolio Server API overview
+                          caption: High-level view of the backend modules and content domains.
+                    - id: architecture
+                      contentType: subHeadingBased
+                      type: section
+                      heading: Architecture
+                      items:
+                        - subHeading: Authentication
+                          paragraphs:
+                            - JWT-based authentication is used for protected routes and admin workflows.
+                          points:
+                            - Register and login endpoints
+                            - Secure admin actions with validation and guards
+                          images:
+                            - url: https://res.cloudinary.com/demo/image/upload/v1744096800/portfolio/projects/portfolio-server/auth-flow.jpg
+                              alt: Authentication flow
+                              caption: Login and token validation flow.
+                          codeSnippets:
+                            - filename: auth.controller.ts
+                              language: typescript
+                              description:
+                                - Example login route declaration
+                              code:
+                                - "@Post('login')"
+                                - "async login(@Body() body: LoginDto) { return this.authService.login(body); }"
+                        - subHeading: Project module
+                          paragraphs:
+                            - Project entries support rich editorial content, media, repository links, and SEO metadata.
+                          points:
+                            - Nested DTO validation for content sections
+                            - Slug uniqueness per user
+                    - id: faq
+                      contentType: questionBased
+                      type: questions
+                      heading: Frequently Asked Questions
+                      questions:
+                        - question: How are media assets stored?
+                          answer: Images can be sent either as a Cloudinary asset object or as a plain string URL/public identifier.
+                        - question: Does the API reject unknown fields?
+                          answer: Yes. The global validation pipe uses whitelist and forbidNonWhitelisted, so extra keys are rejected.
+                  database:
+                    primary: MongoDB
+                    orm: Mongoose
+                    collections:
+                      - users
+                      - projects
+                      - blogs
+                  apis:
+                    auth:
+                      - POST /api/v1/auth/register
+                      - POST /api/v1/auth/login
+                    project:
+                      - POST /api/v1/project/:user_id
+                      - GET /api/v1/project/:user_id
+                      - PUT /api/v1/project/:user_id/:id
+                  performance:
+                    - metric: p95ResponseTime
+                      value: 220ms
+                    - metric: uptime
+                      value: 99.9%
+                  testing:
+                    - type: unit
+                      tools:
+                        - Jest
+                        - Supertest
+                    - type: integration
+                      scope: Project and auth modules
+                  folderStructure:
+                    - path: src/modules/project
+                      purpose: Project controller and service logic
+                    - path: src/dto
+                      purpose: Request validation DTOs
+                  pages:
+                    - route: /docs
+                      description: Swagger and OpenAPI documentation endpoint
+                  cicd:
+                    provider: GitHub Actions
+                    checks:
+                      - lint
+                      - test
+                      - build
+                  deployment:
+                    - provider: Render
+                      target: api
+                      status: live
+                  environmentVariables:
+                    - key: MONGODB_URI
+                      required: true
+                    - key: JWT_SECRET
+                      required: true
+                    - key: CLOUDINARY_API_KEY
+                      required: true
+                  futureImprovements:
+                    - title: Add rate limiting
+                      description: Protect auth and contact endpoints from abuse.
+                    - title: Add project analytics
+                      description: Track project views and engagement trends per portfolio item.
+                  repository:
+                    - type: github
+                      url: https://github.com/ashugoyal/portfolio-server
+                      branch: main
+                      visibility: public
+                  liveUrl: https://api.portfolio.example.com
+                  author:
+                    name: Ashu Goyal
+                    avatar: https://res.cloudinary.com/demo/image/upload/v1744096800/portfolio/authors/ashu-goyal.jpg
+                    github: https://github.com/ashugoyal
+                    linkedin: https://linkedin.com/in/ashugoyal
+                  metadata:
+                    status: published
+                    publishedDate: '2026-04-08T06:21:00.000Z'
+                    featured: true
+                    trending: false
+                    readTime: 12
+                    views: 0
+                    likes: 0
+                  seo:
+                    metaTitle: Portfolio Server — NestJS REST API
+                    metaDescription: A scalable NestJS backend for managing portfolio data.
+                    keywords:
+                      - nestjs
+                      - portfolio
+                      - rest api
+                  isActive: true
       responses:
         '201':
           description: Project created successfully
@@ -1334,6 +2046,23 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProjectMutationResponse'
+              examples:
+                default:
+                  value:
+                    success: true
+                    statusCode: 201
+                    message: Project created successfully.
+                    data:
+                      _id: 660f0c1f4d8c8b3c2adfd701
+                      user_id: 660f0c1f4d8c8b3c2adfd001
+                      title: Portfolio Server
+                      slug: portfolio-server
+                      tagline: A production-ready NestJS backend for portfolio management.
+                      isActive: true
+                      createdAt: '2026-04-08T06:21:00.000Z'
+                      updatedAt: '2026-04-08T06:21:00.000Z'
+                    timeStamp: '2026-04-08T06:21:00.000Z'
+                    path: /api/v1/project/660f0c1f4d8c8b3c2adfd001
         '400':
           $ref: '#/components/responses/ValidationError'
 
@@ -1350,6 +2079,31 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProjectListResponse'
+              examples:
+                default:
+                  value:
+                    success: true
+                    statusCode: 200
+                    message: Request successful
+                    data:
+                      - _id: 660f0c1f4d8c8b3c2adfd701
+                        user_id: 660f0c1f4d8c8b3c2adfd001
+                        title: Portfolio Server
+                        slug: portfolio-server
+                        tagline: A production-ready NestJS backend for portfolio management.
+                        thumbnail:
+                          publicId: portfolio/projects/portfolio-server/thumbnail
+                          secureUrl: https://res.cloudinary.com/demo/image/upload/v1744096800/portfolio/projects/portfolio-server/thumbnail.jpg
+                        meta:
+                          category: software
+                          tags:
+                            - nestjs
+                            - mongodb
+                        isActive: true
+                        createdAt: '2026-04-08T06:21:00.000Z'
+                        updatedAt: '2026-04-08T06:21:00.000Z'
+                    timeStamp: '2026-04-08T06:21:01.000Z'
+                    path: /api/v1/project/660f0c1f4d8c8b3c2adfd001
 
   /project/{user_id}/search:
     get:
@@ -1383,6 +2137,33 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProjectListResponse'
+              examples:
+                byTitle:
+                  value:
+                    success: true
+                    statusCode: 200
+                    message: Request successful
+                    data:
+                      - _id: 660f0c1f4d8c8b3c2adfd701
+                        user_id: 660f0c1f4d8c8b3c2adfd001
+                        title: Portfolio Server
+                        slug: portfolio-server
+                        isActive: true
+                    timeStamp: '2026-04-08T06:21:02.000Z'
+                    path: /api/v1/project/660f0c1f4d8c8b3c2adfd001/search?title=portfolio
+                byActive:
+                  value:
+                    success: true
+                    statusCode: 200
+                    message: Request successful
+                    data:
+                      - _id: 660f0c1f4d8c8b3c2adfd701
+                        user_id: 660f0c1f4d8c8b3c2adfd001
+                        title: Portfolio Server
+                        slug: portfolio-server
+                        isActive: true
+                    timeStamp: '2026-04-08T06:21:02.000Z'
+                    path: /api/v1/project/660f0c1f4d8c8b3c2adfd001/search?isActive=true
         '400':
           $ref: '#/components/responses/ProjectSearchQueryRequiredError'
 
@@ -1401,6 +2182,44 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProjectFetchResponse'
+              examples:
+                default:
+                  value:
+                    success: true
+                    statusCode: 200
+                    message: Request successful
+                    data:
+                      _id: 660f0c1f4d8c8b3c2adfd701
+                      user_id: 660f0c1f4d8c8b3c2adfd001
+                      title: Portfolio Server
+                      slug: portfolio-server
+                      tagline: A production-ready NestJS backend for portfolio management.
+                      shortDescription: REST API built with NestJS, MongoDB, and TypeScript.
+                      meta:
+                        category: software
+                        projectType:
+                          - backend
+                          - api
+                        difficulty: intermediate
+                        status: completed
+                        tags:
+                          - nestjs
+                          - mongodb
+                      thumbnail:
+                        publicId: portfolio/projects/portfolio-server/thumbnail
+                        secureUrl: https://res.cloudinary.com/demo/image/upload/v1744096800/portfolio/projects/portfolio-server/thumbnail.jpg
+                        width: 1280
+                        height: 720
+                        format: jpg
+                        resourceType: image
+                        bytes: 210000
+                        originalFilename: thumbnail.jpg
+                      liveUrl: https://api.portfolio.example.com
+                      isActive: true
+                      createdAt: '2026-04-08T06:21:00.000Z'
+                      updatedAt: '2026-04-08T06:21:00.000Z'
+                    timeStamp: '2026-04-08T06:21:01.000Z'
+                    path: /api/v1/project/660f0c1f4d8c8b3c2adfd001/660f0c1f4d8c8b3c2adfd701
         '400':
           $ref: '#/components/responses/InvalidProjectIdError'
         '404':
@@ -1426,6 +2245,22 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProjectMutationResponse'
+              examples:
+                default:
+                  value:
+                    success: true
+                    statusCode: 200
+                    message: Project updated successfully.
+                    data:
+                      _id: 660f0c1f4d8c8b3c2adfd701
+                      user_id: 660f0c1f4d8c8b3c2adfd001
+                      title: Portfolio Server v2
+                      slug: portfolio-server
+                      isActive: true
+                      createdAt: '2026-04-08T06:21:00.000Z'
+                      updatedAt: '2026-04-08T06:22:00.000Z'
+                    timeStamp: '2026-04-08T06:22:00.000Z'
+                    path: /api/v1/project/660f0c1f4d8c8b3c2adfd001/660f0c1f4d8c8b3c2adfd701
         '400':
           $ref: '#/components/responses/InvalidProjectIdError'
         '404':
@@ -1445,10 +2280,117 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/DeleteResponse'
+              examples:
+                default:
+                  value:
+                    success: true
+                    statusCode: 200
+                    message: Project deleted successfully.
+                    timeStamp: '2026-04-08T06:23:00.000Z'
+                    path: /api/v1/project/660f0c1f4d8c8b3c2adfd001/660f0c1f4d8c8b3c2adfd701
         '400':
           $ref: '#/components/responses/InvalidProjectIdError'
         '404':
           $ref: '#/components/responses/ProjectNotFoundError'
+
+  /analytics/profile-data/{user_id}:
+    get:
+      tags:
+        - Analytics
+      summary: Get profile data counts for a user
+      parameters:
+        - $ref: '#/components/parameters/UserIdPathParam'
+      responses:
+        '200':
+          description: Profile data counts fetched successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AnalyticsProfileCountResponse'
+              examples:
+                default:
+                  value:
+                    success: true
+                    statusCode: 200
+                    message: Request successful
+                    data:
+                      achievements: 3
+                      blogs: 5
+                      experiences: 2
+                      projects: 8
+                      skills: 12
+                      testimonials: 4
+                    timeStamp: '2026-04-08T06:20:00.000Z'
+                    path: /api/v1/analytics/profile-data/660f0c1f4d8c8b3c2adfd001
+        '400':
+          $ref: '#/components/responses/InvalidAnalyticsUserIdError'
+        '404':
+          $ref: '#/components/responses/AnalyticsUserNotFoundError'
+
+  /analytics/insights/{user_id}:
+    get:
+      tags:
+        - Analytics
+      summary: Get insights for a user
+      parameters:
+        - $ref: '#/components/parameters/UserIdPathParam'
+      responses:
+        '200':
+          description: Insights fetched successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AnalyticsInsightsResponse'
+              examples:
+                default:
+                  value:
+                    success: true
+                    statusCode: 200
+                    message: Request successful
+                    data:
+                      avgRating: 4.6
+                      activeBlogs: 3
+                      totalContent: 11
+                    timeStamp: '2026-04-08T06:20:01.000Z'
+                    path: /api/v1/analytics/insights/660f0c1f4d8c8b3c2adfd001
+        '400':
+          $ref: '#/components/responses/InvalidAnalyticsUserIdError'
+        '404':
+          $ref: '#/components/responses/AnalyticsUserNotFoundError'
+
+  /analytics/recent-data/{user_id}:
+    get:
+      tags:
+        - Analytics
+      summary: Get recent data for a user (latest 5 of each resource)
+      parameters:
+        - $ref: '#/components/parameters/UserIdPathParam'
+      responses:
+        '200':
+          description: Recent data fetched successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AnalyticsRecentDataResponse'
+              examples:
+                default:
+                  value:
+                    success: true
+                    statusCode: 200
+                    message: Request successful
+                    data:
+                      recentAchievements: []
+                      recentBlogs: []
+                      recentExperiences: []
+                      recentProjects: []
+                      recentSkills: []
+                      recentTestimonials: []
+                    timeStamp: '2026-04-08T06:20:02.000Z'
+                    path: /api/v1/analytics/recent-data/660f0c1f4d8c8b3c2adfd001
+        '400':
+          $ref: '#/components/responses/InvalidAnalyticsUserIdError'
+        '404':
+          $ref: '#/components/responses/AnalyticsUserNotFoundError'
 
   /contact-us:
     post:
@@ -1461,6 +2403,13 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/ContactUsRequest'
+            examples:
+              default:
+                value:
+                  name: Priya Mehta
+                  email: priya@example.com
+                  organization: Startup Labs
+                  message: Hi, I would love to discuss a potential collaboration on a new product.
       responses:
         '201':
           description: Contact submission stored successfully
@@ -1468,6 +2417,15 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ContactUsMutationResponse'
+              examples:
+                default:
+                  value:
+                    success: true
+                    statusCode: 201
+                    message: Request successful
+                    data: {}
+                    timeStamp: '2026-04-08T06:25:00.000Z'
+                    path: /api/v1/contact-us
         '400':
           $ref: '#/components/responses/ValidationError'
         '500':
@@ -2166,6 +3124,38 @@ components:
                 error: Internal Server Error
                 timeStamp: '2026-04-09T07:04:00.000Z'
                 path: /api/v1/contact-us
+
+    InvalidAnalyticsUserIdError:
+      description: Invalid analytics user id
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            default:
+              value:
+                success: false
+                statusCode: 400
+                message: Invalid user ID
+                error: Bad Request
+                timeStamp: '2026-04-08T06:20:01.000Z'
+                path: /api/v1/analytics/invalid-id
+
+    AnalyticsUserNotFoundError:
+      description: User not found for analytics
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            default:
+              value:
+                success: false
+                statusCode: 404
+                message: User not found
+                error: Not Found
+                timeStamp: '2026-04-08T06:20:02.000Z'
+                path: /api/v1/analytics/660f0c1f4d8c8b3c2adfd099
 
     CloudinaryFolderRequiredError:
       description: Folder path is required
@@ -2888,6 +3878,8 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/BlogContentSection'
+        thumbnail:
+          $ref: '#/components/schemas/CloudinaryAssetOrString'
         media:
           $ref: '#/components/schemas/BlogMedia'
         author:
@@ -2912,6 +3904,8 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/BlogContentSection'
+        thumbnail:
+          $ref: '#/components/schemas/CloudinaryAssetOrString'
         media:
           $ref: '#/components/schemas/BlogMedia'
         author:
@@ -3057,6 +4051,17 @@ components:
       properties:
         category:
           type: string
+          enum:
+            - web
+            - mobile
+            - desktop
+            - software
+            - hardware
+            - ai/ml
+            - devops
+            - open-source
+            - other
+          example: web
         projectType:
           type: array
           items:
@@ -3167,6 +4172,9 @@ components:
           $ref: '#/components/schemas/ProjectMeta'
         thumbnail:
           $ref: '#/components/schemas/ProjectThumbnail'
+        bannerImageUrl:
+          type: string
+          description: Optional alias for thumbnail when a plain image URL is sent.
         content:
           type: array
           items:
@@ -3235,6 +4243,9 @@ components:
           $ref: '#/components/schemas/ProjectMeta'
         thumbnail:
           $ref: '#/components/schemas/ProjectThumbnail'
+        bannerImageUrl:
+          type: string
+          description: Optional alias for thumbnail when a plain image URL is sent.
         content:
           type: array
           items:
@@ -3885,6 +4896,111 @@ components:
           properties:
             data:
               $ref: '#/components/schemas/CloudinarySignedUploadData'
+
+    AnalyticsProfileCountData:
+      type: object
+      required:
+        - achievements
+        - blogs
+        - experiences
+        - projects
+        - skills
+        - testimonials
+      properties:
+        achievements:
+          type: integer
+          example: 3
+        blogs:
+          type: integer
+          example: 5
+        experiences:
+          type: integer
+          example: 2
+        projects:
+          type: integer
+          example: 8
+        skills:
+          type: integer
+          example: 12
+        testimonials:
+          type: integer
+          example: 4
+
+    AnalyticsProfileCountResponse:
+      allOf:
+        - $ref: '#/components/schemas/SuccessEnvelope'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/AnalyticsProfileCountData'
+
+    AnalyticsInsightsData:
+      type: object
+      required:
+        - avgRating
+        - activeBlogs
+        - totalContent
+      properties:
+        avgRating:
+          type: number
+          example: 4.6
+        activeBlogs:
+          type: integer
+          example: 3
+        totalContent:
+          type: integer
+          example: 11
+
+    AnalyticsInsightsResponse:
+      allOf:
+        - $ref: '#/components/schemas/SuccessEnvelope'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/AnalyticsInsightsData'
+
+    AnalyticsRecentDataData:
+      type: object
+      required:
+        - recentAchievements
+        - recentBlogs
+        - recentExperiences
+        - recentProjects
+        - recentSkills
+        - recentTestimonials
+      properties:
+        recentAchievements:
+          type: array
+          items:
+            $ref: '#/components/schemas/AchievementDocument'
+        recentBlogs:
+          type: array
+          items:
+            $ref: '#/components/schemas/BlogDocument'
+        recentExperiences:
+          type: array
+          items:
+            $ref: '#/components/schemas/ExperienceDocument'
+        recentProjects:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProjectDocument'
+        recentSkills:
+          type: array
+          items:
+            $ref: '#/components/schemas/SkillDocument'
+        recentTestimonials:
+          type: array
+          items:
+            $ref: '#/components/schemas/TestimonialDocument'
+
+    AnalyticsRecentDataResponse:
+      allOf:
+        - $ref: '#/components/schemas/SuccessEnvelope'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/AnalyticsRecentDataData'
 
     DeleteResponse:
       allOf:

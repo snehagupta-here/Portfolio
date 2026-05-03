@@ -41,7 +41,10 @@ export class TestimonialController {
     @Param() params: TestimonialUserParamDto,
     @Query() query: SearchTestimonialQueryDto,
   ) {
-    return await this.testimonialService.searchTestimonials(params.user_id, query);
+    return await this.testimonialService.searchTestimonials(
+      params.user_id,
+      query,
+    );
   }
 
   @Get(':user_id/:id')

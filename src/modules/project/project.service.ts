@@ -283,7 +283,7 @@ export class ProjectService {
   private normalizeProjectPayload<T extends CreateProject | UpdateProject>(
     body: T,
   ): T {
-    const { thumbnail, author, content, ...rest } = body;
+    const { thumbnail, bannerImageUrl, author, content, ...rest } = body;
 
     return {
       ...rest,
@@ -295,7 +295,7 @@ export class ProjectService {
           images: this.normalizeProjectImages(item.images),
         })),
       })),
-      thumbnail: this.normalizeImageAsset(thumbnail),
+      thumbnail: this.normalizeImageAsset(thumbnail ?? bannerImageUrl),
       author: author
         ? {
             ...author,

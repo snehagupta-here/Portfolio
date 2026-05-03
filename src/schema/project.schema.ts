@@ -17,9 +17,14 @@ import type {
   ProjectSeo as ProjectSeoShape,
 } from 'src/interfaces/project.interface';
 import { ImageAsset, ImageAssetSchema } from './image-asset.schema';
-import { ContentTypeEnum, SectionTypeEnum } from 'src/enums';
+import {
+  ContentTypeEnum,
+  SectionTypeEnum,
+  ProjectCategoryEnum,
+} from 'src/enums';
 
 export type ProjectDocument = HydratedDocument<Project>;
+const PROJECT_CATEGORY_VALUES = Object.values(ProjectCategoryEnum);
 
 @Schema({ _id: false })
 class ProjectCodeSnippet implements ProjectCodeSnippetShape {
@@ -144,8 +149,8 @@ const ProjectContentSectionSchema = SchemaFactory.createForClass(
 
 @Schema({ _id: false })
 class ProjectMeta implements ProjectMetaShape {
-  @Prop({ type: String })
-  category!: string;
+  @Prop({ type: String, enum: PROJECT_CATEGORY_VALUES })
+  category!: ProjectCategoryEnum;
 
   @Prop({ type: [String], default: [] })
   projectType!: string[];
