@@ -35,15 +35,16 @@ async function bootstrap() {
     }),
   );
 
+  const configService = app.get(ConfigService);
+
   app.enableCors({
     methods: 'GET,POST,PUT,PATCH,DELETE',
-    origin: '*',
+    origin: configService.get<string>('CLIENT_URL'),
     credentials: true,
     preflightContinue: false,
     optionsSuccessStatus: 204,
   });
 
-  const configService = app.get(ConfigService);
   await app.listen(configService.get<number>('PORT', configDefaults.app.port));
 }
 void bootstrap();
