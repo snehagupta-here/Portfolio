@@ -67,7 +67,7 @@ export async function fetchAchievements(userId: string): Promise<Achievement[]> 
   }
 
   const response = await fetch(
-    `${API_BASE_URL}/${encodeURIComponent(userId)}`,
+    `${API_BASE_URL}/achievement/${encodeURIComponent(userId)}`,
     {
       cache: "no-store",
       headers: {
