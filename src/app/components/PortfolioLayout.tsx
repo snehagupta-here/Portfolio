@@ -108,12 +108,6 @@ export default function PortfolioLayout() {
                 {link.name}
               </a>
             ))}
-            <Link
-              to="/admin"
-              className="px-4 py-2 border border-purple-500 rounded-lg text-purple-400 hover:bg-purple-500/10 transition-colors"
-            >
-              Admin
-            </Link>
           </div>
 
           {/* Mobile Menu Button */}

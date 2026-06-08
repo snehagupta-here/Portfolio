@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { Link } from "react-router-dom";
 import {
@@ -16,23 +16,48 @@ import {
   Images,
 } from "lucide-react";
 
-import {
-  detailedAchievements,
-  getPositionColor,
-} from "@/app/data/appData";
-import { PositionEnum, type DetailedAchievement } from "@/app/types/achievements";
+import { PORTFOLIO_USER_ID } from "@/app/config";
 import Navigation from "@/app/components/Navigation";
 import Footer from "@/app/components/Footer";
+import {
+  fetchAchievements,
+  getPositionColor,
+  type Achievement,
+} from "@/services/achievement";
 
 const positionIcons: Record<string, React.ComponentType<{ className?: string }>> = {
-  [PositionEnum.FIRST]: Trophy,
-  [PositionEnum.SECOND]: Medal,
-  [PositionEnum.THIRD]: Medal,
-  [PositionEnum.WINNER]: Award,
-  [PositionEnum.RUNNER_UP]: Award,
-  [PositionEnum.FINALIST]: Star,
-  [PositionEnum.PARTICIPANT]: Star,
-  [PositionEnum.HONORABLE_MENTION]: Star,
+  "1st": Trophy,
+  "1st Place": Trophy,
+  "2nd": Medal,
+  "2nd Place": Medal,
+  "3rd": Medal,
+  "3rd Place": Medal,
+  Winner: Award,
+  "Runner Up": Award,
+  Finalist: Star,
+  Participant: Star,
+  "Honorable Mention": Star,
+};
+
+const getPositionIcon = (position: string) => {
+  const normalized = position.toLowerCase();
+
+  if (positionIcons[position]) return positionIcons[position];
+  if (normalized.includes("1st") || normalized.includes("first")) return Trophy;
+  if (normalized.includes("2nd") || normalized.includes("second")) return Medal;
+  if (normalized.includes("3rd") || normalized.includes("third")) return Medal;
+  if (normalized.includes("winner") || normalized.includes("runner")) return Award;
+  return Star;
+};
+
+const isFirstPlace = (position: string) => {
+  const normalized = position.toLowerCase();
+  return normalized.includes("1st") || normalized.includes("first");
+};
+
+const isWin = (position: string) => {
+  const normalized = position.toLowerCase();
+  return isFirstPlace(position) || normalized === "winner";
 };
 
 const formatDate = (date: string) =>
@@ -43,44 +68,97 @@ const formatDate = (date: string) =>
   });
 
 interface LightboxState {
-  achievement: DetailedAchievement;
+  achievement: Achievement;
   index: number;
-  showCertificate?: boolean;
 }
 
 export default function AchievementsPage() {
-  const [filter, setFilter] = useState<PositionEnum | "all">("all");
+  const [achievements, setAchievements] = useState<Achievement[]>([]);
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [filter, setFilter] = useState<string>("all");
   const [lightbox, setLightbox] = useState<LightboxState | null>(null);
 
-  const filteredAchievements =
-    filter === "all"
-      ? detailedAchievements
-      : detailedAchievements.filter((a) => a.position === filter);
+  useEffect(() => {
+    let ignore = false;
 
-  const positions: (PositionEnum | "all")[] = [
-    "all",
-    PositionEnum.FIRST,
-    PositionEnum.WINNER,
-    PositionEnum.SECOND,
-    PositionEnum.FINALIST,
-  ];
+    async function loadAchievements() {
+      setIsLoading(true);
+      setError(null);
 
-  const stats = {
-    total: detailedAchievements.length,
-    firstPlace: detailedAchievements.filter((a) => a.position === PositionEnum.FIRST)
-      .length,
-    wins: detailedAchievements.filter(
-      (a) => a.position === PositionEnum.FIRST || a.position === PositionEnum.WINNER,
-    ).length,
-    competitions: new Set(detailedAchievements.map((a) => a.competition_name)).size,
-  };
+      try {
+        const data = await fetchAchievements(PORTFOLIO_USER_ID);
+        if (!ignore) {
+          setAchievements(data);
+        }
+      } catch (error) {
+        if (!ignore) {
+          setAchievements([]);
+          setError(
+            error instanceof Error ? error.message : "Unable to load achievements.",
+          );
+        }
+      } finally {
+        if (!ignore) {
+          setIsLoading(false);
+        }
+      }
+    }
+
+    loadAchievements();
+
+    return () => {
+      ignore = true;
+    };
+  }, []);
+
+  const positions = useMemo(
+    () => [
+      "all",
+      ...Array.from(
+        new Set(
+          achievements
+            .map((achievement) => achievement.position)
+            .filter(Boolean),
+        ),
+      ),
+    ],
+    [achievements],
+  );
+
+  useEffect(() => {
+    if (filter !== "all" && !positions.includes(filter)) {
+      setFilter("all");
+    }
+  }, [filter, positions]);
+
+  const filteredAchievements = useMemo(
+    () =>
+      filter === "all"
+        ? achievements
+        : achievements.filter((achievement) => achievement.position === filter),
+    [achievements, filter],
+  );
+
+  const stats = useMemo(
+    () => ({
+      total: achievements.length,
+      firstPlace: achievements.filter((achievement) =>
+        isFirstPlace(achievement.position),
+      ).length,
+      wins: achievements.filter((achievement) => isWin(achievement.position)).length,
+      competitions: new Set(
+        achievements.map((achievement) => achievement.competition_name),
+      ).size,
+    }),
+    [achievements],
+  );
 
   const openLightbox = (
-    achievement: DetailedAchievement,
+    achievement: Achievement,
     index: number,
-    showCertificate = false,
   ) => {
-    setLightbox({ achievement, index, showCertificate });
+    setLightbox({ achievement, index });
   };
 
   const closeLightbox = () => setLightbox(null);
@@ -89,7 +167,7 @@ export default function AchievementsPage() {
     if (!lightbox) return;
     const total = lightbox.achievement.images.length;
     const newIndex = (lightbox.index + dir + total) % total;
-    setLightbox({ ...lightbox, index: newIndex, showCertificate: false });
+    setLightbox({ ...lightbox, index: newIndex });
   };
 
   return (
@@ -165,119 +243,168 @@ export default function AchievementsPage() {
           </motion.div>
 
           {/* Achievements List */}
-          <div className="space-y-12">
-            <AnimatePresence mode="popLayout">
-              {filteredAchievements.map((achievement, index) => {
-                const Icon = positionIcons[achievement.position] || Trophy;
-                const gradient = getPositionColor(achievement.position);
+          {isLoading && (
+            <div className="space-y-6">
+              {[0, 1, 2].map((item) => (
+                <div
+                  key={item}
+                  className="h-80 rounded-2xl border border-border bg-card/40 animate-pulse"
+                />
+              ))}
+            </div>
+          )}
 
-                return (
-                  <motion.article
-                    key={achievement._id}
-                    layout
-                    initial={{ opacity: 0, y: 40 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -20 }}
-                    transition={{ duration: 0.5, delay: index * 0.05 }}
-                    className="glass-strong rounded-2xl overflow-hidden"
-                  >
-                    <div className="grid lg:grid-cols-5 gap-0">
-                      {/* Left — Hero Image */}
-                      <div className="lg:col-span-2 relative h-64 lg:h-auto min-h-[300px] overflow-hidden group">
-                        <img
-                          src={achievement.images[0]?.url}
-                          alt={achievement.images[0]?.alt}
-                          className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 cursor-pointer"
-                          onClick={() => openLightbox(achievement, 0)}
-                          loading="lazy"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/20 to-transparent" />
-                        <div className="absolute top-4 left-4">
-                          <span
-                            className={`inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r ${gradient} text-primary-foreground text-sm font-bold shadow-lg`}
-                          >
-                            <Icon className="w-4 h-4" />
-                            {achievement.position}
-                          </span>
-                        </div>
-                        {achievement.images.length > 1 && (
-                          <button
-                            onClick={() => openLightbox(achievement, 0)}
-                            className="absolute bottom-4 right-4 inline-flex items-center gap-2 px-3 py-2 rounded-lg glass-strong text-foreground text-xs font-medium hover:bg-primary/20 transition-colors"
-                          >
-                            <Images className="w-4 h-4" />
-                            {achievement.images.length} Photos
-                          </button>
-                        )}
-                      </div>
+          {!isLoading && error && (
+            <div className="rounded-2xl border border-red-500/20 bg-red-500/10 p-8 text-center text-red-200">
+              {error}
+            </div>
+          )}
 
-                      {/* Right — Content */}
-                      <div className="lg:col-span-3 p-6 md:p-8 flex flex-col">
-                        <div className="flex flex-wrap items-center gap-3 mb-3 text-sm text-muted-foreground">
-                          <span className="flex items-center gap-1.5">
-                            <Calendar className="w-4 h-4 text-primary" />
-                            {formatDate(achievement.achievement_date)}
-                          </span>
-                          <span className="w-1 h-1 rounded-full bg-muted-foreground" />
-                          <span className="flex items-center gap-1.5">
-                            <MapPin className="w-4 h-4 text-primary" />
-                            {achievement.competition_name}
-                          </span>
-                        </div>
+          {!isLoading && !error && (
+            <div className="space-y-12">
+              <AnimatePresence mode="popLayout">
+                {filteredAchievements.map((achievement, index) => {
+                  const Icon = getPositionIcon(achievement.position);
+                  const gradient = getPositionColor(achievement.position);
+                  const coverImage = achievement.images[0];
 
-                        <h2 className="font-display text-2xl md:text-3xl font-bold mb-4 leading-tight">
-                          {achievement.title}
-                        </h2>
-
-                        <p className="text-muted-foreground leading-relaxed mb-6 flex-1">
-                          {achievement.description}
-                        </p>
-
-                        {/* Image Gallery Thumbnails */}
-                        {achievement.images.length > 1 && (
-                          <div className="mb-6">
-                            <p className="text-xs uppercase tracking-wider text-muted-foreground mb-3 font-semibold">
-                              Gallery
-                            </p>
-                            <div className="grid grid-cols-4 gap-2">
-                              {achievement.images.slice(0, 4).map((img, i) => (
-                                <button
-                                  key={i}
-                                  onClick={() => openLightbox(achievement, i)}
-                                  className="relative aspect-square rounded-lg overflow-hidden group border border-border hover:border-primary/50 transition-colors"
-                                >
-                                  <img
-                                    src={img.url}
-                                    alt={img.alt}
-                                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
-                                    loading="lazy"
-                                  />
-                                  <div className="absolute inset-0 bg-background/0 group-hover:bg-background/30 transition-colors" />
-                                </button>
-                              ))}
+                  return (
+                    <motion.article
+                      key={achievement._id}
+                      layout
+                      initial={{ opacity: 0, y: 40 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -20 }}
+                      transition={{ duration: 0.5, delay: index * 0.05 }}
+                      className="glass-strong rounded-2xl overflow-hidden"
+                    >
+                      <div className="grid lg:grid-cols-5 gap-0">
+                        {/* Left - Hero Image */}
+                        <div className="lg:col-span-2 relative h-64 lg:h-auto min-h-[300px] overflow-hidden group">
+                          {coverImage ? (
+                            <>
+                              <div
+                                className={`absolute inset-0 bg-gradient-to-br ${gradient} flex flex-col items-center justify-center p-8 text-center`}
+                              >
+                                <Icon className="w-20 h-20 text-primary-foreground mb-4" />
+                                <p className="text-primary-foreground/90 font-semibold">
+                                  {achievement.competition_name}
+                                </p>
+                              </div>
+                              <img
+                                src={coverImage.url}
+                                alt={coverImage.alt}
+                                className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 cursor-pointer"
+                                onClick={() => openLightbox(achievement, 0)}
+                                onError={(event) => {
+                                  event.currentTarget.style.display = "none";
+                                }}
+                                loading="lazy"
+                              />
+                            </>
+                          ) : (
+                            <div
+                              className={`absolute inset-0 bg-gradient-to-br ${gradient} flex flex-col items-center justify-center p-8 text-center`}
+                            >
+                              <Icon className="w-20 h-20 text-primary-foreground mb-4" />
+                              <p className="text-primary-foreground/90 font-semibold">
+                                {achievement.competition_name}
+                              </p>
                             </div>
+                          )}
+                          <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/20 to-transparent" />
+                          <div className="absolute top-4 left-4">
+                            <span
+                              className={`inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r ${gradient} text-primary-foreground text-sm font-bold shadow-lg`}
+                            >
+                              <Icon className="w-4 h-4" />
+                              {achievement.position}
+                            </span>
                           </div>
-                        )}
+                          {achievement.images.length > 1 && (
+                            <button
+                              onClick={() => openLightbox(achievement, 0)}
+                              className="absolute bottom-4 right-4 inline-flex items-center gap-2 px-3 py-2 rounded-lg glass-strong text-foreground text-xs font-medium hover:bg-primary/20 transition-colors"
+                            >
+                              <Images className="w-4 h-4" />
+                              {achievement.images.length} Photos
+                            </button>
+                          )}
+                        </div>
 
-                        {/* Actions */}
-                        {achievement.certificate_url && (
-                          <button
-                            onClick={() => openLightbox(achievement, 0, true)}
-                            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-primary/40 text-primary hover:bg-primary/10 transition-colors w-fit text-sm font-medium"
-                          >
-                            <FileBadge className="w-4 h-4" />
-                            View Certificate
-                          </button>
-                        )}
+                        {/* Right - Content */}
+                        <div className="lg:col-span-3 p-6 md:p-8 flex flex-col">
+                          <div className="flex flex-wrap items-center gap-3 mb-3 text-sm text-muted-foreground">
+                            <span className="flex items-center gap-1.5">
+                              <Calendar className="w-4 h-4 text-primary" />
+                              {formatDate(achievement.achievement_date)}
+                            </span>
+                            <span className="w-1 h-1 rounded-full bg-muted-foreground" />
+                            <span className="flex items-center gap-1.5">
+                              <MapPin className="w-4 h-4 text-primary" />
+                              {achievement.competition_name}
+                            </span>
+                          </div>
+
+                          <h2 className="font-display text-2xl md:text-3xl font-bold mb-4 leading-tight">
+                            {achievement.title}
+                          </h2>
+
+                          <p className="text-muted-foreground leading-relaxed mb-6 flex-1">
+                            {achievement.description}
+                          </p>
+
+                          {/* Image Gallery Thumbnails */}
+                          {achievement.images.length > 1 && (
+                            <div className="mb-6">
+                              <p className="text-xs uppercase tracking-wider text-muted-foreground mb-3 font-semibold">
+                                Gallery
+                              </p>
+                              <div className="grid grid-cols-4 gap-2">
+                                {achievement.images.slice(0, 4).map((img, i) => (
+                                  <button
+                                    key={i}
+                                    onClick={() => openLightbox(achievement, i)}
+                                    className={`relative aspect-square rounded-lg overflow-hidden group border border-border bg-gradient-to-br ${gradient} hover:border-primary/50 transition-colors`}
+                                  >
+                                    <img
+                                      src={img.url}
+                                      alt={img.alt}
+                                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                                      onError={(event) => {
+                                        event.currentTarget.style.display = "none";
+                                      }}
+                                      loading="lazy"
+                                    />
+                                    <div className="absolute inset-0 bg-background/0 group-hover:bg-background/30 transition-colors" />
+                                  </button>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Actions */}
+                          {achievement.certificate_url && (
+                            <a
+                              href={achievement.certificate_url}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-primary/40 text-primary hover:bg-primary/10 transition-colors w-fit text-sm font-medium"
+                            >
+                              <FileBadge className="w-4 h-4" />
+                              View Certificate
+                            </a>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  </motion.article>
-                );
-              })}
-            </AnimatePresence>
-          </div>
+                    </motion.article>
+                  );
+                })}
+              </AnimatePresence>
+            </div>
+          )}
 
-          {filteredAchievements.length === 0 && (
+          {!isLoading && !error && filteredAchievements.length === 0 && (
             <div className="text-center py-20 text-muted-foreground">
               No achievements match this filter.
             </div>
@@ -302,7 +429,7 @@ export default function AchievementsPage() {
               <X className="w-6 h-6" />
             </button>
 
-            {!lightbox.showCertificate && lightbox.achievement.images.length > 1 && (
+            {lightbox.achievement.images.length > 1 && (
               <>
                 <button
                   onClick={(e) => {
@@ -333,31 +460,20 @@ export default function AchievementsPage() {
               onClick={(e) => e.stopPropagation()}
             >
               <img
-                src={
-                  lightbox.showCertificate
-                    ? lightbox.achievement.certificate_url?.url
-                    : lightbox.achievement.images[lightbox.index].url
-                }
-                alt={
-                  lightbox.showCertificate
-                    ? lightbox.achievement.certificate_url?.alt
-                    : lightbox.achievement.images[lightbox.index].alt
-                }
+                src={lightbox.achievement.images[lightbox.index].url}
+                alt={lightbox.achievement.images[lightbox.index].alt}
                 className="w-full h-auto max-h-[75vh] object-contain rounded-xl"
               />
               <div className="mt-4 text-center">
                 <p className="text-foreground font-medium">
-                  {lightbox.showCertificate
-                    ? `Certificate — ${lightbox.achievement.title}`
-                    : lightbox.achievement.images[lightbox.index].caption ||
-                      lightbox.achievement.images[lightbox.index].alt}
+                  {lightbox.achievement.images[lightbox.index].caption ||
+                    lightbox.achievement.images[lightbox.index].alt}
                 </p>
-                {!lightbox.showCertificate &&
-                  lightbox.achievement.images.length > 1 && (
-                    <p className="text-sm text-muted-foreground mt-1">
-                      {lightbox.index + 1} / {lightbox.achievement.images.length}
-                    </p>
-                  )}
+                {lightbox.achievement.images.length > 1 && (
+                  <p className="text-sm text-muted-foreground mt-1">
+                    {lightbox.index + 1} / {lightbox.achievement.images.length}
+                  </p>
+                )}
               </div>
             </motion.div>
           </motion.div>
