@@ -5,9 +5,7 @@ import type {
   AchievementImage,
   AchievementResponse,
 } from "./type";
-
-const ACHIEVEMENT_API_BASE_URL =
-  "https://universal-portfolio-server.vercel.app/api/v1/achievement";
+import { API_BASE_URL } from "@/app/config";
 
 const toAchievementImage = (
   image: AchievementApiImage,
@@ -69,7 +67,7 @@ export async function fetchAchievements(userId: string): Promise<Achievement[]> 
   }
 
   const response = await fetch(
-    `${ACHIEVEMENT_API_BASE_URL}/${encodeURIComponent(userId)}`,
+    `${API_BASE_URL}/${encodeURIComponent(userId)}`,
     {
       cache: "no-store",
       headers: {
