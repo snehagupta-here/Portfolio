@@ -1,5 +1,5 @@
 import type { BlogPost } from "@/app/types/blog";
-import type { HomeExperience, HomeSkill, HomeTestimonial } from "@/app/types/home";
+import type { HomeSkill } from "@/app/types/home";
 import type { PersonalInfo, SocialLink } from "@/app/types/portfolio";
 import todoBanner from "@/assets/todo-app-banner.jpg";
 import blogRedisBanner from "@/assets/blog-redis-hero.jpg";
@@ -212,98 +212,12 @@ export const blogPosts: BlogPost[] = [
 ];
 
 export const homeSkills: HomeSkill[] = [
-  { name: "React & Next.js", category: "Frontend" },
-  { name: "TypeScript", category: "Languages" },
-  { name: "TailwindCSS", category: "Frontend" },
-  { name: "Node.js & APIs", category: "Backend" },
-  { name: "UI/UX Design", category: "Design" },
-  { name: "3D Animation & WebGL", category: "Frontend" },
-];
-
-export const homeExperiences: HomeExperience[] = [
-  {
-    title: "Senior Full Stack Developer",
-    company: "Tech Innovators Inc.",
-    period: "2023 - Present",
-    description:
-      "Leading development of next-generation web applications with focus on performance and user experience.",
-    achievements: [
-      "Architected and deployed scalable microservices infrastructure",
-      "Reduced page load times by 60% through optimization",
-      "Mentored team of 5 junior developers",
-    ],
-  },
-  {
-    title: "Frontend Developer",
-    company: "Creative Digital Studio",
-    period: "2021 - 2023",
-    description:
-      "Developed interactive web experiences for major brands using modern frameworks and 3D technologies.",
-    achievements: [
-      "Built 20+ responsive web applications",
-      "Implemented WebGL-based product visualizers",
-      "Improved code quality with comprehensive testing",
-    ],
-  },
-  {
-    title: "UI/UX Designer & Developer",
-    company: "StartUp Ventures",
-    period: "2020 - 2021",
-    description:
-      "Designed and developed user interfaces for mobile and web applications from concept to production.",
-    achievements: [
-      "Designed intuitive interfaces for 3 successful app launches",
-      "Conducted user research and usability testing",
-      "Created comprehensive design system",
-    ],
-  },
-  {
-    title: "Junior Web Developer",
-    company: "Digital Solutions Co.",
-    period: "2019 - 2020",
-    description:
-      "Started career building responsive websites and learning modern web development practices.",
-    achievements: [
-      "Contributed to 15+ client projects",
-      "Learned React, TypeScript, and modern tooling",
-      "Collaborated with cross-functional teams",
-    ],
-  },
-];
-
-export const homeTestimonials: HomeTestimonial[] = [
-  {
-    name: "Sarah Johnson",
-    role: "CEO, TechStart",
-    image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&q=80",
-    content:
-      "Working with this developer was an absolute pleasure. They delivered a stunning website that exceeded all our expectations. The attention to detail and technical expertise is unmatched.",
-    rating: 5,
-  },
-  {
-    name: "Michael Chen",
-    role: "Product Manager, InnovateCo",
-    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&q=80",
-    content:
-      "The project was completed ahead of schedule with exceptional quality. The 3D visualizations brought our product to life in ways we never imagined possible.",
-    rating: 5,
-  },
-  {
-    name: "Emily Rodriguez",
-    role: "Marketing Director, BrandFlow",
-    image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&q=80",
-    content:
-      "An incredibly talented developer who understands both design and functionality. Our new platform has received rave reviews from users and stakeholders alike.",
-    rating: 5,
-  },
-  {
-    name: "David Park",
-    role: "Founder, StartupLab",
-    image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&q=80",
-    content:
-      "Outstanding work from start to finish. They took our vision and turned it into a beautiful, high-performing application. Highly recommended!",
-    rating: 5,
-  },
+  { id: "react-next", name: "React & Next.js", category: "Frontend" },
+  { id: "typescript", name: "TypeScript", category: "Languages" },
+  { id: "tailwindcss", name: "TailwindCSS", category: "Frontend" },
+  { id: "node-apis", name: "Node.js & APIs", category: "Backend" },
+  { id: "ui-ux-design", name: "UI/UX Design", category: "Design" },
+  { id: "webgl-animation", name: "3D Animation & WebGL", category: "Frontend" },
 ];
 
 export const githubContributionSection = {

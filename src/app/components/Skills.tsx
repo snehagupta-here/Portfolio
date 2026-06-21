@@ -1,4 +1,4 @@
-import { useRef, useState, type ElementType } from "react";
+import { useEffect, useMemo, useRef, useState, type ElementType } from "react";
 import { AnimatePresence, motion, useInView } from "motion/react";
 import {
   Braces,
@@ -12,7 +12,9 @@ import {
   Smartphone,
 } from "lucide-react";
 
-import { homeSkills } from "@/app/data/appData";
+import { ImageWithFallback } from "@/app/components/figma/ImageWithFallback";
+import { homeContent as seedHomeContent } from "@/app/data/appData";
+import { useHomeContent } from "@/app/lib/useHomeContent";
 import type { HomeSkill, HomeSkillCategory } from "@/app/types/home";
 
 const iconMap: Record<string, ElementType> = {
@@ -36,6 +38,7 @@ const categoryGradients: Record<string, string> = {
   DevOps: "from-purple-500/20 to-cyan-500/15",
   Cloud: "from-cyan-500/20 to-purple-500/20",
   Languages: "from-cyan-500/15 to-purple-500/20",
+  Other: "from-cyan-500/15 to-purple-500/15",
   default: "from-cyan-500/15 to-purple-500/15",
 };
 
@@ -61,15 +64,32 @@ function SkillCard({ skill, index }: { skill: HomeSkill; index: number }) {
       <div className="relative p-6 rounded-2xl border border-slate-700/50 bg-slate-800/40 backdrop-blur hover:border-cyan-500/30 transition-all duration-300">
         <div className="flex items-center gap-4">
           <div
-            className={`p-3 rounded-xl bg-gradient-to-br ${gradientClass} group-hover:scale-110 transition-transform duration-300`}
+            className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br ${gradientClass} group-hover:scale-110 transition-transform duration-300`}
           >
-            <Icon size={22} className="text-cyan-300" />
+            {skill.iconUrl ? (
+              <ImageWithFallback
+                src={skill.iconUrl}
+                alt={skill.iconAlt || skill.name}
+                className="h-7 w-7 object-contain"
+                loading="lazy"
+              />
+            ) : (
+              <Icon size={22} className="text-cyan-300" />
+            )}
           </div>
           <div className="flex-1 min-w-0">
             <h3 className="font-semibold text-lg truncate text-slate-100 group-hover:text-cyan-300 transition-colors duration-300">
               {skill.name}
             </h3>
-            <span className="text-xs text-slate-400">{skill.category}</span>
+            <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-slate-400">
+              <span>{skill.category}</span>
+              {typeof skill.yearsOfExperience === "number" && (
+                <span>{skill.yearsOfExperience}+ yrs</span>
+              )}
+              {typeof skill.scale === "number" && (
+                <span>{skill.scale}/10</span>
+              )}
+            </div>
           </div>
         </div>
       </div>
@@ -126,22 +146,55 @@ function CategoryFilter({
   );
 }
 
+function SkillsLoadingGrid() {
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+      {Array.from({ length: 8 }).map((_, index) => (
+        <div
+          key={index}
+          className="h-[98px] animate-pulse rounded-2xl border border-slate-700/50 bg-slate-800/40"
+        />
+      ))}
+    </div>
+  );
+}
+
 export default function Skills() {
   const sectionRef = useRef<HTMLElement>(null);
   const isInView = useInView(sectionRef, { once: true, margin: "-100px" });
   const [activeCategory, setActiveCategory] = useState<HomeSkillCategory | "all">(
     "all",
   );
+  const { items } = useHomeContent();
+  const content = items[0] ?? seedHomeContent[0];
+  const skills = content.skills ?? [];
+  const isLoading = !content.skills;
 
-  const skills = homeSkills;
-  const categories = Array.from(new Set(skills.map((s) => s.category)));
-  const filteredSkills =
-    activeCategory === "all"
-      ? skills
-      : skills.filter((s) => s.category === activeCategory);
+  const categories = useMemo(
+    () => Array.from(new Set(skills.map((s) => s.category))),
+    [skills],
+  );
+
+  useEffect(() => {
+    if (activeCategory !== "all" && !categories.includes(activeCategory)) {
+      setActiveCategory("all");
+    }
+  }, [activeCategory, categories]);
+
+  const filteredSkills = useMemo(
+    () =>
+      activeCategory === "all"
+        ? skills
+        : skills.filter((s) => s.category === activeCategory),
+    [activeCategory, skills],
+  );
 
   return (
-    <section ref={sectionRef} id="skills" className="py-24 px-6 relative overflow-hidden">
+    <section
+      ref={sectionRef}
+      id="skills"
+      className="py-24 px-6 relative overflow-hidden"
+    >
       {/* Background Effects */}
       <div className="absolute top-0 right-0 w-96 h-96 bg-purple-500/5 rounded-full blur-[100px]" />
       <div className="absolute bottom-0 left-0 w-96 h-96 bg-cyan-500/5 rounded-full blur-[100px]" />
@@ -163,56 +216,68 @@ export default function Skills() {
           </p>
         </motion.div>
 
-        <CategoryFilter
-          categories={categories}
-          activeCategory={activeCategory}
-          setActiveCategory={setActiveCategory}
-        />
+        {isLoading ? (
+          <SkillsLoadingGrid />
+        ) : skills.length === 0 ? (
+          <div className="rounded-2xl border border-slate-700/50 bg-slate-800/40 px-6 py-5 text-center text-sm text-slate-300">
+            Skills will appear here once they are added.
+          </div>
+        ) : (
+          <>
+            <CategoryFilter
+              categories={categories}
+              activeCategory={activeCategory}
+              setActiveCategory={setActiveCategory}
+            />
 
-        <motion.div
-          layout
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"
-        >
-          <AnimatePresence mode="popLayout">
-            {filteredSkills.map((skill, index) => (
-              <SkillCard key={skill.name} skill={skill} index={index} />
-            ))}
-          </AnimatePresence>
-        </motion.div>
+            <motion.div
+              layout
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"
+            >
+              <AnimatePresence mode="popLayout">
+                {filteredSkills.map((skill, index) => (
+                  <SkillCard key={skill.id} skill={skill} index={index} />
+                ))}
+              </AnimatePresence>
+            </motion.div>
+          </>
+        )}
 
         {/* Stats */}
-        <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ delay: 0.25, duration: 0.7 }}
-          className="flex flex-wrap justify-center gap-12 mt-20"
-        >
-          {[
-            { value: skills.length, label: "Technologies", suffix: "+" },
-            { value: categories.length, label: "Categories", suffix: "" },
-          ].map((stat, index) => (
-            <div key={stat.label} className="text-center">
-              <motion.div
-                initial={{ scale: 0 }}
-                whileInView={{ scale: 1 }}
-                viewport={{ once: true }}
-                transition={{
-                  delay: 0.35 + index * 0.1,
-                  type: "spring",
-                  stiffness: 200,
-                }}
-                className="text-5xl md:text-6xl font-bold mb-2 text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-500"
-              >
-                {stat.value}
-                {stat.suffix}
-              </motion.div>
-              <span className="text-sm text-slate-400 uppercase tracking-wider">
-                {stat.label}
-              </span>
-            </div>
-          ))}
-        </motion.div>
+        {!isLoading && skills.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.25, duration: 0.7 }}
+            className="flex flex-wrap justify-center gap-12 mt-20"
+          >
+            {[
+              { value: skills.length, label: "Technologies", suffix: "+" },
+              { value: categories.length, label: "Categories", suffix: "" },
+            ].map((stat, index) => (
+              <div key={stat.label} className="text-center">
+                <motion.div
+                  initial={{ scale: 0 }}
+                  whileInView={{ scale: 1 }}
+                  viewport={{ once: true }}
+                  transition={{
+                    delay: 0.35 + index * 0.1,
+                    type: "spring",
+                    stiffness: 200,
+                  }}
+                  className="text-5xl md:text-6xl font-bold mb-2 text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-500"
+                >
+                  {stat.value}
+                  {stat.suffix}
+                </motion.div>
+                <span className="text-sm text-slate-400 uppercase tracking-wider">
+                  {stat.label}
+                </span>
+              </div>
+            ))}
+          </motion.div>
+        )}
       </div>
     </section>
   );

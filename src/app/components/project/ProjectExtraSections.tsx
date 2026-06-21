@@ -330,13 +330,21 @@ export const DeploymentSection = ({ items }: { items: DeploymentItem[] }) => (
             <Server size={14} className="text-purple-400" />
             <h3 className="font-display text-base font-semibold text-foreground capitalize">{item.type}</h3>
           </div>
-          {item.details.map((detail, j) => (
+          {(item.details || []).map((detail, j) => (
             <div key={j} className="space-y-1.5">
-              {Object.entries(detail).map(([k, v]) => (
-                <div key={k} className="flex items-center justify-between bg-secondary/50 rounded-lg px-3 py-2">
-                  <span className="text-[10px] uppercase tracking-wider text-muted-foreground">{k}</span>
-                  <span className="text-xs font-mono text-foreground/80">{v}</span>
-                </div>
+              {Object.entries(detail).filter(([k]) => k !== "target").map(([k, v]) => (
+              <div
+  key={k}
+  className="bg-secondary/50 rounded-lg px-3 py-2"
+>
+  <div className="text-[10px] uppercase tracking-wider text-muted-foreground mb-2">
+    {k}
+  </div>
+
+  <div className="text-xs font-mono text-foreground/80 text-left">
+    {Array.isArray(v) ? v.join(", ") : String(v)}
+  </div>
+</div>
               ))}
             </div>
           ))}

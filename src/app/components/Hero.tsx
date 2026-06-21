@@ -1,5 +1,5 @@
 import { motion } from "motion/react";
-import { ArrowDown, Dribbble, Github, Linkedin, Mail, Twitter } from "lucide-react";
+import { ArrowDown, Dribbble, Github, Link, Linkedin, Mail, Twitter } from "lucide-react";
 import FloatingShapes from "./FloatingShapes";
 import { homeContent as seedHomeContent } from "@/app/data/appData";
 import { useHomeContent } from "@/app/lib/useHomeContent";
@@ -10,6 +10,7 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   twitter: Twitter,
   dribbble: Dribbble,
   mail: Mail,
+  link: Link,
 };
 
 export default function Hero() {

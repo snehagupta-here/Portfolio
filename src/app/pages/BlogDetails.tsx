@@ -13,14 +13,35 @@ import BlogContentRenderer from "@/app/components/blog/BlogContentRenderer";
 
 export default function BlogDetails() {
   const { id } = useParams();
-  const { blogPosts } = usePortfolio();
+  const { blogError, blogPosts, isBlogLoading } = usePortfolio();
   const post = blogPosts.find((p) => p.id === id);
 
-  if (!post) {
+  if (isBlogLoading) {
+    return (
+      <div className="min-h-screen bg-background pt-18 pb-12">
+        <div className="h-64 md:h-80 bg-secondary/50 animate-pulse" />
+        <div className="max-w-7xl mx-auto px-6 -mt-20 relative z-10 pb-16">
+          <div className="glass rounded-xl p-6 md:p-8 space-y-5">
+            <div className="h-8 w-2/3 rounded bg-secondary animate-pulse" />
+            <div className="h-4 w-full rounded bg-secondary animate-pulse" />
+            <div className="h-4 w-5/6 rounded bg-secondary animate-pulse" />
+            <div className="h-40 rounded bg-secondary/70 animate-pulse" />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (blogError || !post) {
     return (
       <div className="min-h-screen flex items-center justify-center pt-18">
         <div className="text-center">
-          <h1 className="text-4xl font-bold text-foreground mb-4">Post not found</h1>
+          <h1 className="text-4xl font-bold text-foreground mb-4">
+            {blogError ? "Unable to load post" : "Post not found"}
+          </h1>
+          {blogError && (
+            <p className="text-muted-foreground mb-4">{blogError}</p>
+          )}
           <Link
             to="/#blog"
             className="text-primary hover:opacity-90 transition-opacity"
@@ -38,11 +59,15 @@ export default function BlogDetails() {
   return (
     <div className="min-h-screen bg-background pt-18 pb-12">
       <div className="relative h-64 md:h-80 overflow-hidden">
-        <img
-          src={post.banner}
-          alt={post.title}
-          className="w-full h-full object-cover"
-        />
+        {post.banner ? (
+          <img
+            src={post.banner}
+            alt={post.title}
+            className="w-full h-full object-cover"
+          />
+        ) : (
+          <div className="h-full w-full bg-gradient-to-br from-slate-800 via-slate-900 to-purple-950" />
+        )}
         <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/60 to-transparent" />
       </div>
 

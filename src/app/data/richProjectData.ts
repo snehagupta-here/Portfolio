@@ -44,6 +44,7 @@ export interface ContentSection {
   paragraphs: string[];
   images?: RichImage[];
   points?: ContentPoint[];
+  codeSnippets?: CodeSnippet[];
   items?: ContentSubItem[];
   questions?: FAQQuestion[];
 }
@@ -58,7 +59,7 @@ export interface APIEndpoint {
 }
 
 export interface APIGroup {
-  groupName: string;
+  name: string;
   basePath: string;
   endpoints: APIEndpoint[];
 }

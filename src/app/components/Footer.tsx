@@ -5,6 +5,7 @@ import {
   Dribbble,
   Github,
   Heart,
+  Link as LinkIcon,
   Linkedin,
   Mail,
   Sparkles,
@@ -20,6 +21,7 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   twitter: Twitter,
   dribbble: Dribbble,
   mail: Mail,
+  link: LinkIcon,
 };
 
 const quickLinks = [

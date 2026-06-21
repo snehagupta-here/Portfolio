@@ -18,9 +18,9 @@ export default function Home() {
       {/* <QuickLinks /> */}
       <Skills />
       <Projects />
-      <Experience />
+      <Experience userId={PORTFOLIO_USER_ID} />
       <Achievements userId={PORTFOLIO_USER_ID} />
-      <Testimonials />
+      <Testimonials userId={PORTFOLIO_USER_ID} />
       <GitHubCalendar />
       <Blog />
       {/* <DesignPhilosophy /> */}

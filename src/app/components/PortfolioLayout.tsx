@@ -5,6 +5,7 @@ import {
   Dribbble,
   Github,
   Heart,
+  Link as LinkIcon,
   Linkedin,
   Mail,
   Menu,
@@ -23,6 +24,7 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   twitter: Twitter,
   dribbble: Dribbble,
   mail: Mail,
+  link: LinkIcon,
 };
 
 export default function PortfolioLayout() {

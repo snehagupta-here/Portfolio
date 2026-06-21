@@ -4,7 +4,7 @@ import { Calendar, Clock, ArrowRight } from "lucide-react";
 import { usePortfolio } from "@/contexts/PortfolioContext";
 
 export default function Blog() {
-  const { blogPosts } = usePortfolio();
+  const { blogError, blogPosts, isBlogLoading } = usePortfolio();
   return (
     <section id="blog" className="py-24 px-6 relative overflow-hidden">
       {/* Background Effects */}
@@ -29,8 +29,32 @@ export default function Blog() {
           </p>
         </motion.div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {blogPosts.map((post, index) => (
+        {isBlogLoading && (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {[0, 1, 2].map((item) => (
+              <div
+                key={item}
+                className="h-96 rounded-xl border border-slate-700/50 bg-slate-800/40 animate-pulse"
+              />
+            ))}
+          </div>
+        )}
+
+        {!isBlogLoading && blogError && (
+          <div className="rounded-xl border border-red-500/20 bg-red-500/10 p-6 text-center text-red-200">
+            {blogError}
+          </div>
+        )}
+
+        {!isBlogLoading && !blogError && blogPosts.length === 0 && (
+          <div className="rounded-xl border border-slate-700/50 bg-slate-800/40 p-6 text-center text-slate-400">
+            No blog posts available yet.
+          </div>
+        )}
+
+        {!isBlogLoading && !blogError && blogPosts.length > 0 && (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {blogPosts.map((post, index) => (
             <motion.div
               key={post.id}
               initial={{ opacity: 0, y: 30 }}
@@ -45,11 +69,15 @@ export default function Blog() {
                 <div className="h-full bg-slate-800/50 backdrop-blur border border-slate-700/50 rounded-xl overflow-hidden hover:border-cyan-500/30 transition-all duration-300">
                   {/* Image */}
                   <div className="relative h-48 overflow-hidden">
-                    <img
-                      src={post.thumbnail}
-                      alt={post.title}
-                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                    />
+                    {post.thumbnail ? (
+                      <img
+                        src={post.thumbnail}
+                        alt={post.title}
+                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                      />
+                    ) : (
+                      <div className="h-full w-full bg-gradient-to-br from-slate-800 via-slate-900 to-purple-950" />
+                    )}
                   </div>
 
                   {/* Content */}
@@ -87,8 +115,9 @@ export default function Blog() {
                 </div>
               </Link>
             </motion.div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );

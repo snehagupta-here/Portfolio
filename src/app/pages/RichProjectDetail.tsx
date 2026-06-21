@@ -18,7 +18,7 @@ import type {
   CodeSnippet as CodeSnippetType,
   RichProject,
 } from "../data/richProjectData";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   PerformanceSection,
   TestingSection,
@@ -29,7 +29,8 @@ import {
   EnvVariablesSection,
 } from "../components/project/ProjectExtraSections";
 import { ImageWithFallback } from "../components/figma/ImageWithFallback";
-import { useProjects } from "@/app/lib/useProjects";
+import { PORTFOLIO_USER_ID } from "@/app/config";
+import { fetchProjects } from "@/services/project";
 
 // ── Table of Contents ──
 const TableOfContents = ({ sections }: { sections: ContentSection[] }) => {
@@ -69,7 +70,7 @@ const CodeBlock = ({ snippet }: { snippet: CodeSnippetType }) => {
     <div className="my-6 rounded-xl overflow-hidden border border-border">
       <div className="flex items-center justify-between bg-secondary px-4 py-2">
         <span className="text-xs font-mono text-muted-foreground">
-          {snippet.filename}
+          {snippet.language}
         </span>
         <button onClick={copy} className="text-xs text-purple-400 hover:underline">
           {copied ? "Copied!" : "Copy"}
@@ -82,9 +83,9 @@ const CodeBlock = ({ snippet }: { snippet: CodeSnippetType }) => {
         </p>
       )}
 
-      <pre className="overflow-x-auto p-4 text-sm font-mono text-foreground/90 bg-background">
-        <code>{snippet.code}</code>
-      </pre>
+     <pre className="p-4 text-sm font-mono max-h-[500px] text-foreground/90 bg-background whitespace-pre-wrap overflow-x-auto">
+  <code>{Array.isArray(snippet.code) ? snippet.code.join("\n") : snippet.code}</code>
+</pre>
     </div>
   );
 };
@@ -101,7 +102,7 @@ const SectionImage = ({
     viewport={{ once: true }}
     className="my-6 rounded-xl overflow-hidden border border-border"
   >
-    <ImageWithFallback src={img.url} alt={img.alt} className="w-full object-cover" />
+    <ImageWithFallback src={img.url} alt={img.alt} className="w-full max-h-[600px]  object-contain bg-background" />
     {img.caption && (
       <figcaption className="text-xs text-muted-foreground px-4 py-3 bg-secondary/50 text-center italic">
         {img.caption}
@@ -119,6 +120,7 @@ const HeadingBasedSection = ({ section }: { section: ContentSection }) => (
       </p>
     ))}
     {section.images?.map((img, i) => <SectionImage key={i} img={img} />)}
+    {section.codeSnippets?.map((cs, i) => <CodeBlock key={i} snippet={cs} />)}
   </div>
 );
 
@@ -130,26 +132,36 @@ const PointBasedSection = ({ section }: { section: ContentSection }) => (
         {p}
       </p>
     ))}
-    <div className="grid gap-3 mt-4">
-      {section.points?.map((point, i) => (
-        <motion.div
+    <SectionPoints points={section.points} />
+    {section.images?.map((img, i) => <SectionImage key={i} img={img} />)}
+    {section.codeSnippets?.map((cs, i) => <CodeBlock key={i} snippet={cs} />)}
+  </div>
+);
+
+const SectionPoints = ({ points }: { points?: ContentSection["points"] }) => {
+  if (!points || points.length === 0) return null;
+
+  return (
+    <ul className="mt-3 space-y-2.5">
+      {points.map((point, i) => (
+        <motion.li
           key={i}
           initial={{ opacity: 0, x: -10 }}
           whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true }}
           transition={{ delay: i * 0.05 }}
-          className="glass rounded-lg p-4 border-l-2 border-purple-500"
+          className="flex items-start gap-2 text-sm text-muted-foreground"
         >
-          <h4 className="font-display text-sm font-semibold text-foreground mb-1">
-            {point.label}
-          </h4>
-          <p className="text-xs text-muted-foreground">{point.description}</p>
-        </motion.div>
+          <span className="text-purple-400 mt-1 shrink-0">▸</span>
+          <span>
+           
+            {point.description}
+          </span>
+        </motion.li>
       ))}
-    </div>
-    {section.images?.map((img, i) => <SectionImage key={i} img={img} />)}
-  </div>
-);
+    </ul>
+  );
+};
 
 // ── SubHeading Based Section ──
 const SubHeadingBasedSection = ({ section }: { section: ContentSection }) => (
@@ -159,6 +171,9 @@ const SubHeadingBasedSection = ({ section }: { section: ContentSection }) => (
         {p}
       </p>
     ))}
+    <SectionPoints points={section.points} />
+    {section.images?.map((img, i) => <SectionImage key={i} img={img} />)}
+    {section.codeSnippets?.map((cs, i) => <CodeBlock key={i} snippet={cs} />)}
     <div className="space-y-8 mt-4">
       {section.items?.map((item, i) => (
         <SubItem key={i} item={item} />
@@ -320,10 +335,10 @@ const APIReference = ({
         Auth: {apis.authentication}
       </p>
 
-      {apis.groups.map((group) => (
-        <div key={group.groupName} className="mb-6">
+      {apis?.groups?.map((group) => (
+        <div key={group.name} className="mb-6">
           <h3 className="font-display text-lg font-semibold text-foreground mb-3">
-            {group.groupName}
+            {group.name}
           </h3>
           <div className="space-y-2">
             {group.endpoints.map((ep) => (
@@ -339,11 +354,11 @@ const APIReference = ({
                 >
                   {ep.method}
                 </span>
-                <code className="text-sm font-mono text-foreground/80">
+                <code className="text-[11px] font-mono text-foreground/80">
                   {apis.baseUrl}
                   {ep.route}
                 </code>
-                <span className="text-xs text-muted-foreground ml-auto hidden md:inline">
+                <span className="text-[11px] text-muted-foreground ml-auto hidden md:inline">
                   {ep.description}
                 </span>
               </div>
@@ -376,12 +391,12 @@ const DatabaseSchema = ({
       </h2>
     </div>
 
-    <p className="text-sm text-muted-foreground mb-6">{database.type}</p>
+    <p className="text-sm text-muted-foreground mb-6">{database.databaseType}</p>
 
-    {database.tables.map((table) => (
-      <div key={table.name} className="glass rounded-xl p-5 mb-6">
+    {database?.tables?.map((table) => (
+      <div key={table.tableName} className="glass rounded-xl p-5 mb-6">
         <h3 className="font-display text-lg font-semibold text-foreground mb-1 font-mono">
-          {table.name}
+          {table.tableName}
         </h3>
         <p className="text-xs text-muted-foreground mb-4">
           {table.description}
@@ -403,7 +418,7 @@ const DatabaseSchema = ({
               </tr>
             </thead>
             <tbody>
-              {table.columns.map((col) => (
+              {table?.columns?.map((col) => (
                 <tr key={col.name} className="border-b border-border/50">
                   <td className="py-2 pr-4 font-mono text-purple-400 text-xs">
                     {col.name}
@@ -420,19 +435,7 @@ const DatabaseSchema = ({
           </table>
         </div>
 
-        {table.indexes.length > 0 && (
-          <div className="mt-4 pt-3 border-t border-border/50">
-            <h4 className="text-xs font-semibold text-muted-foreground mb-2 uppercase tracking-wider">
-              Indexes
-            </h4>
-            {table.indexes.map((idx) => (
-              <div key={idx.name} className="text-xs text-muted-foreground mb-1">
-                <code className="text-purple-400/80">{idx.name}</code> —{" "}
-                {idx.reason}
-              </div>
-            ))}
-          </div>
-        )}
+       
       </div>
     ))}
   </motion.section>
@@ -441,13 +444,76 @@ const DatabaseSchema = ({
 // ── Main Page ──
 const RichProjectDetail = () => {
   const { slug } = useParams();
-  const { items: richProjects } = useProjects();
-  const project = richProjects.find((p) => p.slug === slug);
+  const [projects, setProjects] = useState<RichProject[]>([]);
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const project = projects.find((p) => p.slug === slug);
 
-  if (!project) {
+  useEffect(() => {
+    let ignore = false;
+console.log("Fetching projects for user:", PORTFOLIO_USER_ID);
+    async function loadProjects() {
+      setIsLoading(true);
+      setError(null);
+
+      try {
+        const data = await fetchProjects(PORTFOLIO_USER_ID);
+        console.log("the data is",data);
+        if (!ignore) {
+          setProjects(data);
+        }
+      } catch (error) {
+        if (!ignore) {
+          setProjects([]);
+          setError(error instanceof Error ? error.message : "Unable to load project.");
+        }
+      } finally {
+        if (!ignore) {
+          setIsLoading(false);
+        }
+      }
+    }
+
+    loadProjects();
+
+    return () => {
+      ignore = true;
+    };
+  }, []);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <div className="relative h-[50vh] md:h-[60vh] overflow-hidden bg-secondary/40 animate-pulse" />
+        <div className="section-padding">
+          <div className="max-w-5xl mx-auto space-y-6">
+            <div className="h-8 w-2/3 rounded bg-secondary animate-pulse" />
+            <div className="h-4 w-full rounded bg-secondary animate-pulse" />
+            <div className="h-4 w-4/5 rounded bg-secondary animate-pulse" />
+            <div className="grid gap-4 md:grid-cols-2">
+              <div className="h-48 rounded-xl bg-secondary/70 animate-pulse" />
+              <div className="h-48 rounded-xl bg-secondary/70 animate-pulse" />
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !project) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
-        <p className="text-muted-foreground">Project not found.</p>
+        <div className="text-center space-y-4 px-6">
+          <p className="text-muted-foreground">
+            {error || "Project not found."}
+          </p>
+          <Link
+            to="/#projects"
+            className="inline-flex items-center gap-2 text-purple-400 hover:text-purple-300 transition-colors text-sm"
+          >
+            <ArrowLeft size={14} /> Back to Projects
+          </Link>
+        </div>
       </div>
     );
   }
@@ -526,8 +592,8 @@ const RichProjectDetail = () => {
               <ContentRenderer key={section.id} section={section} />
             ))}
 
-            {project.apis && <APIReference apis={project.apis} />}
-            {project.database && <DatabaseSchema database={project.database} />}
+            {project && project.apis && <APIReference apis={project.apis} />}
+            {project && project.database && <DatabaseSchema database={project.database} />}
             {project.performance && <PerformanceSection items={project.performance} />}
             {project.testing && <TestingSection items={project.testing} />}
             {project.folderStructure && (

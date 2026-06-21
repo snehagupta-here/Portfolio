@@ -1,4 +1,5 @@
 import type { PersonalInfo, SocialLink } from "./portfolio";
+import type { HomeSkill } from "./home";
 
 export type HomeContentParagraph = {
   key: string;
@@ -21,7 +22,9 @@ export type HomeContent = {
     totalYearsExperience: string;
     projectsCompleted: string;
     resumeUrl: string;
+    resumeFileName?: string;
     highlights: HomeContentHighlight[];
   };
   socialLinks: SocialLink[];
+  skills?: HomeSkill[];
 };

@@ -1,7 +1,9 @@
 import { Coffee, Code2, Download, Lightbulb, Mail, MapPin } from "lucide-react";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
+import { API_BASE_URL, PORTFOLIO_USER_ID } from "@/app/config";
 import { homeContent as seedHomeContent } from "@/app/data/appData";
 import { useHomeContent } from "@/app/lib/useHomeContent";
+import { downloadResume } from "@/services/user";
 import { motion, useInView } from 'framer-motion';
 import { useRef } from 'react';
 
@@ -24,6 +26,28 @@ export default function About() {
   const projects = withPlus(about.projectsCompleted);
   const ref = useRef<HTMLElement | null>(null);
   const isInView = useInView(ref, { once: true, margin: '-100px' });
+  const handleResumeDownload = async (
+    event: React.MouseEvent<HTMLAnchorElement>,
+  ) => {
+    event.preventDefault();
+
+    try {
+      const { blob, fileName } = await downloadResume(PORTFOLIO_USER_ID);
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = fileName || about.resumeFileName || "resume.pdf";
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+    } catch {
+      if (about.resumeUrl && about.resumeUrl !== "#") {
+        window.open(about.resumeUrl, "_blank", "noopener,noreferrer");
+      }
+    }
+  };
+
   return (
     <section id="about" className="py-24 px-6 relative overflow-hidden" ref={ref}>
       {/* Background Grid */}
@@ -138,7 +162,9 @@ export default function About() {
 	
 	            {/* CTA */}
 	            <motion.a
-	              href={about.resumeUrl}
+	              href={`${API_BASE_URL}/user/${PORTFOLIO_USER_ID}/download-resume`}
+                download={about.resumeFileName || "resume.pdf"}
+                onClick={handleResumeDownload}
 	              whileHover={{ scale: 1.02 }}
 	              whileTap={{ scale: 0.98 }}
 	              className="inline-flex items-center gap-3 px-6 py-3 rounded-xl bg-gradient-to-r from-cyan-500 to-purple-500  font-semibold hover:shadow-lg hover:shadow-cyan-500/30 transition-shadow"

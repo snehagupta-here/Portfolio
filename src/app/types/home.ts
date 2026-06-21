@@ -6,26 +6,15 @@ export type HomeSkillCategory =
   | "Mobile"
   | "DevOps"
   | "Cloud"
-  | "Languages";
+  | "Languages"
+  | "Other";
 
 export type HomeSkill = {
+  id: string;
   name: string;
   category: HomeSkillCategory;
+  iconUrl?: string;
+  iconAlt?: string;
+  yearsOfExperience?: number;
+  scale?: number;
 };
-
-export type HomeExperience = {
-  title: string;
-  company: string;
-  period: string;
-  description: string;
-  achievements: string[];
-};
-
-export type HomeTestimonial = {
-  name: string;
-  role: string;
-  image: string;
-  content: string;
-  rating: number;
-};
-
