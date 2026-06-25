@@ -63,6 +63,7 @@ export type UserProfile = {
   aboutBio?: string;
   aboutHeading?: string;
   avatar?: UserAsset;
+  aboutImage?: UserAsset;
   bio?: string;
   location?: string;
   projectsCompleted?: string;

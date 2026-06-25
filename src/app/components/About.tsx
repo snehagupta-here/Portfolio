@@ -86,7 +86,7 @@ export default function About() {
 	            <div className="relative group">
 	              <div className="absolute inset-0 bg-gradient-to-r from-primary to-purple-glow rounded-2xl blur-xl opacity-30 group-hover:opacity-50 transition-opacity" />
 	              <ImageWithFallback
-	                src={about.picture.src}
+	                src={personalInfo.aboutImage}
 	                alt={about.picture.alt}
 	                className="relative rounded-2xl w-full h-[400px] object-cover"
 	              />

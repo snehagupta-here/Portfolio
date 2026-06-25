@@ -1,45 +1,46 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
-import { motion, useInView } from 'framer-motion';
-import { Calendar, LoaderCircle } from 'lucide-react';
+import { useEffect, useMemo, useRef, useState } from "react";
+import { motion, useInView } from "framer-motion";
+import { Calendar, LoaderCircle } from "lucide-react";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '../components/ui/select';
-import { githubContributionSection } from '@/app/data/appData';
+} from "../components/ui/select";
+import { githubContributionSection } from "@/app/data/appData";
 import {
   fetchGitHubContributions,
   type GitHubContributions,
-} from '@/services/user';
+} from "@/services/user";
+import { PORTFOLIO_USER_ID } from "@/app/config";
 
 const monthNames = [
-  'Jan',
-  'Feb',
-  'Mar',
-  'Apr',
-  'May',
-  'Jun',
-  'Jul',
-  'Aug',
-  'Sep',
-  'Oct',
-  'Nov',
-  'Dec',
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
+  "May",
+  "Jun",
+  "Jul",
+  "Aug",
+  "Sep",
+  "Oct",
+  "Nov",
+  "Dec",
 ];
 
-const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 const CELL_SIZE = 16;
 const CELL_GAP = 4;
 
 const getContributionColor = (count: number) => {
-  if (count === 0) return 'bg-muted/30';
-  if (count <= 3) return 'bg-purple-500/25';
-  if (count <= 6) return 'bg-purple-500/40';
-  if (count <= 9) return 'bg-purple-500/60';
-  return 'bg-purple-500/85';
+  if (count === 0) return "bg-muted/30";
+  if (count <= 3) return "bg-purple-500/25";
+  if (count <= 6) return "bg-purple-500/40";
+  if (count <= 9) return "bg-purple-500/60";
+  return "bg-purple-500/85";
 };
 
 type CalendarDay = {
@@ -84,7 +85,7 @@ export default function GitHubCalendar() {
   const [error, setError] = useState<string | null>(null);
 
   const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: '-100px' });
+  const isInView = useInView(ref, { once: true, margin: "-100px" });
 
   useEffect(() => {
     const controller = new AbortController();
@@ -95,6 +96,7 @@ export default function GitHubCalendar() {
 
       try {
         const data = await fetchGitHubContributions(
+          PORTFOLIO_USER_ID,
           Number(selectedYear),
           controller.signal,
         );
@@ -103,7 +105,7 @@ export default function GitHubCalendar() {
       } catch (requestError) {
         if (
           requestError instanceof DOMException &&
-          requestError.name === 'AbortError'
+          requestError.name === "AbortError"
         ) {
           return;
         }
@@ -112,7 +114,7 @@ export default function GitHubCalendar() {
         setError(
           requestError instanceof Error
             ? requestError.message
-            : 'Unable to load GitHub contributions.',
+            : "Unable to load GitHub contributions.",
         );
       } finally {
         if (!controller.signal.aborted) {
@@ -139,7 +141,7 @@ export default function GitHubCalendar() {
               count: day.contributionCount,
             }
           : {
-              date: '',
+              date: "",
               count: -1,
             };
       }),
@@ -204,8 +206,8 @@ export default function GitHubCalendar() {
                 {stats.total.toLocaleString()}
               </span>
               <span className="text-muted-foreground">
-  contributions in {selectedYear}
-</span>
+                contributions in {selectedYear}
+              </span>
             </div>
 
             <Select
@@ -252,7 +254,7 @@ export default function GitHubCalendar() {
           {/* Stats */}
           <div
             className={`mb-10 grid grid-cols-2 gap-4 md:grid-cols-4 ${
-              isLoading ? 'animate-pulse' : ''
+              isLoading ? "animate-pulse" : ""
             }`}
           >
             <div className="rounded-xl border border-cyan-500/30 bg-cyan-500/10 p-4 text-center">
@@ -324,7 +326,7 @@ export default function GitHubCalendar() {
                   <div className="flex w-10 shrink-0 flex-col gap-1 text-sm text-muted-foreground">
                     {days.map((day, index) => (
                       <div key={day} className="flex h-4 items-center">
-                        {index % 2 === 1 ? day : ''}
+                        {index % 2 === 1 ? day : ""}
                       </div>
                     ))}
                   </div>
@@ -337,9 +339,7 @@ export default function GitHubCalendar() {
                           <motion.div
                             key={`${weekIndex}-${dayIndex}`}
                             initial={{ opacity: 0, scale: 0 }}
-                            animate={
-                              isInView ? { opacity: 1, scale: 1 } : {}
-                            }
+                            animate={isInView ? { opacity: 1, scale: 1 } : {}}
                             transition={{
                               duration: 0.2,
                               delay: isInView
@@ -348,13 +348,13 @@ export default function GitHubCalendar() {
                             }}
                             className={`h-4 w-4 cursor-pointer rounded-sm transition-all hover:ring-2 hover:ring-purple-500/50 ${
                               day.count === -1
-                                ? 'bg-transparent'
+                                ? "bg-transparent"
                                 : getContributionColor(day.count)
                             }`}
                             title={
                               day.date
                                 ? `${day.date}: ${day.count} contributions`
-                                : ''
+                                : ""
                             }
                           />
                         ))}

@@ -5,6 +5,7 @@ export type PersonalInfo = {
   bio: string;
   email: string;
     avatar : string;
+    aboutImage?: string;
 };
 
 export type SocialLink = {

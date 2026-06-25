@@ -57,6 +57,7 @@ const toHomeSkill = (skill: UserSkill): HomeSkill | undefined => {
 
 const toHomeContent = (user: UserProfile): HomeContent => {
   const avatarUrl = getAssetUrl(user.avatar);
+  const aboutImageUrl = getAssetUrl(user.aboutImage);
   const resumeUrl = getAssetUrl(user.resume);
   const paragraphs = user.paragraphs.length > 0
     ? user.paragraphs
@@ -71,6 +72,7 @@ const toHomeContent = (user: UserProfile): HomeContent => {
       bio: user.bio || user.aboutBio || paragraphs[0] || "",
       email: user.email,
       avatar: avatarUrl,
+      aboutImage: aboutImageUrl,
     },
     about: {
       picture: {
@@ -162,16 +164,21 @@ export async function downloadResume(userId: string) {
 }
 
 export async function fetchGitHubContributions(
+  userId: string,
   year: number,
   signal?: AbortSignal,
 ): Promise<GitHubContributions> {
+    if (!userId) {
+    throw new Error("User ID is required to fetch user profile.");
+  }
+
   if (!Number.isInteger(year) || year < 2008) {
     throw new Error("A valid GitHub contribution year is required.");
   }
 
   const params = new URLSearchParams({ year: String(year) });
   const response = await fetch(
-    `${API_BASE_URL}/user/contributions?${params.toString()}`,
+    `${API_BASE_URL}/user/${encodeURIComponent(userId)}/contributions?${params.toString()}`,
     {
       cache: "no-store",
       signal,
