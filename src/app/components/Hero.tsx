@@ -19,7 +19,7 @@ export default function Hero() {
   const personalInfo = content.personalInfo;
   // const hero = content.hero;
   const socialLinks = content.socialLinks;
-  const firstName = personalInfo.name.split(" ")[0] ?? personalInfo.name;
+  const firstName = personalInfo.name;
 
   return (
     <section
@@ -54,7 +54,7 @@ export default function Hero() {
           </motion.div>
 
           <motion.h1
-            className="text-5xl md:text-7xl lg:text-8xl font-bold mb-6 leading-tight"
+            className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight"
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
@@ -78,7 +78,7 @@ export default function Hero() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.8, delay: 0.55 }}
-            className="text-lg text-slate-400 mb-10"
+            className="text-md text-slate-400 mb-10"
           >
             {personalInfo.tagline}
           </motion.p>
