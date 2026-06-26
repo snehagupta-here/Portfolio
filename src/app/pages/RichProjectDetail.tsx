@@ -154,7 +154,6 @@ const SectionPoints = ({ points }: { points?: ContentSection["points"] }) => {
         >
           <span className="text-purple-400 mt-1 shrink-0">▸</span>
           <span>
-           
             {point.description}
           </span>
         </motion.li>
@@ -297,21 +296,32 @@ const ContentRenderer = ({ section }: { section: ContentSection }) => {
     </motion.section>
   );
 };
+const methodColors: Record<string, string> = {
+  GET: "bg-blue-500/20 text-blue-400",
+  POST: "bg-green-500/20 text-green-400",
+  PUT: "bg-orange-500/20 text-orange-400",
+  PATCH: "bg-yellow-500/20 text-yellow-400",
+  DELETE: "bg-red-500/20 text-red-400",
+};
 
+const formatHeading = (key: string) =>
+  key
+    .replace(/([A-Z])/g, " $1")
+    .replace(/^./, (char) => char.toUpperCase());
+type ApiEndpoint = {
+  method: string;
+  endpoint: string;
+  description: string;
+};
+type ApiReference = Record<string, ApiEndpoint[]>;
+interface APIReferenceSectionProps {
+  apis: ApiReference;
+}
 // ── API Reference ──
-const APIReference = ({
+export const APIReference = ({
   apis,
-}: {
-  apis: NonNullable<RichProject["apis"]>;
-}) => {
-  const methodColors: Record<string, string> = {
-    GET: "bg-emerald-500/20 text-emerald-400",
-    POST: "bg-blue-500/20 text-blue-400",
-    PATCH: "bg-amber-500/20 text-amber-400",
-    DELETE: "bg-red-500/20 text-red-400",
-    PUT: "bg-purple-500/20 text-purple-400",
-  };
-
+}: APIReferenceSectionProps) => {
+  console.log("apis", apis);
   return (
     <motion.section
       initial={{ opacity: 0, y: 20 }}
@@ -319,7 +329,7 @@ const APIReference = ({
       viewport={{ once: true }}
       className="scroll-mt-28"
     >
-      <div className="flex items-center gap-3 mb-4">
+      <div className="flex items-center gap-3 mb-6">
         <span className="text-purple-400">
           <ExternalLink size={18} />
         </span>
@@ -328,44 +338,41 @@ const APIReference = ({
         </h2>
       </div>
 
-      <p className="text-sm text-muted-foreground mb-2">
-        Base URL: <code className="text-purple-400 font-mono">{apis.baseUrl}</code>
-      </p>
-      <p className="text-sm text-muted-foreground mb-6">
-        Auth: {apis.authentication}
-      </p>
+      <div className="space-y-8">
+        {Object.entries(apis).map(([groupName, endpoints]) => (
+          <div key={groupName}>
+            <h3 className="font-display text-lg font-semibold text-foreground mb-4">
+              {formatHeading(groupName)}
+            </h3>
 
-      {apis?.groups?.map((group) => (
-        <div key={group.name} className="mb-6">
-          <h3 className="font-display text-lg font-semibold text-foreground mb-3">
-            {group.name}
-          </h3>
-          <div className="space-y-2">
-            {group.endpoints.map((ep) => (
-              <div
-                key={ep.id}
-                className="glass rounded-lg px-4 py-3 flex items-center gap-3"
-              >
-                <span
-                  className={`text-xs font-mono font-bold px-2 py-0.5 rounded ${
-                    methodColors[ep.method] ||
-                    "bg-secondary text-muted-foreground"
-                  }`}
+            <div className="space-y-3">
+              {endpoints.map((endpoint, index) => (
+                <div
+                  key={index}
+                  className="glass rounded-xl p-4 flex flex-col md:flex-row md:items-center gap-3"
                 >
-                  {ep.method}
-                </span>
-                <code className="text-[11px] font-mono text-foreground/80">
-                  {apis.baseUrl}
-                  {ep.route}
-                </code>
-                <span className="text-[11px] text-muted-foreground ml-auto hidden md:inline">
-                  {ep.description}
-                </span>
-              </div>
-            ))}
+                  <span
+                    className={`w-fit px-2.5 py-1 rounded-md text-xs font-bold font-mono ${
+                      methodColors[endpoint.method] ??
+                      "bg-secondary text-muted-foreground"
+                    }`}
+                  >
+                    {endpoint.method}
+                  </span>
+
+                  <code className="font-mono text-xs text-foreground break-all md:min-w-[340px]">
+                    {endpoint.endpoint}
+                  </code>
+
+                  <p className="text-xs text-muted-foreground md:ml-auto md:text-right">
+                    {endpoint.description}
+                  </p>
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
-      ))}
+        ))}
+      </div>
     </motion.section>
   );
 };

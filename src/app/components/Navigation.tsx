@@ -1,16 +1,31 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 
 export default function Navigation() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 50);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  useEffect(() => {
+    if (location.pathname !== "/" || !location.hash) return;
+
+    const targetId = decodeURIComponent(location.hash.slice(1));
+    const frame = window.requestAnimationFrame(() => {
+      document
+        .getElementById(targetId)
+        ?.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+
+    return () => window.cancelAnimationFrame(frame);
+  }, [location.hash, location.pathname]);
 
   const navLinks = [
     { name: "Home", href: "/#home" },
@@ -21,6 +36,28 @@ export default function Navigation() {
     { name: "Blog", href: "/#blog" },
     { name: "Contact", href: "/#contact" },
   ];
+
+  const handleNavClick = (href: string) => {
+    setIsMenuOpen(false);
+
+    if (!href.startsWith("/#")) {
+      navigate(href);
+      return;
+    }
+
+    const id = href.substring(2);
+    const targetHash = `#${id}`;
+
+    if (location.pathname !== "/" || location.hash !== targetHash) {
+      navigate(href);
+    }
+
+    if (location.pathname === "/") {
+      document
+        .getElementById(id)
+        ?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  };
 
   return (
     <nav
@@ -39,13 +76,17 @@ export default function Navigation() {
 
         <div className="hidden md:flex items-center gap-8">
           {navLinks.map((link) => (
-            <Link
+            <a
               key={link.name}
-              to={link.href}
+              href={link.href}
+              onClick={(event) => {
+                event.preventDefault();
+                handleNavClick(link.href);
+              }}
               className="text-slate-300 hover:text-cyan-400 transition-colors"
             >
               {link.name}
-            </Link>
+            </a>
           ))}
         </div>
 
@@ -62,14 +103,17 @@ export default function Navigation() {
         <div className="md:hidden bg-slate-900 border-t border-cyan-500/20">
           <div className="px-6 py-4 flex flex-col gap-4">
             {navLinks.map((link) => (
-              <Link
+              <a
                 key={link.name}
-                to={link.href}
-                onClick={() => setIsMenuOpen(false)}
+                href={link.href}
+                onClick={(event) => {
+                  event.preventDefault();
+                  handleNavClick(link.href);
+                }}
                 className="text-slate-300 hover:text-cyan-400 transition-colors"
               >
                 {link.name}
-              </Link>
+              </a>
             ))}
           </div>
         </div>
@@ -77,4 +121,3 @@ export default function Navigation() {
     </nav>
   );
 }
-

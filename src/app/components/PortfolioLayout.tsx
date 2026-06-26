@@ -1,4 +1,4 @@
-import { Outlet, Link, useLocation } from "react-router-dom";
+import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
 import { motion } from "motion/react";
 import {
   ArrowUp,
@@ -36,6 +36,7 @@ export default function PortfolioLayout() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -44,6 +45,19 @@ export default function PortfolioLayout() {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  useEffect(() => {
+    if (location.pathname !== "/" || !location.hash) return;
+
+    const targetId = decodeURIComponent(location.hash.slice(1));
+    const frame = window.requestAnimationFrame(() => {
+      document
+        .getElementById(targetId)
+        ?.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+
+    return () => window.cancelAnimationFrame(frame);
+  }, [location.hash, location.pathname]);
 
   const navLinks = [
     { name: "Home", href: "/#home" },
@@ -59,9 +73,16 @@ export default function PortfolioLayout() {
     setIsMenuOpen(false);
     if (href.startsWith("/#")) {
       const id = href.substring(2);
-      const element = document.getElementById(id);
-      if (element) {
-        element.scrollIntoView({ behavior: "smooth" });
+      const targetHash = `#${id}`;
+
+      if (location.pathname !== "/" || location.hash !== targetHash) {
+        navigate(href);
+      }
+
+      if (location.pathname === "/") {
+        document
+          .getElementById(id)
+          ?.scrollIntoView({ behavior: "smooth", block: "start" });
       }
     }
   };
