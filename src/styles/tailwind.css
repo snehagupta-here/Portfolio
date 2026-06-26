@@ -61,4 +61,26 @@
   [data-admin-shell] textarea[data-slot="textarea"] {
     background-color: #080a0c !important;
   }
+
+  .contact-field {
+    color-scheme: dark;
+    caret-color: #67e8f9;
+  }
+
+  .contact-field,
+  .contact-field:focus,
+  .contact-field:active {
+    background-color: rgb(15 23 42 / 0.5) !important;
+    color: #ffffff !important;
+  }
+
+  .contact-field:-webkit-autofill,
+  .contact-field:-webkit-autofill:hover,
+  .contact-field:-webkit-autofill:focus,
+  .contact-field:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 1000px rgb(15 23 42) inset !important;
+    -webkit-text-fill-color: #ffffff !important;
+    caret-color: #67e8f9;
+    transition: background-color 9999s ease-out;
+  }
 }

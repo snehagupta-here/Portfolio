@@ -1,20 +1,65 @@
 import { motion } from "motion/react";
-import { Mail, MapPin, Phone, Send } from "lucide-react";
+import {
+  CheckCircle2,
+  Loader2,
+  Mail,
+  MapPin,
+  Send,
+  X,
+  XCircle,
+} from "lucide-react";
 import { useState } from "react";
 
+import { homeContent as seedHomeContent } from "@/app/data/appData";
+import { useHomeContent } from "@/app/lib/useHomeContent";
+import { submitContactUs } from "@/services/contact";
+
+const fieldClass =
+  "contact-field w-full px-4 py-3 bg-slate-900/50 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all";
+
 export default function Contact() {
+  const { items } = useHomeContent();
+  const content = items[0] ?? seedHomeContent[0];
+  const personalInfo = content.personalInfo;
+  const about = content.about;
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     subject: "",
     message: "",
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [status, setStatus] = useState<{
+    type: "success" | "error";
+    message: string;
+  } | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle form submission
-    console.log("Form submitted:", formData);
-    alert("Message sent! (Demo only)");
+
+    try {
+      setIsSubmitting(true);
+      setStatus(null);
+      const result = await submitContactUs({
+        name: formData.name.trim(),
+        email: formData.email.trim(),
+        subject: formData.subject.trim(),
+        message: formData.message.trim(),
+      });
+
+      setFormData({ name: "", email: "", subject: "", message: "" });
+      setStatus({ type: "success", message: result.message });
+    } catch (error) {
+      setStatus({
+        type: "error",
+        message:
+          error instanceof Error
+            ? error.message
+            : "Unable to send your message right now.",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -68,29 +113,26 @@ export default function Contact() {
                 </div>
                 <div>
                   <h4 className="text-white font-bold mb-1">Email</h4>
-                  <p className="text-slate-400">hello@portfolio.com</p>
+                  <a
+                    href={`mailto:${personalInfo.email}`}
+                    className="text-slate-400 hover:text-cyan-300 transition-colors break-all"
+                  >
+                    {personalInfo.email}
+                  </a>
                 </div>
               </div>
 
-              <div className="flex items-start gap-4 p-4 bg-slate-800/50 backdrop-blur border border-slate-700/50 rounded-lg group hover:border-purple-500/30 transition-colors">
-                <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
-                  <Phone className="w-6 h-6 text-white" />
+              {about.location && (
+                <div className="flex items-start gap-4 p-4 bg-slate-800/50 backdrop-blur border border-slate-700/50 rounded-lg group hover:border-purple-500/30 transition-colors">
+                  <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
+                    <MapPin className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <h4 className="text-white font-bold mb-1">Location</h4>
+                    <p className="text-slate-400">{about.location}</p>
+                  </div>
                 </div>
-                <div>
-                  <h4 className="text-white font-bold mb-1">Phone</h4>
-                  <p className="text-slate-400">+1 (555) 123-4567</p>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-4 p-4 bg-slate-800/50 backdrop-blur border border-slate-700/50 rounded-lg group hover:border-pink-500/30 transition-colors">
-                <div className="w-12 h-12 bg-gradient-to-br from-pink-500 to-cyan-500 rounded-lg flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
-                  <MapPin className="w-6 h-6 text-white" />
-                </div>
-                <div>
-                  <h4 className="text-white font-bold mb-1">Location</h4>
-                  <p className="text-slate-400">San Francisco, CA</p>
-                </div>
-              </div>
+              )}
             </div>
           </motion.div>
 
@@ -105,6 +147,39 @@ export default function Contact() {
               onSubmit={handleSubmit}
               className="bg-slate-800/50 backdrop-blur border border-slate-700/50 rounded-2xl p-8 space-y-6"
             >
+              {status && (
+                <motion.div
+                  initial={{ opacity: 0, y: -8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className={`flex items-start gap-3 rounded-xl border p-4 ${
+                    status.type === "success"
+                      ? "border-cyan-400/30 bg-cyan-500/10 text-cyan-100"
+                      : "border-red-400/30 bg-red-500/10 text-red-100"
+                  }`}
+                  role="alert"
+                >
+                  {status.type === "success" ? (
+                    <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-cyan-300" />
+                  ) : (
+                    <XCircle className="mt-0.5 h-5 w-5 shrink-0 text-red-300" />
+                  )}
+                  <div className="min-w-0 flex-1">
+                    <p className="font-semibold">
+                      {status.type === "success" ? "Message sent" : "Message failed"}
+                    </p>
+                    <p className="mt-1 text-sm text-slate-300">{status.message}</p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setStatus(null)}
+                    className="rounded-md p-1 text-slate-300 transition-colors hover:bg-white/10 hover:text-white"
+                    aria-label="Dismiss message"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                </motion.div>
+              )}
+
               <div>
                 <label htmlFor="name" className="block text-white font-medium mb-2">
                   Your Name
@@ -116,7 +191,7 @@ export default function Contact() {
                   onChange={(e) =>
                     setFormData({ ...formData, name: e.target.value })
                   }
-                  className="w-full px-4 py-3 bg-slate-900/50 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all"
+                  className={fieldClass}
                   placeholder="John Doe"
                   required
                 />
@@ -133,7 +208,7 @@ export default function Contact() {
                   onChange={(e) =>
                     setFormData({ ...formData, email: e.target.value })
                   }
-                  className="w-full px-4 py-3 bg-slate-900/50 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all"
+                  className={fieldClass}
                   placeholder="john@example.com"
                   required
                 />
@@ -150,7 +225,7 @@ export default function Contact() {
                   onChange={(e) =>
                     setFormData({ ...formData, subject: e.target.value })
                   }
-                  className="w-full px-4 py-3 bg-slate-900/50 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all"
+                  className={fieldClass}
                   placeholder="Project Inquiry"
                   required
                 />
@@ -167,7 +242,7 @@ export default function Contact() {
                     setFormData({ ...formData, message: e.target.value })
                   }
                   rows={5}
-                  className="w-full px-4 py-3 bg-slate-900/50 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all resize-none"
+                  className={`${fieldClass} resize-none`}
                   placeholder="Tell me about your project..."
                   required
                 />
@@ -175,10 +250,15 @@ export default function Contact() {
 
               <button
                 type="submit"
-                className="w-full px-8 py-4 bg-gradient-to-r from-cyan-500 to-purple-500 rounded-lg font-medium text-white hover:shadow-lg hover:shadow-cyan-500/50 transition-all duration-300 flex items-center justify-center gap-2 group"
+                disabled={isSubmitting}
+                className="w-full px-8 py-4 bg-gradient-to-r from-cyan-500 to-purple-500 rounded-lg font-medium text-white hover:shadow-lg hover:shadow-cyan-500/50 transition-all duration-300 flex items-center justify-center gap-2 group disabled:cursor-not-allowed disabled:opacity-70 disabled:hover:shadow-none"
               >
-                Send Message
-                <Send className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                {isSubmitting ? "Sending..." : "Send Message"}
+                {isSubmitting ? (
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                ) : (
+                  <Send className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                )}
               </button>
             </form>
           </motion.div>
