@@ -10,7 +10,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 
-import { homeContent as seedHomeContent } from "@/app/data/appData";
+import { NoDataState, ThemedLoader } from "@/app/components/DataState";
 import { useHomeContent } from "@/app/lib/useHomeContent";
 import { submitContactUs } from "@/services/contact";
 
@@ -18,10 +18,10 @@ const fieldClass =
   "contact-field w-full px-4 py-3 bg-slate-900/50 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all";
 
 export default function Contact() {
-  const { items } = useHomeContent();
-  const content = items[0] ?? seedHomeContent[0];
-  const personalInfo = content.personalInfo;
-  const about = content.about;
+  const { error, isLoading, items } = useHomeContent();
+  const content = items[0];
+  const personalInfo = content?.personalInfo;
+  const about = content?.about;
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -86,6 +86,11 @@ export default function Contact() {
           </p>
         </motion.div>
 
+        {isLoading ? (
+          <ThemedLoader />
+        ) : !content || !personalInfo || !about ? (
+          <NoDataState message={error || "No contact data is available from the server."} />
+        ) : (
         <div className="grid lg:grid-cols-2 gap-12">
           {/* Contact Info */}
           <motion.div
@@ -263,6 +268,7 @@ export default function Contact() {
             </form>
           </motion.div>
         </div>
+        )}
       </div>
     </section>
   );

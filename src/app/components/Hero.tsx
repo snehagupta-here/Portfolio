@@ -1,7 +1,7 @@
 import { motion } from "motion/react";
 import { ArrowDown, Dribbble, Github, Link, Linkedin, Mail, Twitter } from "lucide-react";
 import FloatingShapes from "./FloatingShapes";
-import { homeContent as seedHomeContent } from "@/app/data/appData";
+import { NoDataState, ThemedLoader } from "@/app/components/DataState";
 import { useHomeContent } from "@/app/lib/useHomeContent";
 
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
@@ -14,8 +14,36 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
 };
 
 export default function Hero() {
-  const { items } = useHomeContent();
-  const content = items[0] ?? seedHomeContent[0];
+  const { error, isLoading, items } = useHomeContent();
+  const content = items[0];
+
+  if (isLoading) {
+    return (
+      <section
+        id="home"
+        className="relative flex min-h-screen items-center justify-center overflow-hidden"
+      >
+        <FloatingShapes />
+        <ThemedLoader className="relative z-10" />
+      </section>
+    );
+  }
+
+  if (!content) {
+    return (
+      <section
+        id="home"
+        className="relative flex min-h-screen items-center justify-center overflow-hidden px-6"
+      >
+        <FloatingShapes />
+        <NoDataState
+          className="relative z-10 w-full max-w-xl"
+          message={error || "No portfolio content is available from the server."}
+        />
+      </section>
+    );
+  }
+
   const personalInfo = content.personalInfo;
   // const hero = content.hero;
   const socialLinks = content.socialLinks;

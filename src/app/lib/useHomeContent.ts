@@ -1,8 +1,6 @@
-import { useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import { PORTFOLIO_USER_ID } from "@/app/config";
-import { useAdminStore } from "@/app/lib/adminStore";
-import { homeContent as seedHomeContent } from "@/app/data/appData";
 import type { HomeContent } from "@/app/types/homeContent";
 import { fetchUserHomeContent } from "@/services/user";
 
@@ -20,23 +18,37 @@ function getHomeContentOnce() {
 }
 
 export function useHomeContent() {
-  const store = useAdminStore<HomeContent>("admin:homeContent", {
-    initial: seedHomeContent,
-    seed: true,
-    getId: (c) => c.id,
-  });
+  const [items, setItems] = useState<HomeContent[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [hasLoaded, setHasLoaded] = useState(false);
 
   useEffect(() => {
     let isActive = true;
 
     async function loadHomeContent() {
+      setIsLoading(true);
+      setError(null);
+
       try {
         const content = await getHomeContentOnce();
         if (isActive) {
-          store.setItems([content]);
+          setItems([content]);
         }
-      } catch {
-        // Keep the existing seeded content if the API is unavailable.
+      } catch (requestError) {
+        if (isActive) {
+          setItems([]);
+          setError(
+            requestError instanceof Error
+              ? requestError.message
+              : "Unable to load portfolio content.",
+          );
+        }
+      } finally {
+        if (isActive) {
+          setIsLoading(false);
+          setHasLoaded(true);
+        }
       }
     }
 
@@ -45,7 +57,11 @@ export function useHomeContent() {
     return () => {
       isActive = false;
     };
-  }, [store.setItems]);
+  }, []);
 
-  return store;
+  const replaceItems = useCallback((next: HomeContent[]) => {
+    setItems(next);
+  }, []);
+
+  return { items, setItems: replaceItems, isLoading, error, hasLoaded };
 }

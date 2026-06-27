@@ -9,7 +9,7 @@ import {
   Twitter,
 } from "lucide-react";
 
-import { homeContent as seedHomeContent } from "@/app/data/appData";
+import { NoDataState, ThemedLoader } from "@/app/components/DataState";
 import { useHomeContent } from "@/app/lib/useHomeContent";
 
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
@@ -21,8 +21,10 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
 };
 
 export default function QuickLinks() {
-  const { items } = useHomeContent();
-  const socialLinks = (items[0] ?? seedHomeContent[0]).socialLinks;
+  const { error, isLoading, items } = useHomeContent();
+  const content = items[0];
+  const socialLinks = content?.socialLinks ?? [];
+
   return (
     <section id="quick-links" className="py-24 px-6 relative overflow-hidden">
       {/* Background Effects */}
@@ -52,8 +54,13 @@ export default function QuickLinks() {
           </p>
         </motion.div>
 
-        <div className="flex flex-wrap items-center justify-center gap-x-12 gap-y-6">
-          {socialLinks.map((link, index) => {
+        {isLoading ? (
+          <ThemedLoader />
+        ) : !content || socialLinks.length === 0 ? (
+          <NoDataState message={error || "No link data is available from the server."} />
+        ) : (
+          <div className="flex flex-wrap items-center justify-center gap-x-12 gap-y-6">
+            {socialLinks.map((link, index) => {
             const Icon = iconMap[link.icon] ?? ExternalLink;
             return (
               <motion.a
@@ -81,8 +88,9 @@ export default function QuickLinks() {
                 />
               </motion.a>
             );
-          })}
-        </div>
+            })}
+          </div>
+        )}
 
         <motion.div
           initial={{ scaleX: 0 }}

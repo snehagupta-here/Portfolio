@@ -3,11 +3,12 @@ import { Link } from "react-router-dom";
 import { ArrowRight, ExternalLink, Github } from "lucide-react";
 import { useState } from "react";
 
+import { NoDataState, ThemedLoader } from "@/app/components/DataState";
 import { useProjects } from "@/app/lib/useProjects";
 
 export default function Projects() {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
-  const { items } = useProjects();
+  const { error, isLoading, items } = useProjects();
 
   const projects = items.map((project, index) => ({
     id: index + 1,
@@ -44,8 +45,13 @@ export default function Projects() {
           </p>
         </motion.div>
 
-        <div className="grid md:grid-cols-2 gap-8">
-          {projects.map((project, index) => (
+        {isLoading ? (
+          <ThemedLoader />
+        ) : projects.length === 0 ? (
+          <NoDataState message={error || "No project data is available from the server."} />
+        ) : (
+          <div className="grid md:grid-cols-2 gap-8">
+            {projects.map((project, index) => (
             <motion.div
               key={project.id}
               initial={{ opacity: 0, y: 30 }}
@@ -144,8 +150,9 @@ export default function Projects() {
                 </div>
               </Link>
             </motion.div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );

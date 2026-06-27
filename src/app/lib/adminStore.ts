@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useSyncExternalStore } from "react";
+import { useCallback, useSyncExternalStore } from "react";
 import type { ImageAsset } from "@/app/types/media";
 
 export type { ImageAsset } from "@/app/types/media";
@@ -124,7 +124,7 @@ function writeItems<T>(key: string, items: T[]) {
 
 export function useAdminStore<T = any>(
   key: string,
-  opts?: { initial?: T[]; seed?: boolean; getId?: (item: T) => string },
+  opts?: { initial?: T[]; getId?: (item: T) => string },
 ) {
   const getSnapshot = () => readItems<T>(key, opts?.initial ?? []);
   const getServerSnapshot = () => opts?.initial ?? [];
@@ -134,20 +134,6 @@ export function useAdminStore<T = any>(
     getSnapshot,
     getServerSnapshot,
   );
-
-  useEffect(() => {
-    if (!opts?.seed) return;
-    if (typeof window === "undefined") return;
-    if (!opts.initial || opts.initial.length === 0) return;
-    try {
-      const existing = window.localStorage.getItem(key);
-      if (existing !== null) return;
-      writeItems(key, opts.initial);
-    } catch {
-      // ignore
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [key]);
 
   const setItems = useCallback((next: T[]) => writeItems(key, next), [key]);
 

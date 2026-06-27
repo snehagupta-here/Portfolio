@@ -1,7 +1,7 @@
 import { Coffee, Code2, Download, Lightbulb, Mail, MapPin } from "lucide-react";
+import { NoDataState, ThemedLoader } from "@/app/components/DataState";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
 import { API_BASE_URL, PORTFOLIO_USER_ID } from "@/app/config";
-import { homeContent as seedHomeContent } from "@/app/data/appData";
 import { useHomeContent } from "@/app/lib/useHomeContent";
 import { downloadResume } from "@/services/user";
 import { motion, useInView } from 'framer-motion';
@@ -18,14 +18,33 @@ const withPlus = (value: string) => {
 };
 
 export default function About() {
-  const { items } = useHomeContent();
-  const content = items[0] ?? seedHomeContent[0];
+  const { error, isLoading, items } = useHomeContent();
+  const content = items[0];
+  const ref = useRef<HTMLElement | null>(null);
+  const isInView = useInView(ref, { once: true, margin: '-100px' });
+
+  if (isLoading) {
+    return (
+      <section id="about" className="py-24 px-6 relative overflow-hidden" ref={ref}>
+        <ThemedLoader />
+      </section>
+    );
+  }
+
+  if (!content) {
+    return (
+      <section id="about" className="py-24 px-6 relative overflow-hidden" ref={ref}>
+        <div className="mx-auto max-w-7xl">
+          <NoDataState message={error || "No about data is available from the server."} />
+        </div>
+      </section>
+    );
+  }
+
   const personalInfo = content.personalInfo;
   const about = content.about;
   const years = withPlus(about.totalYearsExperience);
   const projects = withPlus(about.projectsCompleted);
-  const ref = useRef<HTMLElement | null>(null);
-  const isInView = useInView(ref, { once: true, margin: '-100px' });
   const handleResumeDownload = async (
     event: React.MouseEvent<HTMLAnchorElement>,
   ) => {

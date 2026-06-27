@@ -12,7 +12,6 @@ import {
   Twitter,
 } from "lucide-react";
 
-import { homeContent as seedHomeContent } from "@/app/data/appData";
 import { useHomeContent } from "@/app/lib/useHomeContent";
 
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
@@ -34,10 +33,10 @@ const quickLinks = [
 
 export default function Footer() {
   const { items } = useHomeContent();
-  const content = items[0] ?? seedHomeContent[0];
-  const personalInfo = content.personalInfo;
-  const about = content.about;
-  const socialLinks = content.socialLinks;
+  const content = items[0];
+  const personalInfo = content?.personalInfo;
+  const about = content?.about;
+  const socialLinks = content?.socialLinks ?? [];
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
@@ -58,13 +57,12 @@ export default function Footer() {
                 <Sparkles className="w-5 h-5 text-slate-950" />
               </motion.div>
               <span className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-500">
-                {personalInfo.name}
+                {personalInfo?.name || "Portfolio"}
               </span>
             </Link>
 
             <p className="text-slate-400 max-w-md">
-              {personalInfo.tagline}. Building modern web applications with a
-              focus on performance, accessibility, and user experience.
+              {personalInfo?.tagline || "No data available"}
             </p>
 
             <div className="flex gap-4">
@@ -108,20 +106,20 @@ export default function Footer() {
             <ul className="space-y-3 text-sm text-slate-400">
               <li>
                 <a
-                  href={`mailto:${personalInfo.email}`}
+                  href={personalInfo?.email ? `mailto:${personalInfo.email}` : undefined}
                   className="hover:text-cyan-400 transition-colors"
                 >
-                  {personalInfo.email}
+                  {personalInfo?.email || "No data available"}
                 </a>
               </li>
-              <li>{about.location}</li>
+              <li>{about?.location || "No data available"}</li>
             </ul>
           </div>
         </div>
 
         <div className="pt-8 border-t border-cyan-500/20 flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-sm text-slate-400 flex items-center gap-1">
-            © {new Date().getFullYear()} {personalInfo.name}. Made with
+            © {new Date().getFullYear()} {personalInfo?.name || "Portfolio"}. Made with
             <Heart className="w-4 h-4 text-purple-400 fill-current" />
             and lots of coffee.
           </p>

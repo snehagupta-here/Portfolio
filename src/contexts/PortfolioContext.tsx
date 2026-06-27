@@ -2,8 +2,6 @@ import { createContext, useContext, useEffect, useMemo, useState } from "react";
 
 import type { BlogPost } from "@/app/types/blog";
 import { PORTFOLIO_USER_ID } from "@/app/config";
-import { blogPosts as seedBlogPosts } from "@/app/data/appData";
-import { useAdminStore } from "@/app/lib/adminStore";
 import { fetchBlogPosts } from "@/services/blog";
 
 type SetStateAction<T> = T | ((prev: T) => T);
@@ -19,11 +17,7 @@ type PortfolioContextValue = {
 const PortfolioContext = createContext<PortfolioContextValue | null>(null);
 
 export function PortfolioProvider({ children }: { children: React.ReactNode }) {
-  const { items: blogPosts, setItems } = useAdminStore<BlogPost>("portfolio:blogPosts", {
-    initial: seedBlogPosts,
-    seed: true,
-    getId: (b) => b.id,
-  });
+  const [blogPosts, setItems] = useState<BlogPost[]>([]);
   const [blogError, setBlogError] = useState<string | null>(null);
   const [isBlogLoading, setIsBlogLoading] = useState(true);
 

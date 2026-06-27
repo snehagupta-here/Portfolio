@@ -12,8 +12,8 @@ import {
   Smartphone,
 } from "lucide-react";
 
+import { NoDataState, ThemedLoader } from "@/app/components/DataState";
 import { ImageWithFallback } from "@/app/components/figma/ImageWithFallback";
-import { homeContent as seedHomeContent } from "@/app/data/appData";
 import { useHomeContent } from "@/app/lib/useHomeContent";
 import type { HomeSkill, HomeSkillCategory } from "@/app/types/home";
 
@@ -146,29 +146,15 @@ function CategoryFilter({
   );
 }
 
-function SkillsLoadingGrid() {
-  return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-      {Array.from({ length: 8 }).map((_, index) => (
-        <div
-          key={index}
-          className="h-[98px] animate-pulse rounded-2xl border border-slate-700/50 bg-slate-800/40"
-        />
-      ))}
-    </div>
-  );
-}
-
 export default function Skills() {
   const sectionRef = useRef<HTMLElement>(null);
   const isInView = useInView(sectionRef, { once: true, margin: "-100px" });
   const [activeCategory, setActiveCategory] = useState<HomeSkillCategory | "all">(
     "all",
   );
-  const { items } = useHomeContent();
-  const content = items[0] ?? seedHomeContent[0];
-  const skills = content.skills ?? [];
-  const isLoading = !content.skills;
+  const { error, isLoading, items } = useHomeContent();
+  const content = items[0];
+  const skills = content?.skills ?? [];
 
   const categories = useMemo(
     () => Array.from(new Set(skills.map((s) => s.category))),
@@ -217,11 +203,11 @@ export default function Skills() {
         </motion.div>
 
         {isLoading ? (
-          <SkillsLoadingGrid />
+          <ThemedLoader />
+        ) : !content ? (
+          <NoDataState message={error || "No skills data is available from the server."} />
         ) : skills.length === 0 ? (
-          <div className="rounded-2xl border border-slate-700/50 bg-slate-800/40 px-6 py-5 text-center text-sm text-slate-300">
-            Skills will appear here once they are added.
-          </div>
+          <NoDataState message="No skills have been published from the server yet." />
         ) : (
           <>
             <CategoryFilter

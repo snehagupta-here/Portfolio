@@ -8,12 +8,24 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../components/ui/select";
-import { githubContributionSection } from "@/app/data/appData";
 import {
   fetchGitHubContributions,
   type GitHubContributions,
 } from "@/services/user";
 import { PORTFOLIO_USER_ID } from "@/app/config";
+
+const currentYear = new Date().getFullYear();
+const contributionYears = Array.from({ length: 5 }, (_, index) =>
+  String(currentYear - index),
+);
+
+const githubContributionSection = {
+  id: "github",
+  title: "GitHub Contributions",
+  description: "Live contribution activity from the server.",
+  years: contributionYears,
+  defaultYear: String(currentYear),
+};
 
 const monthNames = [
   "Jan",
